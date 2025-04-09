@@ -10,11 +10,11 @@ This directory contains specification documents that define *what* needs to be b
 
 ## Related Documentation
 ### Core Documentation
-- Technical designs in [technical-design directory](../technical-design/)
-- Project planning in [project-plan directory](../project-plan/)
-- Research findings in [research directory](../research/)
+- Technical designs in [technical-design directory](../technical-design/DESIGN.md)
+- Project planning in [project-plan directory](../project-plan/PLAN.md)
+- Research findings in [research directory](../research/README.md)
 
 ### Support Documentation
-- User guides in [user directory](../user/)
-- Setup instructions in [setup directory](../setup/)
-- Additional documentation in [misc directory](../misc/) 
+- User guides in [user directory](../user/README.md)
+- Setup instructions in [setup directory](../setup/README.md)
+- Additional documentation in [misc directory](../misc/README.md) 

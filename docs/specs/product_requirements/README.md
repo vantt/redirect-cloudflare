@@ -6,7 +6,7 @@ This directory contains the detailed product requirements for the URL Redirect S
 - [Overview and Introduction](overview.md) - Product introduction, purpose, and high-level overview
 - [Functional Requirements](functional_requirements.md) - Core functionality, URL structure, and parameter handling
 - [Non-Functional Requirements](non_functional_requirements.md) - Performance, security, reliability, and scalability requirements
-- [Technical Architecture](technical_architecture.md) - Infrastructure and component specifications
+- [Technical Architecture](../../technical-design/technical_architecture.md) - Infrastructure and component specifications
 - [Analytics Requirements](analytics_requirements.md) - Tracking capabilities and data quality requirements
 - [User Interface Requirements](ui_requirements.md) - Error pages and analytics dashboard specifications
 

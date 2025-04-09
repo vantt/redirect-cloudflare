@@ -1,6 +1,6 @@
-# URL Shortener Documentation
+# Central Redirect Hub Documentation
 
-This directory contains all documentation for the URL shortener project. Each subdirectory serves a specific purpose and contains relevant documentation.
+This directory contains all documentation for the URL Redirect project. Each subdirectory serves a specific purpose and contains relevant documentation.
 
 ## Directory Structure
 
