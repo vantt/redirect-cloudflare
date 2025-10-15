@@ -62,10 +62,17 @@ docs/project-plan/implementation.md -> Phase 1 -> 1.3 Redirect Handling -> Creat
 - `URL.hostname`: [https://developer.mozilla.org/en-US/docs/Web/API/URL/hostname](https://developer.mozilla.org/en-US/docs/Web/API/URL/hostname)
 - HTTP Status 508 Loop Detected (Informational): [https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/508](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/508) - *Note: We're using 400 for simplicity.*
 
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Component Designs](../../../technical-design/component_designs.md): Details logic for detecting/preventing loops.
+- [Security Design](../../../technical-design/security_design.md): Defines strategies for mitigating redirect chain issues.
+
 **Dependencies:**
 - Task 1.1.2 (Configure Dev Env - for env var)
 - Task 1.2.2 (URL Validation - uses URL parsing)
 - Task 1.3.2 (Status Code Management)
+- Task 1.3.1 completed (redirect logic exists).
+- Task 1.1.3 completed (testing framework setup).
 
 **Acceptance Criteria:**
 - `isRedirectLoop` function correctly identifies destination URLs pointing to the redirect service hostname.

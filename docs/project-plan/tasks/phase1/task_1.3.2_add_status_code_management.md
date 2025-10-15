@@ -65,11 +65,19 @@ docs/project-plan/implementation.md -> Phase 1 -> 1.3 Redirect Handling -> Add s
 
 **Technical References:**
 - HTTP Status Codes: [https://developer.mozilla.org/en-US/docs/Web/HTTP/Status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status)
+- Response object options: [https://developers.cloudflare.com/workers/runtime-apis/response/#parameters](https://developers.cloudflare.com/workers/runtime-apis/response/#parameters)
+
+**Related Design & Specifications:**
+- [URL Structure](../../../specs/url_structure.md): May specify desired redirect types (permanent/temporary).
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Component Designs](../../../technical-design/component_designs.md): Details logic for choosing status codes.
+- [API Specifications (Internal)](../../../technical-design/api_specifications.md): May define how status codes are determined or passed.
 
 **Dependencies:**
 - Task 1.2.1 (URL Parsing)
 - Task 1.2.2 (URL Validation)
 - Task 1.3.1 (Redirect Logic)
+- Task 1.1.3 (testing framework setup)
 
 **Acceptance Criteria:**
 - Magic numbers for status codes replaced with constants.

@@ -28,9 +28,14 @@ docs/project-plan/implementation.md -> Phase 3 -> 3.3 Reporting Features -> Impl
 - Cloudflare Analytics Engine SQL API: [https://developers.cloudflare.com/analytics/analytics-engine/sql-api/](https://developers.cloudflare.com/analytics/analytics-engine/sql-api/)
 - (Dashboard tool documentation on data export)
 
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Future Considerations](../../../technical-design/future_considerations.md): May specify data export requirements.
+- [Infrastructure](../../../technical-design/infrastructure.md): Platform's data export capabilities (API, direct access).
+
 **Dependencies:**
-- Task 3.1.4 (Tracking Analytics Design - chosen data store)
-- Task 3.2.2 (Dashboard potentially used for export)
+- Task 3.1.4 completed (data source defined).
+- Choice of export format (CSV, JSON, etc.).
 
 **Acceptance Criteria:**
 - Data export requirements are understood.

@@ -40,6 +40,10 @@ docs/project-plan/implementation.md -> Phase 1 -> 1.1 Basic Worker Setup -> Conf
 - ESLint: [https://eslint.org/](https://eslint.org/)
 - Prettier: [https://prettier.io/](https://prettier.io/)
 
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Infrastructure](../../../technical-design/infrastructure.md): Details platform components like KV.
+
 **Dependencies:**
 - Task 1.1.1 completed (project initialized).
 - Wrangler CLI.

@@ -33,9 +33,14 @@ docs/project-plan/implementation.md -> Phase 3 -> 3.4 Monitoring Tools -> Create
 - Cloudflare Analytics Engine SQL API: [https://developers.cloudflare.com/analytics/analytics-engine/sql-api/](https://developers.cloudflare.com/analytics/analytics-engine/sql-api/)
 - Dashboard created in Task 3.2.x.
 
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Infrastructure](../../../technical-design/infrastructure.md): Platform for collecting and querying usage data.
+- [Future Considerations](../../../technical-design/future_considerations.md): May detail specific usage metrics needed.
+
 **Dependencies:**
-- Task 3.1.4 (Analytics data collection)
-- Task 3.2.x (Dashboard creation)
+- Task 3.1.4 completed (tracking data collected).
+- Task 3.2.1 completed (dashboard concept).
 
 **Acceptance Criteria:**
 - The created dashboard provides visibility into key usage patterns.

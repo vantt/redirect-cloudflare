@@ -75,10 +75,18 @@ docs/project-plan/implementation.md -> Phase 3 -> 3.1 Advanced Tracking -> Add p
 - `ctx.waitUntil()`: [https://developers.cloudflare.com/workers/runtime-apis/handlers/fetch/#contextwaituntil](https://developers.cloudflare.com/workers/runtime-apis/handlers/fetch/#contextwaituntil)
 - `fetch()` API: [https://developers.cloudflare.com/workers/runtime-apis/fetch/](https://developers.cloudflare.com/workers/runtime-apis/fetch/)
 
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Integration Designs](../../../technical-design/integration_designs.md): Specifies server-side tracking protocols (e.g., Measurement Protocol).
+- [Component Designs](../../../technical-design/component_designs.md): Details Tracking System logic for server-side sends.
+- [API Specifications (Internal)](../../../technical-design/api_specifications.md): Defines event structure for server-side calls.
+- [Security Design](../../../technical-design/security_design.md): Covers secure handling of API secrets and data.
+
 **Dependencies:**
-- Task 1.1.2 (for secrets config)
-- Task 2.3 (Tracking Parameter Processing)
-- Task 1.3.1 (Redirect Logic - to place calls before redirect)
+- Task 2.3 completed (parameter processing).
+- Task 1.1.2 completed (environment variables for API secrets).
+- Task 1.1.3 completed (testing framework).
+- Access to platform API credentials (e.g., GA4 Measurement Protocol API Secret).
 
 **Acceptance Criteria:**
 - Design for server-side platform tracking is documented.

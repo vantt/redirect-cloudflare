@@ -1,0 +1,99 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Global Coding Standards
+
+## General Coding Standards
+1. Code Quality:
+   - Follow SOLID principles
+   - Implement DRY (Don't Repeat Yourself)
+   - Use clear, semantic naming
+   - Include proper error handling
+   - Add comprehensive documentation
+
+
+2. Security Practices:
+   - Validate all inputs
+   - Sanitize data outputs
+   - Use prepared statements for queries
+   - Implement proper authentication
+   - Follow OWASP guidelines
+
+
+3. Performance Optimization:
+   - Optimize database queries
+   - Implement caching where appropriate
+   - Use lazy loading for resources
+   - Minimize HTTP requests
+   - Optimize asset delivery
+
+
+## Architecture Patterns
+1. Backend Development:
+   - RESTful API design
+   - Microservices architecture
+   - Event-driven patterns
+   - Repository pattern
+   - Service layer abstraction
+
+
+2. Frontend Development:
+   - Component-based architecture
+   - State management patterns
+   - Progressive enhancement
+   - Responsive design
+   - Accessibility standards
+
+
+## Testing Standards
+1. Test Coverage:
+   - Unit testing
+   - Integration testing
+   - End-to-end testing
+   - Performance testing
+   - Security testing
+
+
+2. Documentation Requirements:
+   - API documentation
+   - Code comments
+   - README files
+   - Changelog maintenance
+   - Setup instructions
+
+
+## Development Workflow
+1. Version Control:
+   - Git flow branching
+   - Meaningful commit messages
+   - Pull request templates
+   - Code review guidelines
+   - Branch naming conventions
+
+
+2. CI/CD Practices:
+   - Automated testing
+   - Continuous integration
+   - Deployment automation
+   - Environment management
+   - Monitoring and logging
+
+
+## Code Review Guidelines
+1. Review Focus:
+   - Code functionality
+   - Security implications
+   - Performance impact
+   - Documentation completeness
+   - Test coverage
+
+
+2. Quality Checks:
+   - Linting standards
+   - Code formatting
+   - Type checking
+   - Dependency management
+   - Security scanning

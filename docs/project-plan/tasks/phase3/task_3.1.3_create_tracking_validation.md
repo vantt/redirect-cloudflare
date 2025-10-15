@@ -82,8 +82,16 @@ docs/project-plan/implementation.md -> Phase 3 -> 3.1 Advanced Tracking -> Creat
 **Technical References:**
 - `console.warn`: [https://developer.mozilla.org/en-US/docs/Web/API/console/warn](https://developer.mozilla.org/en-US/docs/Web/API/console/warn)
 
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Integration Designs](../../../technical-design/integration_designs.md): Specifies required data formats/fields for GTM/GA4.
+- [Component Designs](../../../technical-design/component_designs.md): Details validation logic in Tracking System.
+- [API Specifications (Internal)](../../../technical-design/api_specifications.md): Defines valid tracking data structures.
+
 **Dependencies:**
-- Task 2.3 (Tracking Parameter Processing)
+- Task 2.3 completed (parameter processing).
+- Task 3.1.1/3.1.2 completed (tracking implementation needing validation).
+- Task 1.1.3 completed (testing framework).
 
 **Acceptance Criteria:**
 - `validateTrackingParameters` function correctly identifies missing/empty required parameters.

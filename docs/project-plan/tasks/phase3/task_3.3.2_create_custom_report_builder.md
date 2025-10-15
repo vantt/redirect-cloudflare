@@ -28,7 +28,14 @@ docs/project-plan/implementation.md -> Phase 3 -> 3.3 Reporting Features -> Crea
 **Technical References:**
 - (Depends on chosen approach - API frameworks, dashboard tool docs)
 
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Future Considerations](../../../technical-design/future_considerations.md): May detail custom reporting needs.
+- [Infrastructure](../../../technical-design/infrastructure.md): Data platform query capabilities.
+
 **Dependencies:**
+- Task 3.1.4 completed (data source defined).
+- UI development skills.
 - Clear requirement from stakeholders for custom report building capabilities beyond standard dashboards.
 
 **Acceptance Criteria:**

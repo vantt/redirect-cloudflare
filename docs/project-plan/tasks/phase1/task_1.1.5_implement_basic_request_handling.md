@@ -54,10 +54,19 @@ docs/project-plan/implementation.md -> Phase 1 -> 1.1 Basic Worker Setup -> Impl
 - Response object: [https://developers.cloudflare.com/workers/runtime-apis/response/](https://developers.cloudflare.com/workers/runtime-apis/response/)
 - Fetch handler: [https://developers.cloudflare.com/workers/learning/fetch-event-lifecycle/](https://developers.cloudflare.com/workers/learning/fetch-event-lifecycle/)
 - Vitest mocking/spying: [https://vitest.dev/guide/mocking.html](https://vitest.dev/guide/mocking.html)
+- FetchEvent: [https://developers.cloudflare.com/workers/runtime-apis/fetch-event/](https://developers.cloudflare.com/workers/runtime-apis/fetch-event/)
+
+**Related Design & Specifications:**
+- [URL Structure](../../../specs/url_structure.md): Defines the incoming URL format to be handled.
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Architecture Overview](../../../technical-design/architecture_overview.md): Shows the Request Handler component.
+- [Component Designs](../../../technical-design/component_designs.md): Details the Request Handler's expected logic.
+- [Component Interactions](../../../technical-design/component_interactions.md): Shows how the Request Handler interacts.
+- [URL Processing Mechanism](../../../technical-design/url_processing.md): Explains how the fragment-based URL is handled.
 
 **Dependencies:**
-- Task 1.1.1, 1.1.2, 1.1.3 completed.
-- Potentially Task 1.1.4 if Env bindings are used.
+- Task 1.1.1 completed (project initialized with `src/index.ts`).
+- Task 1.1.3 completed (testing framework setup).
 
 **Acceptance Criteria:**
 - The worker correctly logs the incoming request URL.

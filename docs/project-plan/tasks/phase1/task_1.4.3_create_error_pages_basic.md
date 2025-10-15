@@ -104,10 +104,18 @@ docs/project-plan/implementation.md -> Phase 1 -> 1.4 Error Handling -> Create e
 - Content negotiation: [https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation)
 - Wrangler `[rules]` for including assets: [https://developers.cloudflare.com/workers/wrangler/configuration/#bundling](https://developers.cloudflare.com/workers/wrangler/configuration/#bundling) (May need adjustment for direct import)
 - Esbuild Text Loader: [https://esbuild.github.io/content-types/#text](https://esbuild.github.io/content-types/#text)
+- Response object (HTML): [https://developers.cloudflare.com/workers/runtime-apis/response/#html](https://developers.cloudflare.com/workers/runtime-apis/response/#html)
+
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [API Specifications (Internal)](../../../technical-design/api_specifications.md): Defines how error responses trigger these pages.
+- [Infrastructure](../../../technical-design/infrastructure.md): May mention hosting/CDN for error pages.
+- [Component Designs](../../../technical-design/component_designs.md): Details component logic for serving error pages.
 
 **Dependencies:**
-- Task 1.4.1 (Error Response Structure)
-- Task 1.1.1 / Build setup (for handling HTML imports)
+- Task 1.4.1 completed (error response structure designed).
+- Task 1.1.5 completed (request handler to serve responses).
+- Basic HTML/CSS knowledge.
 
 **Acceptance Criteria:**
 - Basic static HTML error pages exist.

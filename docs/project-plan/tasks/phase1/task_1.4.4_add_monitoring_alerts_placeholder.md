@@ -36,8 +36,14 @@ docs/project-plan/implementation.md -> Phase 1 -> 1.4 Error Handling -> Add moni
 **Technical References:**
 - Cloudflare Observability: [https://developers.cloudflare.com/workers/observability/](https://developers.cloudflare.com/workers/observability/)
 
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Infrastructure](../../../technical-design/infrastructure.md): Mentions platform capabilities (e.g., metrics).
+- [Future Considerations](../../../technical-design/future_considerations.md): May outline monitoring/alerting plans.
+
 **Dependencies:**
-- Previous error handling and logging tasks (1.4.1, 1.4.2).
+- Error logging implemented (Task 1.4.2) as a basis for alerts.
+- Basic understanding of monitoring concepts.
 
 **Acceptance Criteria:**
 - Critical error conditions for alerting are identified and documented.

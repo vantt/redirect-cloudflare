@@ -34,9 +34,16 @@ docs/project-plan/implementation.md -> Phase 3 -> 3.2 Dashboard Development -> A
 **Technical References:**
 - (Tool-specific documentation for dashboard variables/filtering)
 - Cloudflare Analytics Engine SQL API (for query syntax): [https://developers.cloudflare.com/analytics/analytics-engine/sql-api/](https://developers.cloudflare.com/analytics/analytics-engine/sql-api/)
+- SQL `WHERE` clause: Standard SQL documentation.
+
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Future Considerations](../../../technical-design/future_considerations.md): May detail desired dashboard filtering.
+- [Infrastructure](../../../technical-design/infrastructure.md): Underlying data platform's query capabilities.
 
 **Dependencies:**
-- Task 3.2.2 (Dashboard components created)
+- Tasks 3.2.1 & 3.2.2 completed (dashboard exists).
+- Data source supports filtering (e.g., SQL API).
 
 **Acceptance Criteria:**
 - Dashboard includes filters for key dimensions like time range and UTM parameters.

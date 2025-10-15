@@ -59,8 +59,14 @@ docs/project-plan/implementation.md -> Phase 1 -> 1.2 URL Processing -> Create U
 - `decodeURIComponent()`: [https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent)
 - `url_structure.md` (mentions encoding): `docs/specs/url_structure.md`
 
+**Related Design & Specifications:**
+- [URL Structure](../../../specs/url_structure.md): May imply encoding needs.
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Security Design](../../../technical-design/security_design.md): Covers safe encoding/decoding practices.
+- [Component Designs](../../../technical-design/component_designs.md): Shows potential consumers of these utilities.
+
 **Dependencies:**
-- Task 1.1.3 (Testing Setup)
+- Task 1.1.3 completed (testing framework setup).
 
 **Acceptance Criteria:**
 - Encoding/decoding utility functions exist and pass unit tests.

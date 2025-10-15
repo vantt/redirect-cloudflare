@@ -49,6 +49,10 @@ docs/project-plan/implementation.md -> Phase 1 -> 1.1 Basic Worker Setup -> Set 
 - Vitest Environment Miniflare: [https://github.com/cloudflare/vitest-environment-miniflare](https://github.com/cloudflare/vitest-environment-miniflare)
 - Testing Workers: [https://developers.cloudflare.com/workers/testing/unit-testing/](https://developers.cloudflare.com/workers/testing/unit-testing/)
 
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Infrastructure](../../../technical-design/infrastructure.md): Details platform components.
+
 **Dependencies:**
 - Task 1.1.1 completed (project initialized).
 - Task 1.1.2 completed (dev environment configured).

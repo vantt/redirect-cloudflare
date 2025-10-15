@@ -31,9 +31,16 @@ docs/project-plan/implementation.md -> Phase 3 -> 3.4 Monitoring Tools -> Set up
 
 **Technical References:**
 - Worker Metrics: [https://developers.cloudflare.com/workers/observability/metrics/](https://developers.cloudflare.com/workers/observability/metrics/)
+- Cloudflare Observability tools: [https://developers.cloudflare.com/workers/observability/](https://developers.cloudflare.com/workers/observability/)
+
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Infrastructure](../../../technical-design/infrastructure.md): Platform's built-in monitoring (metrics, tracing).
+- [Future Considerations](../../../technical-design/future_considerations.md): May define performance monitoring requirements.
 
 **Dependencies:**
-- Worker deployed and handling traffic.
+- Worker deployed to Cloudflare.
+- Understanding of key performance indicators (KPIs) like latency, CPU time, error rates.
 - Task 3.2.2 (Custom dashboard, optional for this task).
 
 **Acceptance Criteria:**

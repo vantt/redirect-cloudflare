@@ -32,12 +32,19 @@ docs/project-plan/implementation.md -> Phase 4 -> 4.2 Security Hardening -> Impl
 8.  Establish a process for reviewing WAF events periodically and handling false positives.
 
 **Technical References:**
-- Cloudflare WAF: [https://www.cloudflare.com/waf/](https://www.cloudflare.com/waf/)
+- Cloudflare WAF: [https://developers.cloudflare.com/waf/](https://developers.cloudflare.com/waf/)
 - Cloudflare Managed Ruleset: [https://developers.cloudflare.com/waf/managed-rulesets/cloudflare-managed-ruleset/](https://developers.cloudflare.com/waf/managed-rulesets/cloudflare-managed-ruleset/)
 - OWASP Core Rule Set: [https://owasp.org/www-project-modsecurity-core-rule-set/](https://owasp.org/www-project-modsecurity-core-rule-set/)
 
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Infrastructure](../../../technical-design/infrastructure.md): Platform WAF capabilities.
+- [Security Design](../../../technical-design/security_design.md): Defines required WAF rulesets (OWASP, custom rules).
+
 **Dependencies:**
-- Worker deployed to a Cloudflare zone with proxy enabled.
+- Deployed worker on Cloudflare.
+- Access to configure Cloudflare WAF.
+- Understanding of common web vulnerabilities (XSS, SQLi, etc.).
 
 **Acceptance Criteria:**
 - Cloudflare Managed Ruleset (including OWASP rules) is enabled and active for the worker's domain.

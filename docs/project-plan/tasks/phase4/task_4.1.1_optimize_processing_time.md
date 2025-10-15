@@ -47,10 +47,17 @@ docs/project-plan/implementation.md -> Phase 4 -> 4.1 Performance Tuning -> Opti
 - `console.time`: [https://developer.mozilla.org/en-US/docs/Web/API/console/time](https://developer.mozilla.org/en-US/docs/Web/API/console/time)
 - `ctx.waitUntil`: [https://developers.cloudflare.com/workers/runtime-apis/handlers/fetch/#contextwaituntil](https://developers.cloudflare.com/workers/runtime-apis/handlers/fetch/#contextwaituntil)
 - Performance best practices: [https://blog.cloudflare.com/workers-optimization-tips/](https://blog.cloudflare.com/workers-optimization-tips/) (Conceptual)
+- Performance best practices (e.g., avoid blocking operations).
+
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Infrastructure](../../../technical-design/infrastructure.md): Platform performance characteristics.
+- [Component Designs](../../../technical-design/component_designs.md): Internal logic that can be optimized.
+- [Future Considerations](../../../technical-design/future_considerations.md): May define performance targets.
 
 **Dependencies:**
-- Task 3.4.1 (Performance Monitoring Setup)
-- Worker deployed and serving traffic to generate metrics.
+- Task 3.4.1 completed (performance monitoring setup).
+- Codebase exists to be optimized.
 
 **Acceptance Criteria:**
 - Worker performance metrics (P90/P99 CPU and Wall Time) meet or approach the target (<5ms).

@@ -41,8 +41,15 @@ docs/project-plan/implementation.md -> Phase 4 -> 4.2 Security Hardening -> Impl
 - Cloudflare Rate Limiting: [https://developers.cloudflare.com/waf/rate-limiting-rules/](https://developers.cloudflare.com/waf/rate-limiting-rules/)
 - HTTP 429 Status Code: [https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429)
 
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Infrastructure](../../../technical-design/infrastructure.md): Platform rate limiting capabilities.
+- [Security Design](../../../technical-design/security_design.md): Defines rate limiting strategy and thresholds.
+
 **Dependencies:**
-- Worker deployed to a Cloudflare zone.
+- Deployed worker on Cloudflare.
+- Understanding of expected traffic patterns.
+- Access to configure Cloudflare WAF/Rate Limiting.
 
 **Acceptance Criteria:**
 - Cloudflare Rate Limiting rule is configured for the worker endpoint.

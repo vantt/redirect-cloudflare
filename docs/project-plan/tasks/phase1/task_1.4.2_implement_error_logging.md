@@ -87,11 +87,17 @@ docs/project-plan/implementation.md -> Phase 1 -> 1.4 Error Handling -> Implemen
 - Logging in Workers: [https://developers.cloudflare.com/workers/observability/logging/](https://developers.cloudflare.com/workers/observability/logging/)
 - Vitest Spies: [https://vitest.dev/guide/mocking.html#spies](https://vitest.dev/guide/mocking.html#spies)
 
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Component Designs](../../../technical-design/component_designs.md): Details logging implementation within components.
+- [Component Interactions](../../../technical-design/component_interactions.md): Shows error logging flow.
+- [API Specifications (Internal)](../../../technical-design/api_specifications.md): Defines log data structure.
+- [Infrastructure](../../../technical-design/infrastructure.md): Mentions potential logging targets.
+
 **Dependencies:**
-- Previous error handling tasks (1.4.1) and error detection points (1.2.1, 1.2.2, 1.3.3).
+- Task 1.4.1 completed (error response structure designed).
+- Task 1.1.5 completed (basic request handling for context).
+- Task 1.1.3 completed (testing framework setup).
 
 **Acceptance Criteria:**
-- `console.error` is used to log details for detected errors (invalid URL, loop) and unexpected exceptions.
-- Log messages include relevant contextual information.
-- Unit tests verify that `console.error` is called appropriately in error scenarios.
-- Code meets quality standards. 
+- `console.error`

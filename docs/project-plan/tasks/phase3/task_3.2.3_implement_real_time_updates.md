@@ -25,9 +25,17 @@ docs/project-plan/implementation.md -> Phase 3 -> 3.2 Dashboard Development -> I
 
 **Technical References:**
 - (Tool-specific documentation for refresh intervals)
+- WebSockets API: [https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
+
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Future Considerations](../../../technical-design/future_considerations.md): May discuss real-time dashboard needs.
+- [Infrastructure](../../../technical-design/infrastructure.md): Platform capabilities for real-time data (e.g., Durable Objects for WebSockets).
 
 **Dependencies:**
 - Task 3.2.2 (Dashboard components created)
+- Tasks 3.2.1 & 3.2.2 completed (dashboard exists).
+- Data source allowing real-time feeds.
 
 **Acceptance Criteria:**
 - Dashboard is configured with an appropriate auto-refresh interval.

@@ -41,11 +41,17 @@ docs/project-plan/implementation.md -> Phase 3 -> 3.2 Dashboard Development -> C
 **Technical References:**
 - Cloudflare Analytics Engine SQL API: [https://developers.cloudflare.com/analytics/analytics-engine/sql-api/](https://developers.cloudflare.com/analytics/analytics-engine/sql-api/)
 - (If using Grafana): [https://grafana.com/docs/grafana/latest/datasources/cloudflare/](https://grafana.com/docs/grafana/latest/datasources/cloudflare/)
+- Chart.js: [https://www.chartjs.org/](https://www.chartjs.org/)
+
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Future Considerations](../../../technical-design/future_considerations.md): Relates to the dashboard concept.
+- [Infrastructure](../../../technical-design/infrastructure.md): Platform might dictate visualization options.
 
 **Dependencies:**
-- Task 3.1.4 (Tracking Analytics Implementation/Data Collection)
-- Task 3.2.1 (Dashboard Design)
-- Data must be flowing into Analytics Engine.
+- Task 3.2.1 completed (dashboard layout designed).
+- Task 3.1.4 completed (data source defined).
+- Familiarity with a charting library or UI framework.
 
 **Acceptance Criteria:**
 - Dashboard exists in the chosen tool.

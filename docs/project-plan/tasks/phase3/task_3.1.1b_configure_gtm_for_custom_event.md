@@ -76,11 +76,16 @@ Corresponds to Task 3.1.1 (Implementation detail)
 - GTM Custom Event Trigger: [https://support.google.com/tagmanager/answer/6106961](https://support.google.com/tagmanager/answer/6106961)
 - GA4 Event Tag in GTM: [https://support.google.com/tagmanager/answer/9442095](https://support.google.com/tagmanager/answer/9442095)
 - GA4 Recommended Event Parameters: [https://support.google.com/analytics/answer/9267735](https://support.google.com/analytics/answer/9267735)
+- GTM Variables: [https://support.google.com/tagmanager/answer/6107162](https://support.google.com/tagmanager/answer/6107162)
+
+**Related Design & Specifications:**
+- [Integration Designs](../../../technical-design/integration_designs.md): Details expected GTM configuration for custom events.
+- [API Specifications (Internal)](../../../technical-design/api_specifications.md): Defines the dataLayer structure GTM will consume.
 
 **Dependencies:**
-- Task 3.1.1 (Worker-side data layer push implementation).
-- Task 2.2 (Basic GA4 GTM setup).
-- Access to GTM container.
+- Task 3.1.1 completed (Worker pushing events to dataLayer).
+- Access to the GTM container.
+- Understanding of GTM tags, triggers, and variables.
 
 **Acceptance Criteria:**
 - GTM Data Layer variables for destination URL and tracking parameters are created.

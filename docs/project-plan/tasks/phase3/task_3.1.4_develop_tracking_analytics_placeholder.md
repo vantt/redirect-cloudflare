@@ -86,9 +86,14 @@ docs/project-plan/implementation.md -> Phase 3 -> 3.1 Advanced Tracking -> Devel
 - `writeDataPoint` API: [https://developers.cloudflare.com/analytics/analytics-engine/reference/workers-api/#writedatapoint](https://developers.cloudflare.com/analytics/analytics-engine/reference/workers-api/#writedatapoint)
 - Logpush: [https://developers.cloudflare.com/logs/logpush/](https://developers.cloudflare.com/logs/logpush/)
 
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Future Considerations](../../../technical-design/future_considerations.md): May outline advanced analytics features.
+- [Infrastructure](../../../technical-design/infrastructure.md): Potential platforms for storing/querying analytics data.
+
 **Dependencies:**
-- Most preceding tasks (for data points like URLs, params, status codes, error codes).
-- Task 1.1.2 (for `wrangler.toml` binding config).
+- Completed logging/tracking tasks (Phase 2, Phase 3.1).
+- Understanding of data analysis and visualization tools.
 
 **Acceptance Criteria:**
 - Design choice (Analytics Engine vs. Logpush) is documented.

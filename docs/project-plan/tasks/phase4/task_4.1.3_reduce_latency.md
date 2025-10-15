@@ -37,10 +37,17 @@ docs/project-plan/implementation.md -> Phase 4 -> 4.1 Performance Tuning -> Redu
 - `ctx.waitUntil`: [https://developers.cloudflare.com/workers/runtime-apis/handlers/fetch/#contextwaituntil](https://developers.cloudflare.com/workers/runtime-apis/handlers/fetch/#contextwaituntil)
 - Worker Cold Starts: [https://blog.cloudflare.com/eliminating-cold-starts-with-cloudflare-workers/](https://blog.cloudflare.com/eliminating-cold-starts-with-cloudflare-workers/)
 
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Infrastructure](../../../technical-design/infrastructure.md): Edge network benefits and limitations.
+- [Future Considerations](../../../technical-design/future_considerations.md): May define latency targets.
+- [Component Designs](../../../technical-design/component_designs.md): Identify potential internal latency sources.
+
 **Dependencies:**
 - Task 3.1.2 (Server-side tracking implementation - affects subrequests)
 - Task 3.4.1 (Performance Monitoring)
 - Access to detailed Cloudflare logs or external monitoring tools.
+- Task 4.1.1 / 4.1.2 completed (optimization steps may impact latency).
 
 **Acceptance Criteria:**
 - Non-essential subrequests are made asynchronously.

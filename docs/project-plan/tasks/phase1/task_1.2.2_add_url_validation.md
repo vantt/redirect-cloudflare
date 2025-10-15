@@ -56,9 +56,18 @@ docs/project-plan/implementation.md -> Phase 1 -> 1.2 URL Processing -> Add URL 
 - `URL` constructor: [https://developer.mozilla.org/en-US/docs/Web/API/URL/URL](https://developer.mozilla.org/en-US/docs/Web/API/URL/URL)
 - `URL.protocol`: [https://developer.mozilla.org/en-US/docs/Web/API/URL/protocol](https://developer.mozilla.org/en-US/docs/Web/API/URL/protocol)
 - Security considerations (`javascript:` protocol): OWASP guidelines.
+- OWASP Input Validation Cheat Sheet: [https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html)
+
+**Related Design & Specifications:**
+- [URL Structure](../../../specs/url_structure.md): Specifies constraints on URL components.
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Component Designs](../../../technical-design/component_designs.md): Details the component handling validation.
+- [Security Design](../../../technical-design/security_design.md): Defines security-related validation rules.
+- [API Specifications (Internal)](../../../technical-design/api_specifications.md): May define error structures.
 
 **Dependencies:**
-- Task 1.2.1 (URL Parsing Logic)
+- Task 1.2.1 completed (URL parsing logic exists).
+- Task 1.1.3 completed (testing framework setup).
 
 **Acceptance Criteria:**
 - `isValidDestinationUrl` function correctly validates URL strings.

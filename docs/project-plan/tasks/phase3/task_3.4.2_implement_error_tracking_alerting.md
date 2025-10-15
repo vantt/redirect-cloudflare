@@ -44,9 +44,15 @@ docs/project-plan/implementation.md -> Phase 3 -> 3.4 Monitoring Tools -> Implem
 - Cloudflare Notifications: [https://developers.cloudflare.com/fundamentals/notifications/](https://developers.cloudflare.com/fundamentals/notifications/)
 - Cloudflare Logs Alerts: [https://developers.cloudflare.com/logs/reference/alerts/](https://developers.cloudflare.com/logs/reference/alerts/)
 
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Infrastructure](../../../technical-design/infrastructure.md): Platform's alerting capabilities (based on logs/metrics).
+- [Future Considerations](../../../technical-design/future_considerations.md): May define specific alerting rules.
+
 **Dependencies:**
-- Task 1.4.4 (Critical errors identified)
-- Worker deployed and configured logging/error handling.
+- Task 1.4.2 completed (error logging implemented).
+- Task 3.4.1 completed (performance/error metrics available).
+- Access to configure Cloudflare alerts or external tools.
 
 **Acceptance Criteria:**
 - Cloudflare Notification Destinations are configured.

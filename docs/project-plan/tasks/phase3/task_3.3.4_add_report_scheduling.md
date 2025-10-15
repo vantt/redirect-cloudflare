@@ -32,4 +32,13 @@ docs/project-plan/implementation.md -> Phase 3 -> 3.3 Reporting Features -> Add 
 
 **Acceptance Criteria:**
 - Options for scheduling reports are investigated based on the chosen reporting method.
-- The approach for scheduling (or decision to defer automation) is documented. 
+- The approach for scheduling (or decision to defer automation) is documented.
+
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Future Considerations](../../../technical-design/future_considerations.md): May detail report scheduling needs.
+- [Infrastructure](../../../technical-design/infrastructure.md): Platform scheduling capabilities (Cron Triggers).
+
+**Dependencies:**
+- Task 3.3.1 or 3.3.3 completed (report/export generation exists).
+- Choice of delivery method (email, storage bucket, etc.). 

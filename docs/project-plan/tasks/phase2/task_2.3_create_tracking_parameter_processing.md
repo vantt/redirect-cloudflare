@@ -85,9 +85,17 @@ docs/project-plan/implementation.md -> Phase 2: Tracking Integration -> Create t
 - UTM Parameters overview: [https://support.google.com/analytics/answer/1033863](https://support.google.com/analytics/answer/1033863)
 - `url_structure.md`: `docs/specs/url_structure.md`
 
+**Related Design & Specifications:**
+- [URL Structure](../../../specs/url_structure.md): Defines incoming parameter format.
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Integration Designs](../../../technical-design/integration_designs.md): Specifies target parameter formats for GTM/GA4.
+- [Component Designs](../../../technical-design/component_designs.md): Details the Tracking System's processing logic.
+- [API Specifications (Internal)](../../../technical-design/api_specifications.md): Defines structures for raw and processed parameters.
+
 **Dependencies:**
-- Task 1.2.1 (URL Parsing)
-- Task 1.2.2 (URL Validation)
+- Task 1.2.3 completed (parameter extraction).
+- Task 2.1/2.2 completed (integration points defined).
+- Task 1.1.3 completed (testing framework).
 
 **Acceptance Criteria:**
 - `extractTrackingParameters` function correctly extracts known UTM and platform parameters from the destination URL query string.

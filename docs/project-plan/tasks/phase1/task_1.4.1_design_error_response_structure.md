@@ -104,10 +104,19 @@ docs/project-plan/implementation.md -> Phase 1 -> 1.4 Error Handling -> Design e
 **Technical References:**
 - JSON standard: [https://www.json.org/](https://www.json.org/)
 - `Content-Type` header: [https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type)
+- RFC 7807 (Problem Details for HTTP APIs): [https://datatracker.ietf.org/doc/html/rfc7807](https://datatracker.ietf.org/doc/html/rfc7807)
+
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [API Specifications (Internal)](../../../technical-design/api_specifications.md): Defines the structure of error responses.
+- [Component Designs](../../../technical-design/component_designs.md): Shows components generating errors.
+- [Component Interactions](../../../technical-design/component_interactions.md): Illustrates error handling flows.
 
 **Dependencies:**
 - Task 1.3.2 (Status Code Management)
 - Task 1.3.4 (Caching Strategy - for headers)
+- Understanding of HTTP status codes for errors (4xx, 5xx).
+- Previous tasks defining potential error sources (e.g., validation, parsing).
 
 **Acceptance Criteria:**
 - Standard JSON error response structure is defined and implemented in `createErrorResponse`.

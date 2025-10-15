@@ -79,10 +79,19 @@ docs/project-plan/implementation.md -> Phase 1 -> 1.3 Redirect Handling -> Devel
 - `Pragma` header: [https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Pragma](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Pragma)
 - `Expires` header: [https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Expires](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Expires)
 - Caching strategies: [https://web.dev/http-cache/](https://web.dev/http-cache/)
+- Cache API (Workers): [https://developers.cloudflare.com/workers/runtime-apis/cache/](https://developers.cloudflare.com/workers/runtime-apis/cache/)
+
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Infrastructure](../../../technical-design/infrastructure.md): Mentions CDN capabilities.
+- [Component Designs](../../../technical-design/component_designs.md): Details how caching interacts with redirect logic.
+- [Future Considerations](../../../technical-design/future_considerations.md): May mention advanced caching plans.
+- [API Specifications (Internal)](../../../technical-design/api_specifications.md): Could define cache control mechanisms.
 
 **Dependencies:**
-- Task 1.3.1 (Redirect Logic)
-- Task 1.3.2 (Status Code Management)
+- Task 1.3.1 completed (redirect logic implemented).
+- Task 1.3.2 completed (status code management).
+- Understanding of HTTP caching headers.
 
 **Acceptance Criteria:**
 - Appropriate `Cache-Control` (and potentially `Pragma`, `Expires`) headers are added to all redirect, no-redirect, and error responses.

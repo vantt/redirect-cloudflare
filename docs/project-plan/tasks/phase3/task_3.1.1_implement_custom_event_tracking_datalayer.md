@@ -94,10 +94,18 @@ docs/project-plan/implementation.md -> Phase 3 -> 3.1 Advanced Tracking -> Imple
 **Technical References:**
 - GTM Data Layer: [https://developers.google.com/tag-manager/devguide](https://developers.google.com/tag-manager/devguide)
 - `JSON.stringify()`: [https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)
+- GTM Developer Guide - dataLayer: [https://developers.google.com/tag-manager/devguide#datalayer](https://developers.google.com/tag-manager/devguide#datalayer)
+
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Integration Designs](../../../technical-design/integration_designs.md): Specifies GTM dataLayer usage and event types.
+- [Component Designs](../../../technical-design/component_designs.md): Details Tracking System event generation.
+- [API Specifications (Internal)](../../../technical-design/api_specifications.md): Defines custom event and dataLayer structure.
 
 **Dependencies:**
-- Task 2.1 (Setup GTM Integration)
-- Task 2.3 (Tracking Parameter Processing)
+- Task 2.1 completed (GTM script injection).
+- Task 2.3 completed (parameter processing).
+- Task 1.1.3 completed (testing framework).
 
 **Acceptance Criteria:**
 - `isNoRedirect=1` response includes a `dataLayer.push` script before the GTM snippet.

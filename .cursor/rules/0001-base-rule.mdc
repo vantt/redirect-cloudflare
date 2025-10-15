@@ -1,0 +1,10 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Base Rules 
+
+## Action notice
+Every time you choose to apply a rule(s), say 'Hello TET' and explicitly state the rule(s) in the output.
+Use its prefix number associate with abbreviate the rule description to a single word or phrase.

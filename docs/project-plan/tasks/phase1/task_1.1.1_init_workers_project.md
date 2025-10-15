@@ -17,20 +17,24 @@ docs/project-plan/implementation.md -> Phase 1 -> 1.1 Basic Worker Setup -> Init
 **TDD Approach:**
 
 *   **Test Cases (Manual/Setup Verification):**
-    *   Verify that running `wrangler init <project-name>` creates the expected directory structure (`src/`, `wrangler.toml`, `package.json`).
+    *   Verify that running `wrangler init .` creates the expected directory structure (`src/`, `wrangler.toml`, `package.json`).
     *   Verify that the initial `src/index.js` (or `.ts`) contains a basic `fetch` event listener.
     *   Verify that `npm install` installs necessary basic dependencies (like `@cloudflare/workers-types`).
 *   **Implementation Steps:**
     1.  Choose a project name (e.g., `url-redirect-worker`).
     2.  Navigate to the desired parent directory in the terminal.
-    3.  Run `npx wrangler init url-redirect-worker`. Follow the prompts (e.g., choose starter template).
-    4.  `cd url-redirect-worker`.
-    5.  Run `npm install`.
+    3.  Run `npx wrangler init .`. Follow the prompts (e.g., choose starter template).
+    4.  Run `npm install`.
 
 **Technical References:**
 - Wrangler CLI `init`: [https://developers.cloudflare.com/workers/wrangler/commands/#init](https://developers.cloudflare.com/workers/wrangler/commands/#init)
 - Worker Templates: [https://github.com/cloudflare/workers-sdk/tree/main/templates](https://github.com/cloudflare/workers-sdk/tree/main/templates)
 - Fetch handler: [https://developers.cloudflare.com/workers/learning/fetch-event-lifecycle/](https://developers.cloudflare.com/workers/learning/fetch-event-lifecycle/)
+
+**Related Design & Specifications:**
+- [Infrastructure](../../../technical-design/infrastructure.md): Confirms the use of Cloudflare Workers.
+- [Architecture Overview](../../../technical-design/architecture_overview.md): Shows the single-worker architecture context.
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
 
 **Dependencies:**
 - Node.js and npm/npx installed.

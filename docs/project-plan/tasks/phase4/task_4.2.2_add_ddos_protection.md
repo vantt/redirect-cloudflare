@@ -28,8 +28,14 @@ docs/project-plan/implementation.md -> Phase 4 -> 4.2 Security Hardening -> Add 
 - Cloudflare DDoS Protection: [https://www.cloudflare.com/ddos/](https://www.cloudflare.com/ddos/)
 - Cloudflare HTTP DDoS Attack Protection: [https://developers.cloudflare.com/ddos-protection/http-ddos-attack-protection/](https://developers.cloudflare.com/ddos-protection/http-ddos-attack-protection/)
 
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Infrastructure](../../../technical-design/infrastructure.md): Platform's inherent DDoS protection.
+- [Security Design](../../../technical-design/security_design.md): Mentions DDoS mitigation reliance on platform.
+
 **Dependencies:**
-- Worker deployed to a Cloudflare zone with proxy enabled.
+- Worker deployed on Cloudflare.
+- Cloudflare account plan with relevant features.
 
 **Acceptance Criteria:**
 - Cloudflare DDoS protection status is confirmed as active.

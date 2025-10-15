@@ -61,11 +61,18 @@ docs/project-plan/implementation.md -> Phase 1 -> 1.1 Basic Worker Setup -> Set 
 - Wrangler KV Commands: [https://developers.cloudflare.com/workers/wrangler/commands/#kvnamespace](https://developers.cloudflare.com/workers/wrangler/commands/#kvnamespace)
 - Testing KV with Miniflare: [https://miniflare.dev/testing/kv](https://miniflare.dev/testing/kv) (or via `vitest-environment-miniflare` which uses Miniflare)
 
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Infrastructure](../../../technical-design/infrastructure.md): Explicitly mentions KV storage.
+- [Future Considerations](../../../technical-design/future_considerations.md): Mentions potential KV use cases and data models.
+
 **Dependencies:**
 - Task 1.1.1 completed.
 - Task 1.1.2 completed (`wrangler.toml` exists).
 - Task 1.1.3 completed (testing framework setup).
 - Wrangler CLI authenticated with Cloudflare account.
+- Task 1.1.2 completed (wrangler.toml configured for KV bindings).
+- Access to Cloudflare dashboard or Wrangler CLI for namespace creation.
 
 **Acceptance Criteria:**
 - KV namespaces created in Cloudflare (production and preview).

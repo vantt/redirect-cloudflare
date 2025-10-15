@@ -60,10 +60,19 @@ docs/project-plan/implementation.md -> Phase 1 -> 1.3 Redirect Handling -> Imple
 - HTTP Redirects (301 vs 302): [https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#redirection_messages](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#redirection_messages)
 - `Location` header: [https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Location](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Location)
 
+**Related Design & Specifications:**
+- [URL Structure](../../../specs/url_structure.md): Defines the destination URL format.
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Architecture Overview](../../../technical-design/architecture_overview.md): Shows the Redirect Engine component.
+- [Component Designs](../../../technical-design/component_designs.md): Details the Redirect Engine's logic.
+- [Component Interactions](../../../technical-design/component_interactions.md): Shows interaction flow for redirection.
+- [Security Design](../../../technical-design/security_design.md): Covers prevention of open redirects.
+- [API Specifications (Internal)](../../../technical-design/api_specifications.md): May define redirect response structure.
+
 **Dependencies:**
-- Task 1.2.1 (URL Parsing)
-- Task 1.2.2 (URL Validation)
-- Task 1.2.3 (Parameter Extraction)
+- Task 1.2.1 completed (URL parsing to get destination).
+- Task 1.2.2 completed (URL validation).
+- Task 1.1.3 completed (testing framework setup).
 
 **Acceptance Criteria:**
 - `createRedirectResponse` function generates correct `Response` objects for both redirect (302 status, `Location` header) and no-redirect (200 status, specific body) scenarios.

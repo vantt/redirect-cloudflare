@@ -53,9 +53,17 @@ docs/project-plan/implementation.md -> Phase 1 -> 1.2 URL Processing -> Implemen
 - String manipulation (`indexOf`, `substring`): Standard JS docs.
 - `url_structure.md`: `docs/specs/url_structure.md`
 
+**Related Design & Specifications:**
+- [URL Structure](../../../specs/url_structure.md): Defines the exact structure to be parsed.
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Component Designs](../../../technical-design/component_designs.md): Details the component handling URL parsing.
+- [URL Processing Mechanism](../../../technical-design/url_processing.md): Explains how the fragment-based URL is handled.
+- [API Specifications (Internal)](../../../technical-design/api_specifications.md): Defines internal data structures for parsed URLs.
+- [Security Design](../../../technical-design/security_design.md): Covers safe handling of URL data.
+
 **Dependencies:**
-- Task 1.1.3 (Testing Setup)
-- Task 1.1.5 (Basic Request Handling)
+- Task 1.1.5 completed (basic request handler exists).
+- Task 1.1.3 completed (testing framework setup).
 
 **Acceptance Criteria:**
 - `parseDestinationUrlFromHash` function correctly extracts the destination URL string from the hash fragment.

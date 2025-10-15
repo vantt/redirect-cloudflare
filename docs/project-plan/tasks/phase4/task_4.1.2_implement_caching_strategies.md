@@ -80,9 +80,15 @@ docs/project-plan/implementation.md -> Phase 4 -> 4.1 Performance Tuning -> Impl
 - HTTP Caching (`Cache-Control`): [https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control)
 - `cf-cache-status` header: [https://developers.cloudflare.com/cache/about/cdn-cache-status/](https://developers.cloudflare.com/cache/about/cdn-cache-status/)
 
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Infrastructure](../../../technical-design/infrastructure.md): Platform caching features (Cache API, CDN tiers).
+- [Component Designs](../../../technical-design/component_designs.md): Logic interacting with the cache.
+- [Future Considerations](../../../technical-design/future_considerations.md): May detail advanced caching strategies.
+
 **Dependencies:**
-- Core worker logic (response generation).
-- Task 1.3.4 (Initial cache header setup).
+- Task 1.3.4 completed (basic caching strategy).
+- Task 3.4.1 completed (performance monitoring to measure impact).
 
 **Acceptance Criteria:**
 - Cache API is used for cacheable endpoints (like `/health`).

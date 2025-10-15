@@ -1,0 +1,114 @@
+---
+description: Use this rule when creating a new rule.
+globs: 
+alwaysApply: false
+---
+# Rule to create Rules 
+
+## Rule creation
+- Always save or update a rule (does not fail to write or create a file occasionally)
+- Optimize for auto rule selection through optimized front matter descriptions
+- Usage of mermaid diagrams in certain rules if it will aid LLM and reduce need for extra verbosity keeping context smaller
+- Auto Canonical classification
+- Ability to generate both public and private rules
+- Ability to request the LLM learn or never do something again and it will know to create or update a rule
+- A script that will add the rule and a few other nice things to a new or existing repo to quickly add the ability for auto rule generation.
+- If you have existing rules, once this rule is in place, it is great for updating all existing rules into granular well formatted optimized rules following this core rule 000
+
+## Rule Name Prefix
+PREFIX-rule-name.mdc where PREFIX is a number with following convention:
+- 0xxx: Core Rules
+- 01xx: Documentation Rules
+- 02xx: Integration Rules
+- 03xx: Tool configs
+- 04xx: Testing standards
+- 08xx: Workflows
+- 09xx: Templates
+- 1xxx: Language rules
+- 2xxx: Framework rules
+- _name.mdc: Private rules
+
+## Rules Location
+Rules for placing and organizing Cursor rule files in the repository.
+
+<rule>
+name: rules_location
+description: Standards for placing Cursor rule files in the correct directory
+filters:
+  # Match any .mdc files
+  - type: file_extension
+    pattern: "\\.mdc$"
+  # Match files that look like Cursor rules
+  - type: content
+    pattern: "(?s)<rule>.*?</rule>"
+  # Match file creation events
+  - type: event
+    pattern: "file_create"
+
+actions:
+  - type: reject
+    conditions:
+      - pattern: "^(?!\\.\\/\\.cursor\\/rules\\/.*\\.mdc$)"
+        message: "Cursor rule files (.mdc) must be placed in the .cursor/rules directory"
+      - pattern: "^(?!\\./\\.cursor\\/rules\\/[a-z0-9]+(-[a-z0-9]+)*\\.mdc$)"
+        message: "Filename must use kebab-case (e.g., my-rule-name.mdc)"
+
+  - type: suggest
+    message: |
+      When creating Cursor rules:
+
+      **Place rule files in `PROJECT_ROOT/.cursor/rules/` **:
+       - 
+
+      1. Always place rule files in `PROJECT_ROOT/.cursor/rules/` or its subdirectories. 
+         You can organize rules directly in `.cursor/rules/` or in subdirectories for categorization (e.g., `auth/`, `utils/`).:
+         ```
+         .cursor/rules/
+         ├── your-rule-name.mdc
+         ├── another-rule.mdc
+         ├── auth/
+         │     └── auth-rule.mdc
+         ├── utils/
+         │      └── util-rule.mdc
+         ├── another-rule-name.mdc
+         └── ...
+         ```
+
+      2. Follow the file naming convention:
+         - Use kebab-case for filenames
+         - Always use .mdc extension
+         - Make names descriptive of the rule's purpose
+
+      
+      4. Directory structure:
+         ```
+         PROJECT_ROOT/
+         ├── .cursor/
+         │   └── rules/
+         │       ├── your-rule-name.mdc
+         |       ├── auth/
+         │       │   └── auth-rule.mdc
+         │       └── ...
+         └── ...
+         ```
+
+      4. Never place rule files:
+         - In the project root
+         - In subdirectories outside .cursor/rules
+         - In any other location
+
+examples:
+  - input: |
+      # Bad: Rule file in wrong location
+      rules/my-rule.mdc
+      my-rule.mdc
+      .rules/my-rule.mdc
+
+      # Good: Rule file in correct location
+      .cursor/rules/my-rule.mdc
+    output: "Correctly placed Cursor rule file"
+
+metadata:
+  priority: high
+  version: 1.0
+</rule>

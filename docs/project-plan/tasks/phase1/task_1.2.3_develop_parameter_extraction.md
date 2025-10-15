@@ -66,9 +66,17 @@ docs/project-plan/implementation.md -> Phase 1 -> 1.2 URL Processing -> Develop 
 - `URLSearchParams`: [https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams)
 - `url_structure.md`: `docs/specs/url_structure.md`
 
+**Related Design & Specifications:**
+- [URL Structure](../../../specs/url_structure.md): Defines parameter location and format.
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Component Designs](../../../technical-design/component_designs.md): Details the component handling extraction.
+- [URL Processing Mechanism](../../../technical-design/url_processing.md): Explains fragment handling.
+- [API Specifications (Internal)](../../../technical-design/api_specifications.md): Defines structure for extracted parameters.
+- [Integration Designs](../../../technical-design/integration_designs.md): May list parameters needed for integrations.
+
 **Dependencies:**
-- Task 1.2.1 (URL Parsing)
-- Task 1.2.2 (URL Validation)
+- Task 1.2.1 completed (URL parsing logic exists).
+- Task 1.1.3 completed (testing framework setup).
 
 **Acceptance Criteria:**
 - `extractControlParameters` correctly identifies the `isNoRedirect` parameter and returns the appropriate boolean flag.

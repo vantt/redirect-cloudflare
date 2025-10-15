@@ -32,9 +32,17 @@ docs/project-plan/implementation.md -> Phase 3 -> 3.3 Reporting Features -> Gene
 
 **Technical References:**
 - Cloudflare Cron Triggers: [https://developers.cloudflare.com/workers/configuration/cron-triggers/](https://developers.cloudflare.com/workers/configuration/cron-triggers/)
+- Cloudflare Scheduled Workers/Cron Triggers: [https://developers.cloudflare.com/workers/platform/cron-triggers/](https://developers.cloudflare.com/workers/platform/cron-triggers/)
 - (Tool-specific documentation for reporting/exports)
 
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Future Considerations](../../../technical-design/future_considerations.md): May specify reporting requirements.
+- [Infrastructure](../../../technical-design/infrastructure.md): Platform's data query and scheduling capabilities.
+
 **Dependencies:**
+- Task 3.1.4 completed (data source defined).
+- Understanding of required report content.
 - Task 3.2.2 (Dashboard components exist, implies data source exists)
 
 **Acceptance Criteria:**

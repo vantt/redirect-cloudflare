@@ -40,8 +40,14 @@ docs/project-plan/implementation.md -> Phase 3 -> 3.2 Dashboard Development -> D
 **Technical References:**
 - Cloudflare Analytics Engine: [https://developers.cloudflare.com/analytics/analytics-engine/](https://developers.cloudflare.com/analytics/analytics-engine/)
 
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Future Considerations](../../../technical-design/future_considerations.md): May mention dashboard requirements or ideas.
+- [Infrastructure](../../../technical-design/infrastructure.md): Potential platform for hosting/displaying the dashboard.
+
 **Dependencies:**
-- Task 3.1.4 (Tracking Analytics Design - defines data source/schema)
+- Task 3.1.4 completed (data points for dashboard defined).
+- Understanding of user requirements for the dashboard.
 
 **Acceptance Criteria:**
 - Key metrics and dimensions for the dashboard are identified.

@@ -39,10 +39,21 @@ docs/project-plan/implementation.md -> Phase 2: Tracking Integration -> Implemen
 - GA4 GTM Tag Setup: [https://support.google.com/tagmanager/answer/9442095](https://support.google.com/tagmanager/answer/9442095)
 - GA4 Measurement ID: [https://support.google.com/analytics/answer/9539598](https://support.google.com/analytics/answer/9539598)
 - GTM Preview Mode: [https://support.google.com/tagmanager/answer/6107056](https://support.google.com/tagmanager/answer/6107056)
+- GA4 Measurement Protocol: [https://developers.google.com/analytics/devguides/collection/protocol/ga4](https://developers.google.com/analytics/devguides/collection/protocol/ga4)
+
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Integration Designs](../../../technical-design/integration_designs.md): Details the GA4 integration strategy.
+- [Component Designs](../../../technical-design/component_designs.md): Details the Tracking System component.
+- [Component Interactions](../../../technical-design/component_interactions.md): Shows data flow for GA4 events.
+- [API Specifications (Internal)](../../../technical-design/api_specifications.md): Defines GA4 event structure.
+- [Security Design](../../../technical-design/security_design.md): Covers secure data transmission.
 
 **Dependencies:**
-- Task 2.1 (GTM Integration - Worker side script injection)
-- Access to the relevant GTM container and GA4 property.
+- Task 2.1 completed (GTM setup, if sending via GTM).
+- Task 1.2.3 completed (parameter extraction).
+- Task 1.1.2 completed (dev env for API keys/IDs).
+- Access to a GA4 Property (Measurement ID, API Secret).
 
 **Acceptance Criteria:**
 - GA4 Configuration tag is correctly set up and published in the GTM container.

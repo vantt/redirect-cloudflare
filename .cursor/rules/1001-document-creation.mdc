@@ -1,0 +1,239 @@
+---
+rule_id: 1001-document-creation
+description: Rules for Create/Update and Organization documentation
+globs: 
+alwaysApply: false
+version: 1.3
+scope: documentation
+---
+
+# Cursor Rules for Documentation Creation/Update and Organization
+
+## General Guidelines
+- All documentation must live in the `/docs/` folder of the project root
+- Use Markdown (.md) format for all files
+- Keep individual files concise, targeting 100–300 tokens (~20–60 lines) unless specified otherwise
+- When generating new documentation, follow the structure and conventions outlined below
+
+## Folder Structure Enforcement
+
+### Core Documentation Directories
+1. `/docs/specs/`
+   - Purpose: Define *what* and *why*
+   - Content: Product requirements, URL structures, architectural decisions
+   - File naming: Use descriptive names like `product_requirements.md`, `url_structure.md`
+   - Index file: Use `SPECS.md` as the main index file
+
+2. `/docs/technical-design/`
+   - Purpose: Define *how* technically
+   - Content: System architecture, component design, data models, APIs
+   - File naming: Use component-focused names like `auth_system.md`, `data_model.md`
+   - Index file: Use `DESIGN.md` as the main index file
+
+3. `/docs/project-plan/`
+   - Purpose: Define *when* and track progress
+   - Content: Task breakdowns, timelines, milestones, progress tracking
+   - File naming: Use timeline-focused names like `phase_1_plan.md`, `milestone_tracking.md`
+   - Index file: Use `PLAN.md` as the main index file
+
+4. `/docs/research/`
+   - Purpose: Store analysis and investigation results
+   - Content: Technology evaluations, market research, performance studies
+   - File naming: Use analysis-focused names like `hosting_solution_analysis.md`, `init_ideas.md`
+   - Index file: Use `README.md` as the main index file
+
+### Optional Support Directories
+These can be created as needed based on project scale:
+- `/docs/user/` - End-user documentation (with `README.md` as index)
+- `/docs/setup/` - Installation and configuration guides (with `README.md` as index)
+- `/docs/misc/` - Other project-specific documentation (with `README.md` as index)
+
+## Directory-Specific Rules
+
+### /specs/ Rules
+- Maintain a `SPECS.md` that links to all specification documents
+- Keep specifications high-level and focused
+- Maximum file size: 500 tokens
+- Split large specifications into logical sections:
+  - Example: `auth_flow.md` → `auth_flow_login.md`, `auth_flow_registration.md`
+
+### /technical-design/ Rules
+- Maintain a `DESIGN.md` as the main index
+- Focus on technical implementation details and architecture
+- Include system diagrams and component interactions
+- Link back to corresponding specs documents
+- Keep designs modular and component-focused
+
+### /project-plan/ Rules
+- Maintain a `PLAN.md` as the main index
+- Focus on project timeline and progress tracking
+- Include milestones and deliverables
+- Link to relevant specs and technical designs
+- Keep tracking information up-to-date
+
+### /research/ Rules
+- Maintain a `README.md` as the main index
+- Document analysis methodology
+- Include data sources and conclusions
+- Update with new findings as project evolves
+- Link to related specs or technical designs
+
+## Document Creation Guidelines
+
+### Index File Naming Conventions
+1. Primary Documentation:
+   - Specifications directory: Use `SPECS.md`
+   - Technical Design directory: Use `DESIGN.md`
+   - Project Plan directory: Use `PLAN.md`
+2. Supporting Documentation:
+   - All other directories: Use `README.md`
+3. Index File Requirements:
+   - Must be placed at the root of each directory
+   - Should appear at the top of directory listings
+   - Must contain links to all documents in the directory
+   - Should include cross-references to related directories
+
+### New Document Creation
+When creating a new document:
+1. Choose appropriate directory based on content type:
+   - Requirements and Goals → `/specs/`
+   - Technical Implementation → `/technical-design/`
+   - Project Planning → `/project-plan/`
+   - Analysis and Research → `/research/`
+2. Follow naming conventions:
+   - Use lowercase with underscores
+   - Be descriptive but concise
+   - Include category prefix if helpful (e.g., `auth_`, `api_`)
+3. Include standard sections:
+   - Title and brief description
+   - Last updated date
+   - Related documents
+   - Main content
+   - Next steps or TODOs if applicable
+
+### Document Updates
+When updating existing documents:
+1. Maintain a change log at the bottom of the document
+2. Update related documents if needed
+3. Update the relevant index file (SPECS.md/DESIGN.md/PLAN.md/README.md) if document structure changes
+
+## Linking and Cross-referencing
+- Use relative links between documents
+- Always link between related specs and implementation documents
+- Use consistent link format: `[Document Name](mdc:relative/path/to/doc.md)`
+
+## Token Optimization
+- Keep documents focused and concise
+- Split large documents when they exceed 500 tokens
+- Use linking instead of duplicating information
+
+## Exceptions
+- Research documents may exceed token limits if splitting would reduce clarity
+- Technical designs may be combined if tightly coupled
+- Critical user guides may be longer for better readability
+
+## Document Size Guidelines
+
+### General Guidelines
+
+#### Standard Document Sizes
+1. **Basic Documentation** (READMEs, Simple Guides)
+   - Target size: 200-800 lines
+   - Maximum recommended: 1000 lines
+   - Split when: Content covers multiple distinct topics
+
+2. **Technical Documentation**
+   - Target size: 300-1200 lines
+   - Maximum recommended: 2000 lines
+   - Split when: Topics can be logically separated
+
+3. **API Documentation**
+   - Target size: 500-2000 lines
+   - Maximum recommended: 3000 lines
+   - Split when: Different API domains/categories exist
+
+#### Document Categories and Specific Limits
+
+1. `/docs/specs/`
+   - Product Requirements: 300-1000 lines
+   - Architecture Decisions: 300-800 lines
+   - URL/Interface Specs: 200-600 lines
+
+2. `/docs/technical-design/`
+   - System Architecture: 500-1500 lines
+   - Component Design: 300-800 lines
+   - Data Models: 200-600 lines
+   - API Specifications: 500-2000 lines
+
+3. `/docs/project-plan/`
+   - Project Overview: 200-500 lines
+   - Phase Plans: 300-800 lines
+   - Implementation Details: 300-1000 lines
+
+4. `/docs/research/`
+   - Analysis Documents: 300-1000 lines
+   - Investigation Results: 300-800 lines
+   - Comparative Studies: 400-1200 lines
+
+5. `/docs/user/`
+   - User Guides: 300-1000 lines
+   - Tutorials: 200-600 lines
+   - FAQs: 200-800 lines
+
+6. `/docs/setup/`
+   - Installation Guides: 200-600 lines
+   - Configuration Guides: 300-800 lines
+   - Deployment Instructions: 300-1000 lines
+
+7. `/docs/misc/`
+   - General Documents: 200-800 lines
+   - Reference Materials: 300-1000 lines
+
+### When to Split Documents
+
+Split documents when they:
+1. Cover multiple distinct topics that could stand alone
+2. Exceed maximum size recommendations
+3. Are frequently edited by different teams
+4. Have complex navigation needs
+5. Take more than 2-3 minutes to find specific information
+
+### Document Organization Requirements
+
+#### For Documents Under 1000 Lines
+1. Clear table of contents
+2. Logical section breaks
+3. Consistent heading hierarchy
+4. Internal links for navigation
+
+#### For Documents Over 1000 Lines
+1. Detailed table of contents
+2. Executive summary
+3. Clear section navigation
+4. Cross-references
+5. Index of key terms
+6. Quick navigation shortcuts
+
+### Exceptions
+Exceptions to these size limits are allowed for:
+1. Comprehensive API documentation
+2. Generated documentation
+3. Reference materials
+4. Historical records
+5. Legal documentation
+   
+## Rule Application
+This rule should be applied:
+- When creating new documentation
+- When reorganizing existing documentation
+- When updating documentation structure
+- When reviewing documentation completeness
+
+## Metadata
+```yaml
+priority: high
+category: documentation
+applies_to: all-docs
+exceptions_allowed: true
+requires_approval: false
+``` 

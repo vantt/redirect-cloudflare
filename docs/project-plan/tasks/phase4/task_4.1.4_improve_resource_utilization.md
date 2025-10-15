@@ -39,12 +39,21 @@ docs/project-plan/implementation.md -> Phase 4 -> 4.1 Performance Tuning -> Impr
 - Worker Limits: [https://developers.cloudflare.com/workers/platform/limits/](https://developers.cloudflare.com/workers/platform/limits/) (CPU, Memory, Subrequests, etc.)
 - Worker Memory Usage Metrics: [https://developers.cloudflare.com/workers/observability/metrics/#memory-usage](https://developers.cloudflare.com/workers/observability/metrics/#memory-usage)
 - Bundle Analysis Tools (General JS): Webpack Bundle Analyzer, source-map-explorer
+- Cloudflare Worker Limits: [https://developers.cloudflare.com/workers/platform/limits/](https://developers.cloudflare.com/workers/platform/limits/)
+
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Infrastructure](../../../technical-design/infrastructure.md): Platform resource limits (CPU, memory).
+- [Future Considerations](../../../technical-design/future_considerations.md): Scalability requirements affecting resource use.
+- [Component Designs](../../../technical-design/component_designs.md): Identify potentially resource-heavy components.
 
 **Dependencies:**
 - Task 4.1.1 (CPU Optimization)
 - Task 4.1.2 (Caching)
 - Monitoring setup (Task 3.4.1)
 - Load testing tools/environment.
+- Task 3.4.1 completed (performance monitoring for CPU/memory metrics).
+- Deployed worker under load.
 
 **Acceptance Criteria:**
 - CPU usage is minimized through efficient code and asynchronous operations.

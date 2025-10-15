@@ -55,12 +55,24 @@ docs/project-plan/implementation.md -> Phase 2: Tracking Integration -> Set up G
 **Technical References:**
 - GTM Quick Start Guide: [https://developers.google.com/tag-manager/quickstart](https://developers.google.com/tag-manager/quickstart) (Shows the standard snippets)
 - Content Security Policy (CSP) Considerations: Injecting scripts requires careful CSP setup if implemented later. [https://developers.google.com/tag-manager/web/csp](https://developers.google.com/tag-manager/web/csp) (*Defer CSP setup for now*).
+- GTM Server-Side Tagging: [https://developers.google.com/tag-platform/tag-manager/server-side](https://developers.google.com/tag-platform/tag-manager/server-side)
+
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Integration Designs](../../../technical-design/integration_designs.md): Details the GTM integration strategy.
+- [Component Designs](../../../technical-design/component_designs.md): Details the Tracking System component.
+- [Component Interactions](../../../technical-design/component_interactions.md): Shows data flow to GTM.
+- [API Specifications (Internal)](../../../technical-design/api_specifications.md): Defines data structures for tracking events.
+- [Security Design](../../../technical-design/security_design.md): Covers secure data transmission.
 
 **Dependencies:**
 - Task 1.1.2 (Configure Dev Env - for env var)
 - Task 1.2.3 (Parameter Extraction - identifies `isNoRedirect=1`)
 - Task 1.3.1 (Redirect Logic - handles the `shouldRedirect=false` path)
 - Build setup for HTML template import (from Task 1.4.3)
+- Task 1.2.3 completed (parameter extraction logic)
+- Access to a GTM container (Web or Server-Side)
+- Basic understanding of GTM concepts (tags, triggers, variables, dataLayer)
 
 **Acceptance Criteria:**
 - `GTM_CONTAINER_ID` environment variable is configured.

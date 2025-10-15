@@ -83,12 +83,18 @@ docs/project-plan/implementation.md -> Phase 2: Tracking Integration -> Develop 
 - `console.log`: [https://developer.mozilla.org/en-US/docs/Web/API/console/log](https://developer.mozilla.org/en-US/docs/Web/API/console/log)
 - Workers `ctx.waitUntil`: [https://developers.cloudflare.com/workers/runtime-apis/handlers/fetch/#contextwaituntil](https://developers.cloudflare.com/workers/runtime-apis/handlers/fetch/#contextwaituntil) (Useful for firing off async tasks like sending tracking data without blocking the response).
 
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Component Designs](../../../technical-design/component_designs.md): Details the Tracking System's logging logic.
+- [API Specifications (Internal)](../../../technical-design/api_specifications.md): Defines the structure of logged tracking events.
+- [Infrastructure](../../../technical-design/infrastructure.md): Potential targets for logs (e.g., Analytics Engine, external store).
+- [Future Considerations](../../../technical-design/future_considerations.md): Might mention data retention or advanced analytics.
+
 **Dependencies:**
-- All preceding tasks in Phase 1 and Phase 2.
+- Task 2.3 completed (processed tracking parameters available).
+- Task 1.1.3 completed (testing framework setup).
+- (Optional) Task 1.1.4 if logging to KV initially.
+- (Optional) Cloudflare account access if using Analytics Engine.
 
 **Acceptance Criteria:**
-- Server-side logs (`console.log`) are generated for key tracking events (parsing, param extraction, redirect action).
-- Log messages are clearly marked and contain relevant context.
-- Unit tests verify the logging behaviour using spies.
-- Error requests do not generate tracking logs.
-- Code meets quality standards. 
+- Server-side logs (`

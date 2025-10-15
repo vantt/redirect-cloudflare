@@ -68,9 +68,15 @@ docs/project-plan/implementation.md -> Phase 3 -> 3.4 Monitoring Tools -> Add sy
 - Cloudflare Health Checks: [https://developers.cloudflare.com/health-checks/](https://developers.cloudflare.com/health-checks/)
 - URL API (`pathname`): [https://developer.mozilla.org/en-US/docs/Web/API/URL/pathname](https://developer.mozilla.org/en-US/docs/Web/API/URL/pathname)
 
+**Related Design & Specifications:**
+- [Main Technical Design](../../../technical-design/DESIGN.md): Entry point for overall technical design.
+- [Infrastructure](../../../technical-design/infrastructure.md): Platform health check capabilities.
+- [API Specifications (Internal)](../../../technical-design/api_specifications.md): Defines the health check endpoint format.
+
 **Dependencies:**
 - Task 3.4.2 (Notification Destinations configured)
-- Worker deployed.
+- Worker deployed and accessible.
+- Basic request handling (Task 1.1.5).
 
 **Acceptance Criteria:**
 - Worker responds with 200 OK on the `/health` endpoint.
