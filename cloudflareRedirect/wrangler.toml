@@ -7,4 +7,7 @@ binding = "REDIRECT_KV"
 preview_id = "04adc1306db64f7d9d29f5e3343a3d7f" 
 id = "66ac68eae673447a9baf6ce94f7abff6"
 
-
+[[kv_namespaces]]
+binding = "ANALYTICS_KV"
+preview_id = "04adc1306db64f7d9d29f5e3343a3d7f" 
+id = "b8f9a2c3d7741f4a8c9a3f45f2a1b3a"
