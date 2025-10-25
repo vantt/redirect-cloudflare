@@ -1,18 +1,24 @@
-/// <reference types="vitest" />
-
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { Hono } from 'hono'
-import bootstrapApp from '../../src/routes/bootstrap'
-import redirectApp from '../../src/routes/redirect'
 
 // Create test app that mimics main app structure
 const testApp = new Hono()
 
 // Mount routes like in main index.ts
+import bootstrapApp from '../../src/routes/bootstrap'
+import redirectApp from '../../src/routes/redirect'
 testApp.route('/', bootstrapApp)
 testApp.route('/r', redirectApp)
 
 describe('Bootstrap Legacy URL Tests', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it('should upgrade legacy hash URL to redirect endpoint', async () => {
     const response = await testApp.request('/#https://example.com')
     
@@ -51,7 +57,6 @@ describe('Bootstrap Legacy URL Tests', () => {
     
     const html = await response.text()
     expect(html).toContain('/r?to=')
-    // Should be URL encoded
     const encodedUrl = encodeURIComponent(testUrl)
     expect(html).toContain(encodedUrl)
   })
@@ -62,7 +67,6 @@ describe('Bootstrap Legacy URL Tests', () => {
     
     const html = await response.text()
     expect(html).toContain('/r?to=')
-    // Should be properly URL encoded
     expect(html).toContain('%E6%B5%8B%E8%AF%95')
   })
 
