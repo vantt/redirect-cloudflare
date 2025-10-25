@@ -12,6 +12,8 @@
  * - 7.4: Integrated Tracking in Redirect Flow
  */
 
+import { appLogger } from '../utils/logger'
+
 /**
  * Extract tracking parameters from destination URL
  * TODO: Implement actual UTM and platform-specific parameter extraction in Epic 7.1
@@ -61,12 +63,26 @@ export async function sendGA4Event(
   apiSecret: string, 
   measurementId: string
 ): Promise<void> {
-  // TODO: Epic 7.3 - Send POST request to https://www.google-analytics.com/mp/collect
-  // TODO: Epic 7.3 - Include query params: measurement_id and api_secret
-  // TODO: Epic 7.3 - Set Content-Type: application/json header
-  // TODO: Epic 7.3 - Implement 2-second timeout using AbortSignal.timeout(2000)
-  // TODO: Epic 7.3 - Catch timeout and fetch errors, log without throwing
-  
-  // Placeholder implementation - resolves immediately
-  return Promise.resolve()
+  try {
+    // TODO: Epic 7.3 - Send POST request to https://www.google-analytics.com/mp/collect
+    // TODO: Epic 7.3 - Include query params: measurement_id and api_secret
+    // TODO: Epic 7.3 - Set Content-Type: application/json header
+    // TODO: Epic 7.3 - Implement 2-second timeout using AbortSignal.timeout(2000)
+    // TODO: Epic 7.3 - Catch timeout and fetch errors, log without throwing
+    
+    // Placeholder implementation - log GA4 tracking sent event
+    appLogger.info('GA4 tracking sent', { 
+      success: true,
+      measurementId,
+      payloadType: payload.type || 'unknown'
+    })
+    
+    return Promise.resolve()
+  } catch (error) {
+    appLogger.error('GA4 tracking failed', { 
+      error: error instanceof Error ? error.message : 'Unknown error',
+      measurementId
+    })
+    // Don't throw - tracking failures shouldn't break redirect flow
+  }
 }

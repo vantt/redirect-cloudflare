@@ -1,0 +1,88 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>5</epicId>
+    <storyId>2</storyId>
+    <title>Structured Logging Infrastructure</title>
+    <status>drafted</status>
+    <generatedAt>2025-10-25</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-5.2.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>operations engineer</asA>
+    <iWant>structured JSON logs for requests and business events</iWant>
+    <soThat>I can monitor performance and troubleshoot effectively</soThat>
+    <tasks>
+      - Enable Hono logger middleware in src/index.ts
+      - Create utils/logger.ts with info/error JSON output
+      - Integrate logging in redirect flow and error handler
+      - Unit + integration tests for logging shape and middleware
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. app.use('*', logger()) configured in src/index.ts
+    2. utils/logger.ts implements info() and error() with JSON structure
+    3. Logs include {level, message, timestamp, ...metadata}
+    4. Integrations for redirect processed, GA4 sent/failed, request error
+    5. Unit + integration tests validate output and middleware behavior
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics.md" title="Epics" section="Story 5.2" snippet="Structured logging requirements and integration points"/>
+      <doc path="docs/architecture.md" title="Architecture" section="Logging" snippet="JSON logging and Workers dashboard visibility"/>
+    </docs>
+    <code>
+      <artifact>
+        <path>cloudflareRedirect/src/index.ts</path>
+        <kind>entry-point</kind>
+        <symbol>app.use('*', logger())</symbol>
+        <lines>1-80</lines>
+        <reason>Global request logging</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/utils/logger.ts</path>
+        <kind>utility</kind>
+        <symbol>appLogger.info/error</symbol>
+        <lines>1-120</lines>
+        <reason>Structured JSON logs</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/routes/redirect.ts</path>
+        <kind>endpoint</kind>
+        <symbol>log redirect processed / tracking events</symbol>
+        <lines>1-200</lines>
+        <reason>Business event logging</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <dependency path="package.json" reason="@hono/logger for middleware"/>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="privacy" description="Do not log sensitive data"/>
+    <constraint type="performance" description="Keep logging overhead low"/>
+  </constraints>
+
+  <interfaces>
+    <interface name="appLogger" location="src/utils/logger.ts" signature="info(message, meta?), error(message, meta?)"/>
+  </interfaces>
+
+  <tests>
+    <standards>
+      <standard tool="Vitest v4.0+" purpose="Unit and integration testing"/>
+    </standards>
+    <locations>
+      <location path="cloudflareRedirect/test/utils/logger.test.ts" description="Unit: logger output structure"/>
+      <location path="cloudflareRedirect/test/integration/logger-middleware.test.ts" description="Integration: Hono logger middleware"/>
+    </locations>
+    <ideas>
+      <test-idea type="unit" description="info/error output JSON fields present"/>
+      <test-idea type="integration" description="logger() prints request/response metrics"/>
+    </ideas>
+  </tests>
+</story-context>
+

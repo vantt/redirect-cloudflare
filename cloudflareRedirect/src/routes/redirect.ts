@@ -1,7 +1,10 @@
 import { Hono } from 'hono'
+import { zValidator } from '@hono/zod-validator'
 import { HonoRequest } from 'hono'
 import { RedirectError } from '../lib/errors'
 import { getRedirect } from '../lib/kv-store'
+import { appLogger } from '../utils/logger'
+import { redirectSchema } from '../lib/validation'
 import type { RedirectData, Env } from '../types/env'
 
 export const getRedirectQuery = (req: HonoRequest): string => {
@@ -36,22 +39,44 @@ export const createRedirectResponse = (destination: string, type: 'permanent' | 
 // Create Hono app for redirect routes
 const app = new Hono<{ Bindings: Env }>()
 
-app.get('/', async (c) => {
+// Update the handler to use zValidator
+app.get('/', zValidator('query', redirectSchema), async (c) => {
   try {
-    const destination = getRedirectQuery(c.req)
+    // Get validated query parameters
+    const query = c.req.valid('query')
+    const destination = query.to
     
     // Check if destination exists in KV store
     const redirectData = await getRedirect(destination, c.env.REDIRECT_KV)
     
     if (redirectData && redirectData.type && (redirectData.type === 'permanent' || redirectData.type === 'temporary')) {
       // Use KV data for redirect (AC #2)
+      appLogger.info('Redirect processed', {
+        path: c.req.path,
+        destination: redirectData.url,
+        type: redirectData.type,
+        tracking: false
+      })
       return createRedirectResponse(redirectData.url, redirectData.type)
     } else if (redirectData) {
       // Malformed KV data - fallback to 302 with warning (AC #7)
+      appLogger.info('Redirect processed with malformed KV data', {
+        path: c.req.path,
+        destination,
+        type: 'temporary',
+        tracking: false,
+        warning: 'Malformed KV data'
+      })
       console.warn(`Malformed redirect data for "${destination}":`, redirectData)
       return createRedirectResponse(destination, 'temporary')
     } else {
       // URL not found in KV - fallback to 302 for direct redirect (AC #3)
+      appLogger.info('Redirect processed', {
+        path: c.req.path,
+        destination,
+        type: 'temporary',
+        tracking: false
+      })
       return createRedirectResponse(destination, 'temporary')
     }
   } catch (error) {

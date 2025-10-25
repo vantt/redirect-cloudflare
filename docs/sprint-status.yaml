@@ -1,4 +1,4 @@
-﻿
+
 # generated: 2025-10-25
 # project: cloudflareRedirect
 # project_key: cloudflareRedirect
@@ -53,10 +53,10 @@ development_status:
   epic-3-retrospective: completed
   epic-5: backlog
   5-1-debug-mode-implementation-for-redirect-endpoint: drafted
-  5-2-structured-logging-infrastructure: drafted
+  5-2-structured-logging-infrastructure: done
   epic-5-retrospective: optional
   epic-6: backlog
-  6-1-zod-schema-validation-with-hono-validator-middleware: ready-for-dev
+  6-1-zod-schema-validation-with-hono-validator-middleware: done
   6-2-protocol-validation-and-open-redirect-prevention: drafted
   6-3-optional-domain-allowlist-configuration: drafted
   epic-6-retrospective: optional

@@ -1,0 +1,72 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>6</epicId>
+    <storyId>2</storyId>
+    <title>Protocol Validation and Open Redirect Prevention</title>
+    <status>drafted</status>
+    <generatedAt>2025-10-25</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-6.2.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>security engineer</asA>
+    <iWant>to enforce HTTP/HTTPS-only destination URLs and prevent open redirects</iWant>
+    <soThat>unsafe schemes and protocol-relative URLs are rejected</soThat>
+    <tasks>
+      - Add Zod refine to redirectSchema allowing only http/https
+      - Reject javascript:, data:, file:, ftp:, protocol-relative //
+      - Add tests for accepted and rejected schemes
+      - Ensure consistent 400 error JSON with message
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. Zod refine limits scheme to http/https with clear error message
+    2. Non-HTTP schemes and protocol-relative URLs rejected
+    3. Empty/whitespace strings rejected
+    4. Unit tests for scheme validation; integration tests return 400
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics.md" title="Epics" section="Story 6.2" snippet="Protocol validation and open redirect prevention"/>
+      <doc path="docs/architecture.md" title="Architecture" section="Security" snippet="URL validation and safe redirects"/>
+    </docs>
+    <code>
+      <artifact>
+        <path>cloudflareRedirect/src/lib/validation.ts</path>
+        <kind>library</kind>
+        <symbol>redirectSchema refine for scheme</symbol>
+        <lines>1-100</lines>
+        <reason>Scheme restriction logic</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/routes/redirect.ts</path>
+        <kind>endpoint</kind>
+        <symbol>Validation applied before redirect</symbol>
+        <lines>1-140</lines>
+        <reason>Enforces validated inputs</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <dependency path="package.json" reason="zod / @hono/zod-validator for validation"/>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="security" description="No non-HTTP schemes or protocol-relative URLs"/>
+  </constraints>
+
+  <interfaces>
+    <interface name="redirectSchemaRefine" location="src/lib/validation.ts" signature=".refine(url => startsWith('http://') || startsWith('https://'))"/>
+  </interfaces>
+
+  <tests>
+    <locations>
+      <location path="cloudflareRedirect/test/lib/validation-scheme.test.ts" description="Unit: accepted/rejected schemes"/>
+      <location path="cloudflareRedirect/test/routes/redirect-scheme.test.ts" description="Integration: 400 for invalid schemes"/>
+    </locations>
+  </tests>
+</story-context>
+
