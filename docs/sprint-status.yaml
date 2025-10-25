@@ -1,4 +1,4 @@
-# generated: 2025-10-25
+# generated: 2025-10-25T15:30:00.000Z
 # project: cloudflareRedirect
 # project_key: cloudflareRedirect
 # tracking_system: file-system
@@ -11,6 +11,7 @@
 #   - contexted: Epic tech context created (required before drafting stories)
 #
 # Story Status:
+#   - backlog: Story only exists in epic file
 #   - drafted: Story file created in stories folder
 #   - ready-for-dev: Draft approved and story context created
 #   - in-progress: Developer actively working on implementation
@@ -28,29 +29,27 @@
 # - SM typically drafts next story after previous one is 'done' to incorporate learnings
 # - Dev moves story to 'review', SM reviews, then Dev moves to 'done'
 
-generated: 2025-10-25
+generated: 2025-10-25T15:30:00.000Z
 project: cloudflareRedirect
 project_key: cloudflareRedirect
 tracking_system: file-system
 story_location: {project-root}/docs/stories
 
 development_status:
-  epic-1: backlog
+  epic-1: done
   1-1-project-initialization-with-hono-framework: done
   1-2-kv-data-structure-and-crud-operations: done
   1-3-basic-r-endpoint-with-redirect-logic: done
   1-4-custom-error-classes-and-global-error-handler: done
   1-5-redirect-type-support-301-vs-302: done
   epic-1-retrospective: done
-  epic-2: ready-for-dev
-  2-1-tracking-placeholder-stubs-and-flags: ready-for-dev
+  epic-2: contexted
+  2-1-tracking-placeholder-stubs-and-flags: done
   epic-2-retrospective: optional
   epic-3: backlog
-  3-1-client-side-bootstrap-html-at-root-endpoint: backlog
+  3-1-client-side-bootstrap-html-at-root-endpoint: done
   3-2-legacy-url-backward-compatibility-testing: backlog
   epic-3-retrospective: optional
-  epic-4: backlog
-  epic-4-retrospective: optional
   epic-5: backlog
   5-1-debug-mode-implementation-for-redirect-endpoint: backlog
   5-2-structured-logging-infrastructure: backlog

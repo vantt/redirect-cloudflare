@@ -2,6 +2,8 @@ export interface Env {
   REDIRECT_KV: KVNamespace
   ANALYTICS_KV: KVNamespace
   ALLOWED_DOMAINS?: string
+  ENABLE_TRACKING?: string // Feature flag to enable/disable tracking (default: "false")
+  DEFAULT_REDIRECT_URL?: string // Default URL for root endpoint when no hash provided
 }
 
 export interface RedirectData {

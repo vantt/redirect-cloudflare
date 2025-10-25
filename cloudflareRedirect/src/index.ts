@@ -1,10 +1,12 @@
 import { Hono } from 'hono'
 import redirectApp from './routes/redirect'
+import bootstrapApp from './routes/bootstrap'
 import { RedirectError } from './lib/errors'
 
 const app = new Hono()
 
-app.get('/', (c) => c.text('Hello World'))
+// Mount bootstrap routes (handles legacy fragment URLs)
+app.route('/', bootstrapApp)
 
 // Mount redirect routes
 app.route('/r', redirectApp)

@@ -1,0 +1,151 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>1</storyId>
+    <title>Client-Side Bootstrap HTML at Root Endpoint</title>
+    <status>Ready</status>
+    <generatedAt>2025-10-25T15:45:00.000Z</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-3.1.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user with a legacy `/#destination` URL</asA>
+    <iWant>the root endpoint to detect my fragment-based URL and upgrade me to the server-side redirect</iWant>
+    <soThat>my existing bookmarks and links continue to work without manual updates</soThat>
+    <tasks>- [ ] Task 1: Create bootstrap route file structure (AC: 1)
+  - [ ] Create `routes/bootstrap.ts` file
+  - [ ] Export GET `/` endpoint handler
+  - [ ] Import and register route in main `src/index.ts`
+- [ ] Task 2: Implement HTML response for hash detection (AC: 2, 3, 4)
+  - [ ] Create minimal HTML template with meta robots tag
+  - [ ] Add inline JavaScript (<2KB) for hash extraction
+  - [ ] Implement query parameter reading logic
+  - [ ] Add noscript fallback message
+- [ ] Task 3: Implement upgrade logic (AC: 3, 5)
+  - [ ] Parse destination URL from `window.location.hash`
+  - [ ] Construct `/r?to=...` URL with proper encoding
+  - [ ] Handle `isNoRedirect` parameter mapping to `n` parameter
+  - [ ] Add fallback to `DEFAULT_REDIRECT_URL` when no hash present
+  - [ ] Execute `window.location.replace()` for upgrade
+- [ ] Task 4: Add response headers and error handling (AC: 8)
+  - [ ] Set `Cache-Control: no-cache` headers
+  - [ ] Add basic error handling for malformed URLs
+- [ ] Task 5: Create integration tests (AC: 6, 7)
+  - [ ] Test hash URL upgrade: `GET /#https://example.com`
+  - [ ] Test default redirect: `GET /` (no hash)
+  - [ ] Test query parameter preservation
+  - [ ] Test special characters in destination URLs
+- [ ] Task 6: Update project configuration
+  - [ ] Add `DEFAULT_REDIRECT_URL` to environment bindings
+  - [ ] Update TypeScript types in `src/types/env.ts`</tasks>
+  </story>
+
+  <acceptanceCriteria>1. `routes/bootstrap.ts` implements GET `/` endpoint serving minimal HTML response
+2. HTML includes `<meta name="robots" content="noindex, nofollow">` to prevent indexing
+3. HTML includes inline JavaScript (<2KB) that:
+   - Reads `window.location.hash` and extracts destination URL
+   - Reads query parameters (e.g., `?isNoRedirect=1`)
+   - Constructs upgrade URL: `/r?to=<encoded-destination>&n=<isNoRedirect-value>`
+   - Executes `window.location.replace()` to upgrade
+4. HTML includes `<noscript>` fallback: "Please enable JavaScript to continue"
+5. If no hash present: redirect to `DEFAULT_REDIRECT_URL` from environment
+6. Integration test: `GET /#https://example.com` serves HTML with upgrade script
+7. Integration test: `GET /` (no hash) redirects to default URL
+8. Response headers include `Cache-Control: no-cache`</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>Epic Breakdown</title>
+        <section>Epic 3: Legacy Client Bootstrap</section>
+        <snippet>Maintain backward compatibility with existing legacy `/#destination` URLs by implementing a lightweight client-side bootstrap at the `/` endpoint.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Decision Architecture</title>
+        <section>Project Structure</section>
+        <snippet>Bootstrap endpoint maps to `routes/bootstrap.ts` component for Epic 3 legacy client upgrade functionality.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>cloudflareRedirect/src/index.ts</path>
+        <kind>entry-point</kind>
+        <symbol>app.get('/', (c) => c.text('Hello World'))</symbol>
+        <lines>7</lines>
+        <reason>Current root endpoint needs to be replaced with bootstrap functionality</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/routes/redirect.ts</path>
+        <kind>route</kind>
+        <symbol>createRedirectResponse</symbol>
+        <lines>23-31</lines>
+        <reason>Reference pattern for redirect response creation and URL handling</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/lib/errors.ts</path>
+        <kind>utility</kind>
+        <symbol>RedirectError</symbol>
+        <lines>1-20</lines>
+        <reason>Error handling pattern to follow for bootstrap endpoint</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/test/bootstrap.test.ts</path>
+        <kind>test</kind>
+        <symbol>placeholder test</symbol>
+        <lines>3-6</lines>
+        <reason>Existing test file that needs to be populated with bootstrap tests</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <ecosystem>node</ecosystem>
+      <packages>
+        <package name="hono" version="^4.4.0" />
+        <package name="zod" version="^3.23.8" />
+        <package name="@cloudflare/workers-types" version="^4.20241004.0" />
+        <package name="miniflare" version="^3.20250718.2" />
+        <package name="typescript" version="^5.9.0" />
+        <package name="vitest" version="^4.0.3" />
+        <package name="wrangler" version="^3.80.0" />
+      </packages>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Must integrate with existing Hono routing structure in src/index.ts</constraint>
+    <constraint>HTML response must be minimal (<2KB) for performance requirements</constraint>
+    <constraint>JavaScript must be inline to avoid additional network requests</constraint>
+    <constraint>Must use existing error handling patterns with RedirectError class</constraint>
+    <constraint>Follow existing testing patterns using Vitest + Miniflare framework</constraint>
+    <constraint>Environment variables must be typed in src/types/env.ts interface</constraint>
+  </constraints>
+  <interfaces>
+    <interface>
+      <name>Hono HTML Response</name>
+      <kind>framework-method</kind>
+      <signature>c.html(htmlContent: string): Response</signature>
+      <path>cloudflareRedirect/src/index.ts</path>
+    </interface>
+    <interface>
+      <name>Environment Bindings</name>
+      <kind>type-interface</kind>
+      <signature>interface Env { DEFAULT_REDIRECT_URL?: string }</signature>
+      <path>cloudflareRedirect/src/types/env.ts</path>
+    </interface>
+  </interfaces>
+  <tests>
+    <standards>Use Vitest with describe/it/expect pattern. Integration tests should test complete request/response cycles using Miniflare for Cloudflare Workers emulation. Tests should verify HTML content structure and JavaScript logic functionality.</standards>
+    <locations>
+      <location>cloudflareRedirect/test/bootstrap.test.ts</location>
+      <location>cloudflareRedirect/test/integration/</location>
+    </locations>
+    <ideas>
+      <test ac="6">Test hash URL upgrade: Mock request to GET /#https://example.com and verify HTML response contains upgrade script</test>
+      <test ac="7">Test default redirect: Mock request to GET / (no hash) and verify redirect to DEFAULT_REDIRECT_URL</test>
+      <test ac="3">Test JavaScript extraction logic: Verify window.location.hash parsing and URL encoding</test>
+      <test ac="8">Test cache headers: Verify Cache-Control: no-cache is set in response headers</test>
+    </ideas>
+  </tests>
+</story-context>
