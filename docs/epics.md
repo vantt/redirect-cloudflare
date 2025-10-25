@@ -1,4 +1,4 @@
-# cloudflareRedirect - Epic Breakdown
+﻿# cloudflareRedirect - Epic Breakdown
 
 **Author:** vanTT
 **Date:** 2025-10-24
@@ -151,101 +151,35 @@ Establish the foundational serverless redirect infrastructure on Cloudflare Work
 
 ---
 
-## Epic 2: Pre-Redirect Tracking
+## Epic 2: Tracking Placeholder (Defer Full GA4 Integration)
 
 **Priority:** P0 (MVP - Required)
 
 **Expanded Goal:**
-Implement robust analytics tracking that captures UTM parameters and platform-specific tracking codes (xptdk, ref) from destination URLs and sends them to Google Analytics 4 BEFORE executing the redirect. This ensures no tracking data is lost and maintains consistency with the legacy system while adding timeout protection to prevent GA4 slowness from blocking redirects.
+Provide minimal scaffolding (stubs and flags) for future tracking integration without implementing GA4 at this stage. Preserve interfaces and configuration to avoid rework while keeping MVP scope tight.
 
-**Architecture Components:** `lib/tracking.ts`, `routes/redirect.ts` (integration)
+**Architecture Components:** `lib/tracking.ts` (stubs), configuration flags
 
-**Covers PRD Requirements:** FR2 (Pre-redirect tracking), FR3 (GA4 integration), NFR5 (Tracking reliability)
+**Covers PRD Requirements:** Preparation for FR2/FR3 (deferred); no GA4 wiring in P0
 
-**Story Count:** 4 stories
-
----
-
-### Story 2.1: Tracking Parameter Extraction from Destination URLs
-
-**As a** marketing analyst,
-**I want** the system to extract UTM and platform-specific tracking parameters from destination URLs,
-**So that** I can track campaign performance and user attribution in analytics.
-
-**Acceptance Criteria:**
-1. `lib/tracking.ts` exports `extractTrackingParams(destinationUrl)` function
-2. Function extracts UTM parameters: `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term`
-3. Function extracts platform-specific params: `xptdk` (Shopee), `ref` (Facebook)
-4. Function returns `TrackingParams` interface with all extracted parameters (undefined for missing ones)
-5. Function handles URL parsing errors gracefully (returns empty object, logs error)
-6. Unit tests cover: complete UTM set, partial UTM set, platform params, malformed URLs, URLs without tracking params
-7. Function correctly parses URL-encoded parameter values
-8. TypeScript `TrackingParams` interface defined in `src/types/env.ts`
-
-**Prerequisites:** None (standalone utility function)
+**Story Count:** 1 story
 
 ---
 
-### Story 2.2: GA4 Measurement Protocol Payload Builder
+### Story 2.1: Tracking Placeholder Stubs and Flags
 
 **As a** developer,
-**I want** to construct valid GA4 Measurement Protocol payloads from tracking parameters,
-**So that** analytics events can be sent to Google Analytics 4 with correct data structure.
+**I want** to add no‑op tracking stubs and configuration flags,
+**So that** the system can integrate full tracking later without refactoring MVP code.
 
 **Acceptance Criteria:**
-1. `lib/tracking.ts` exports `buildGA4Payload(params, measurementId)` function
-2. Function constructs GA4 Measurement Protocol v2 payload structure with:
-   - `client_id` generated using hash of timestamp + random value
-   - `events` array with single event: `redirect_click`
-   - Event parameters mapped from `TrackingParams` (campaign, source, medium, content, term)
-3. Function includes custom parameters for platform-specific tracking (xptdk, ref)
-4. Function handles missing/undefined parameters gracefully (omits from payload)
-5. Unit tests verify payload structure matches GA4 spec
-6. Unit tests cover: full parameters, minimal parameters, custom parameters
-7. Generated `client_id` is consistent format (not sensitive data)
+1. Create `lib/tracking.ts` with exported no‑op functions (`extractTrackingParams`, `buildGA4Payload`, `sendGA4Event`) that return placeholder values
+2. Add env flag `ENABLE_TRACKING=false` documented in README; functions should short‑circuit when disabled
+3. Add TODO comments referencing Epic 7 stories for future implementation
+4. No network calls nor GA4 dependencies in P0
+5. Unit tests assert stubs execute without side effects
 
-**Prerequisites:** Story 2.1 (TrackingParams interface and extraction)
-
----
-
-### Story 2.3: GA4 Measurement Protocol HTTP Integration
-
-**As a** system,
-**I want** to send tracking events to GA4 Measurement Protocol endpoint via HTTP POST,
-**So that** analytics data is recorded before users are redirected.
-
-**Acceptance Criteria:**
-1. `lib/tracking.ts` exports async `sendGA4Event(payload, apiSecret, measurementId)` function
-2. Function sends POST request to `https://www.google-analytics.com/mp/collect` with query params: `measurement_id` and `api_secret`
-3. Request headers include `Content-Type: application/json`
-4. Request body is JSON stringified GA4 payload
-5. Function includes 2-second timeout using `AbortSignal.timeout(2000)`
-6. Function catches timeout and fetch errors, logs them without throwing
-7. Integration test with Miniflare verifies fetch call is made with correct URL and payload
-8. Unit test verifies timeout is properly configured
-9. Environment variables `GA4_MEASUREMENT_ID` and `GA4_API_SECRET` used from `c.env`
-
-**Prerequisites:** Story 2.2 (Payload builder), Story 1.1 (Env bindings for GA4 config)
-
----
-
-### Story 2.4: Integrated Tracking in Redirect Flow
-
-**As a** end user,
-**I want** my analytics to be tracked before I'm redirected,
-**So that** no tracking data is lost even if I close the browser quickly.
-
-**Acceptance Criteria:**
-1. `routes/redirect.ts` updated to extract tracking params from destination URL using `extractTrackingParams()`
-2. Route builds GA4 payload using `buildGA4Payload()` with extracted params
-3. Route calls `await sendGA4Event()` BEFORE returning redirect response
-4. Tracking errors are logged but do NOT prevent redirect from executing
-5. Integration test verifies: tracking function called before redirect response sent
-6. Integration test verifies: redirect still works even if tracking fails/times out
-7. Structured log entry created for tracking attempt (success/failure)
-8. Performance: tracking adds <100ms latency in happy path (within sub-5ms total budget)
-
-**Prerequisites:** Story 2.1 (extraction), Story 2.2 (payload builder), Story 2.3 (GA4 send), Story 1.5 (redirect flow to integrate into)
+**Prerequisites:** None
 
 ---
 
@@ -399,6 +333,104 @@ Implement debugging capabilities and structured logging to enable troubleshootin
 
 ---
 
+
+## Epic 7: Full Tracking (GA4 Integration)
+
+**Priority:** P1 (Important)
+
+**Expanded Goal:**
+Implement full GA4 tracking based on prepared stubs in Epic 2, including parameter extraction, payload building, HTTP integration, and redirect flow wiring with proper error handling and performance constraints.
+
+**Architecture Components:** lib/tracking.ts, outes/redirect.ts
+
+**Covers PRD Requirements:** FR2 (Pre-redirect tracking), FR3 (GA4 integration), NFR5 (Tracking reliability)
+
+**Story Count:** 4 stories
+
+---
+
+### Story 7.1: Tracking Parameter Extraction from Destination URLs
+
+**As a** marketing analyst,
+**I want** the system to extract UTM and platform-specific tracking parameters from destination URLs,
+**So that** I can track campaign performance and user attribution in analytics.
+
+**Acceptance Criteria:**
+1. `lib/tracking.ts` exports `extractTrackingParams(destinationUrl)` function
+2. Function extracts UTM parameters: `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term`
+3. Function extracts platform-specific params: `xptdk` (Shopee), `ref` (Facebook)
+4. Function returns `TrackingParams` interface with all extracted parameters (undefined for missing ones)
+5. Function handles URL parsing errors gracefully (returns empty object, logs error)
+6. Unit tests cover: complete UTM set, partial UTM set, platform params, malformed URLs, URLs without tracking params
+7. Function correctly parses URL-encoded parameter values
+8. TypeScript `TrackingParams` interface defined in `src/types/env.ts`
+
+**Prerequisites:** None (standalone utility function)
+
+---
+
+### Story 7.2: GA4 Measurement Protocol Payload Builder
+
+**As a** developer,
+**I want** to construct valid GA4 Measurement Protocol payloads from tracking parameters,
+**So that** analytics events can be sent to Google Analytics 4 with correct data structure.
+
+**Acceptance Criteria:**
+1. `lib/tracking.ts` exports `buildGA4Payload(params, measurementId)` function
+2. Function constructs GA4 Measurement Protocol v2 payload structure with:
+   - `client_id` generated using hash of timestamp + random value
+   - `events` array with single event: `redirect_click`
+   - Event parameters mapped from `TrackingParams` (campaign, source, medium, content, term)
+3. Function includes custom parameters for platform-specific tracking (xptdk, ref)
+4. Function handles missing/undefined parameters gracefully (omits from payload)
+5. Unit tests verify payload structure matches GA4 spec
+6. Unit tests cover: full parameters, minimal parameters, custom parameters
+7. Generated `client_id` is consistent format (not sensitive data)
+
+**Prerequisites:** Story 7.1 (TrackingParams interface and extraction)
+
+---
+
+### Story 7.3: GA4 Measurement Protocol HTTP Integration
+
+**As a** system,
+**I want** to send tracking events to GA4 Measurement Protocol endpoint via HTTP POST,
+**So that** analytics data is recorded before users are redirected.
+
+**Acceptance Criteria:**
+1. `lib/tracking.ts` exports async `sendGA4Event(payload, apiSecret, measurementId)` function
+2. Function sends POST request to `https://www.google-analytics.com/mp/collect` with query params: `measurement_id` and `api_secret`
+3. Request headers include `Content-Type: application/json`
+4. Request body is JSON stringified GA4 payload
+5. Function includes 2-second timeout using `AbortSignal.timeout(2000)`
+6. Function catches timeout and fetch errors, logs them without throwing
+7. Integration test with Miniflare verifies fetch call is made with correct URL and payload
+8. Unit test verifies timeout is properly configured
+9. Environment variables `GA4_MEASUREMENT_ID` and `GA4_API_SECRET` used from `c.env`
+
+**Prerequisites:** Story 7.2 (Payload builder), Story 1.1 (Env bindings for GA4 config)
+
+---
+
+### Story 7.4: Integrated Tracking in Redirect Flow
+
+**As a** end user,
+**I want** my analytics to be tracked before I'm redirected,
+**So that** no tracking data is lost even if I close the browser quickly.
+
+**Acceptance Criteria:**
+1. `routes/redirect.ts` updated to extract tracking params from destination URL using `extractTrackingParams()`
+2. Route builds GA4 payload using `buildGA4Payload()` with extracted params
+3. Route calls `await sendGA4Event()` BEFORE returning redirect response
+4. Tracking errors are logged but do NOT prevent redirect from executing
+5. Integration test verifies: tracking function called before redirect response sent
+6. Integration test verifies: redirect still works even if tracking fails/times out
+7. Structured log entry created for tracking attempt (success/failure)
+8. Performance: tracking adds <100ms latency in happy path (within sub-5ms total budget)
+
+**Prerequisites:** Story 7.1 (extraction), Story 7.2 (payload builder), Story 7.3 (GA4 send), Story 1.5 (redirect flow to integrate into)
+
+---
 ## Epic 6: Security & Validation
 
 **Priority:** P0 (MVP - Required)

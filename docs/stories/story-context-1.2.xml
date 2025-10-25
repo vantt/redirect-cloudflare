@@ -6,7 +6,7 @@
     <status>Draft</status>
     <generatedAt>2025-10-25</generatedAt>
     <generator>BMAD Story Context Workflow</generator>
-    <sourceStoryPath>docs/delivery/story-1.2.md</sourceStoryPath>
+    <sourceStoryPath>docs/stories/story-1.2.md</sourceStoryPath>
   </metadata>
 
   <story>
@@ -78,8 +78,8 @@
       <artifact>
         <path>cloudflareRedirect/src/index.ts</path>
         <kind>entry point</kind>
-        <symbol>Hono app initialization</symbol>
-        <lines>N/A</lines>
+        <symbol>Hono app initialization and routes</symbol>
+        <lines>4-16</lines>
         <reason>Main entry point - KV binding REDIRECT_KV already configured and available via c.env</reason>
       </artifact>
     </code>

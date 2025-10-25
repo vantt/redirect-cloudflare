@@ -119,7 +119,7 @@ export async function putRedirect(
 
 ### Context Reference
 
-- docs/delivery/story-context-1.2.xml
+- docs/stories/story-context-1.2.xml
 
 ### Agent Model Used
 

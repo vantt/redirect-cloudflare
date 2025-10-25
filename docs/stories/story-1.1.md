@@ -74,7 +74,7 @@ so that we have a working foundation with TypeScript, testing setup, and deploym
 
 ### Context Reference
 
-- docs/delivery/story-context-1.1.xml
+- docs/stories/story-context-1.1.xml
 
 ### Agent Model Used
 

@@ -1,0 +1,47 @@
+﻿# Story 2.1: Tracking Placeholder Stubs and Flags
+
+Status: Draft
+
+## Story
+
+As a developer,
+I want to add noâ€‘op tracking stubs and configuration flags,
+so that the system can integrate full tracking later without refactoring MVP code.
+
+## Acceptance Criteria
+
+1. Create `lib/tracking.ts` with exported noâ€‘op functions: `extractTrackingParams()`, `buildGA4Payload()`, `sendGA4Event()` returning placeholder values
+2. Add env flag `ENABLE_TRACKING=false` (documented) and shortâ€‘circuit all tracking functions when disabled
+3. Add TODO comments referencing Epic 7 stories (7.1â€“7.4) for future implementation
+4. No network calls nor GA4 dependencies in P0
+5. Unit tests assert stubs execute without side effects
+
+## Tasks / Subtasks
+
+- [ ] Create `cloudflareRedirect/src/lib/tracking.ts` with noâ€‘op exports
+  - [ ] `extractTrackingParams(destinationUrl: string): Record<string, string>` â†’ returns `{}`
+  - [ ] `buildGA4Payload(params: Record<string,string>, measurementId: string): any` â†’ returns `{ type: 'noop' }`
+  - [ ] `sendGA4Event(payload: any, apiSecret: string, measurementId: string): Promise<void>` â†’ resolves immediately
+- [ ] Add env flag plumbing
+  - [ ] Introduce `ENABLE_TRACKING` in `src/types/env.ts` (optional string, default "false")
+  - [ ] Document in README how to enable later
+- [ ] Wire safe imports (no usage yet) and TODOs referencing Epic 7
+- [ ] Unit tests: ensure functions return placeholder values and have no side effects
+
+## Dev Notes
+
+- This is a placeholder only. No GA4 HTTP calls or dependencies; keeps MVP scope tight.
+- Provides stable interfaces for Epic 7 to replace implementations later without refactor risk.
+
+### References
+
+- Source: docs/epics.md#Epic 2: Tracking Placeholder (Defer Full GA4 Integration)
+- Source: docs/epics.md#Epic 7: Full Tracking (GA4 Integration)
+
+## Dev Agent Record
+
+### Context Reference
+
+- docs/stories/story-context-2.1.xml
+
+

@@ -47,7 +47,7 @@ High-performance serverless URL redirect service on Cloudflare Workers replacing
 | Document | Expected Path | Severity | Impact |
 |----------|--------------|----------|--------|
 | **Epics Document** | docs/epics.md or docs/bmm-epics.md | 🔴 CRITICAL | Blocks Phase 4 - no breakdown of requirements into implementable units |
-| **User Stories** | docs/delivery/story-*.md | 🔴 CRITICAL | Blocks Phase 4 - no work items for dev agent |
+| **User Stories** | docs/stories/story-*.md | 🔴 CRITICAL | Blocks Phase 4 - no work items for dev agent |
 
 ---
 

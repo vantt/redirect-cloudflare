@@ -1,0 +1,89 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>1</storyId>
+    <title>Tracking Placeholder Stubs and Flags</title>
+    <status>drafted</status>
+    <generatedAt>2025-10-25</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-2.1.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>to add no-op tracking stubs and configuration flags</iWant>
+    <soThat>we can integrate full tracking later without refactoring MVP code</soThat>
+    <tasks>
+      - Create lib/tracking.ts with exported no-op functions
+      - Add ENABLE_TRACKING env flag (default false) and short-circuit logic
+      - Add TODO references to Epic 7 stories (7.1–7.4)
+      - Ensure no network calls or GA4 deps in P0
+      - Unit tests validate no side effects
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. No-op functions exported: extractTrackingParams, buildGA4Payload, sendGA4Event
+    2. ENABLE_TRACKING flag present and enforced (default false)
+    3. TODO comments referencing Epic 7 stories added
+    4. No GA4 network calls or dependencies included
+    5. Unit tests confirm placeholder behavior and no side effects
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics.md" title="Epics Document" section="Epic 2" snippet="Tracking Placeholder (Defer Full GA4 Integration) - one story placeholder to keep interfaces stable"/>
+      <doc path="docs/epics.md" title="Epics Document" section="Epic 7" snippet="Full Tracking (GA4 Integration) - extraction, payload, HTTP, integration"/>
+      <doc path="docs/prd.md" title="PRD" section="FR2/FR3" snippet="Pre-redirect tracking and GA4 integration requirements (deferred to P1)"/>
+      <doc path="docs/architecture.md" title="Architecture" section="Implementation Patterns" snippet="Introduce stubs/feature flags to control non-MVP capabilities"/>
+    </docs>
+    <code>
+      <artifact>
+        <path>cloudflareRedirect/src/lib/tracking.ts</path>
+        <kind>library</kind>
+        <symbol>no-op tracking functions</symbol>
+        <lines>1-80</lines>
+        <reason>Placeholder APIs for later Epic 7 implementation</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/types/env.ts</path>
+        <kind>types</kind>
+        <symbol>Env bindings</symbol>
+        <lines>1-20</lines>
+        <reason>Add ENABLE_TRACKING optional binding</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <dependency path="cloudflareRedirect/src/types/env.ts" reason="Expose ENABLE_TRACKING flag"/>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="scope" description="Do not implement GA4 logic in P0"/>
+    <constraint type="feature-flag" description="Wrap all tracking with ENABLE_TRACKING (default false)"/>
+    <constraint type="architecture" description="Provide stable interfaces for Epic 7 to replace"/>
+    <constraint type="testing" description="Unit tests ensure no side effects"/>
+  </constraints>
+
+  <interfaces>
+    <interface name="extractTrackingParams" location="src/lib/tracking.ts" signature="(destinationUrl: string) => Record&lt;string,string&gt;" returns="{} (placeholder)"/>
+    <interface name="buildGA4Payload" location="src/lib/tracking.ts" signature="(params: Record&lt;string,string&gt;, measurementId: string) => any" returns="{ type: 'noop' } (placeholder)"/>
+    <interface name="sendGA4Event" location="src/lib/tracking.ts" signature="(payload: any, apiSecret: string, measurementId: string) => Promise&lt;void&gt;" returns="void (resolves immediately)"/>
+  </interfaces>
+
+  <tests>
+    <standards>
+      <standard tool="Vitest v4.0+" purpose="Unit testing"/>
+    </standards>
+    <locations>
+      <location path="cloudflareRedirect/test/lib/tracking-placeholder.test.ts" description="Tests for no-op tracking stubs"/>
+    </locations>
+    <ideas>
+      <test-idea type="unit" description="extractTrackingParams returns {} for valid URL"/>
+      <test-idea type="unit" description="buildGA4Payload returns {type:'noop'}"/>
+      <test-idea type="unit" description="sendGA4Event resolves immediately without network calls"/>
+      <test-idea type="unit" description="ENABLE_TRACKING flag short-circuits any potential logic"/>
+    </ideas>
+  </tests>
+</story-context>
+

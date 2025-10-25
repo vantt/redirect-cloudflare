@@ -138,7 +138,7 @@ cloudflareRedirect/
 
 ### Context Reference
 
-- docs/delivery/story-context-1.3.xml
+- docs/stories/story-context-1.3.xml
 
 ### Agent Model Used
 
@@ -147,3 +147,16 @@ cloudflareRedirect/
 ### Completion Notes List
 
 ### File List
+
+
+## Merged Addendum
+
+- Source reconciliation: This story was also drafted in `docs/stories/1.3-basic-r-endpoint-with-redirect-logic.md`.
+- Primary version retained: this file (`docs/stories/story-1.3.md`).
+- Previous status record from alternate draft: Done.
+
+Additional notes preserved from the alternate draft:
+- Dependencies and testing approach align with project standards (Vitest + Miniflare integration tests; strict TypeScript config).
+- Development summary confirmed: implemented endpoint, parameter validation, URL decoding, proper 302 redirect and headers; tests covering success and error paths.
+
+All future references should use: `docs/stories/story-1.3.md`.

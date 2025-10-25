@@ -30,7 +30,7 @@ Khuyến nghị hành động:
 
 ### Documents Reviewed
 
-\#\#\#\ Danh\ mục\ tài\ liệu\ tìm\ thấy\n\n-\ Loại:\ PRD\n\ \ -\ Đường\ dẫn:\ docs/prd\.md\n\ \ -\ Cập\ nhật:\ 2025-10-24\ 23:27\n\ \ -\ Mô\ tả:\ Yêu\ cầu\ chức\ năng\ và\ phi\ chức\ năng,\ chiến\ lược\ URL\ và\ bảo\ mật\n\n-\ Loại:\ Architecture\n\ \ -\ Đường\ dẫn:\ docs/architecture\.md\n\ \ -\ Cập\ nhật:\ 2025-10-25\ 00:07\n\ \ -\ Mô\ tả:\ Quyết\ định\ kiến\ trúc,\ mẫu\ triển\ khai,\ cấu\ trúc\ dự\ án,\ CI/CD\n\n-\ Loại:\ Epics\n\ \ -\ Đường\ dẫn:\ docs/epics\.md\n\ \ -\ Cập\ nhật:\ 2025-10-25\ 00:34\n\ \ -\ Mô\ tả:\ Phân\ rã\ epic,\ tiêu\ chí\ chấp\ nhận,\ trình\ tự\ gợi\ ý\n\n\#\#\#\ Thiếu\ \(đánh\ dấu\ rủi\ ro\)\n-\ Stories\ \(docs/delivery/story-\*\.md\)\r\n-\ Tech\ Spec\ \(docs/tech-spec\*\.md\)\r\n-\ UX\ artifacts\ \(docs/ux\*\.md\)\ \[tuỳ\ thuộc\ đường\ dẫn\ hiện\ hành]\r\n
+\#\#\#\ Danh\ mục\ tài\ liệu\ tìm\ thấy\n\n-\ Loại:\ PRD\n\ \ -\ Đường\ dẫn:\ docs/prd\.md\n\ \ -\ Cập\ nhật:\ 2025-10-24\ 23:27\n\ \ -\ Mô\ tả:\ Yêu\ cầu\ chức\ năng\ và\ phi\ chức\ năng,\ chiến\ lược\ URL\ và\ bảo\ mật\n\n-\ Loại:\ Architecture\n\ \ -\ Đường\ dẫn:\ docs/architecture\.md\n\ \ -\ Cập\ nhật:\ 2025-10-25\ 00:07\n\ \ -\ Mô\ tả:\ Quyết\ định\ kiến\ trúc,\ mẫu\ triển\ khai,\ cấu\ trúc\ dự\ án,\ CI/CD\n\n-\ Loại:\ Epics\n\ \ -\ Đường\ dẫn:\ docs/epics\.md\n\ \ -\ Cập\ nhật:\ 2025-10-25\ 00:34\n\ \ -\ Mô\ tả:\ Phân\ rã\ epic,\ tiêu\ chí\ chấp\ nhận,\ trình\ tự\ gợi\ ý\n\n\#\#\#\ Thiếu\ \(đánh\ dấu\ rủi\ ro\)\n-\ Stories\ \(docs/stories/story-\*\.md\)\r\n-\ Tech\ Spec\ \(docs/tech-spec\*\.md\)\r\n-\ UX\ artifacts\ \(docs/ux\*\.md\)\ \[tuỳ\ thuộc\ đường\ dẫn\ hiện\ hành]\r\n
 
 ### Document Analysis Summary
 
@@ -82,7 +82,7 @@ Level 0-1 (tham khảo):
 ### Critical Findings
 
 Các khoảng trống (GAP):
-- GAP-001: Thiếu stories (docs/delivery/story-*.md) → chặn Pha 4.
+- GAP-001: Thiếu stories (docs/stories/story-*.md) → chặn Pha 4.
 - GAP-002: Tech Spec riêng chưa có (tuỳ chọn Level 2, khuyến nghị nhẹ).
 - GAP-003: UX artifacts chưa có (chỉ cần nếu đường dẫn có UX).
 

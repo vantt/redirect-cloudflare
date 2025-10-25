@@ -1,0 +1,88 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>3</storyId>
+    <title>Basic /r Endpoint with Redirect Logic</title>
+    <status>drafted</status>
+    <generatedAt>2025-10-25</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-1.3.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>end user</asA>
+    <iWant>/r` endpoint to redirect me to destination URL</iWant>
+    <soThat>I can access target pages through short URLs</soThat>
+    <tasks>
+      - [ ] Create routes/redirect.ts with basic /r endpoint (AC: #1)
+      - [ ] Add parameter validation (AC: #2, #7)
+      - [ ] Implement URL decoding (AC: #3, #8)
+      - [ ] Implement redirect response (AC: #4, #5)
+      - [ ] Write integration tests (AC: #6, #7, #8)
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. GET `/r?to=<url>` endpoint implemented in `routes/redirect.ts`
+    2. Endpoint validates `to` parameter exists (throws error if missing)
+    3. Endpoint performs URL decoding on `to` parameter
+    4. Endpoint returns HTTP 302 redirect with `Location` header set to destination
+    5. Response includes `Cache-Control: no-cache` header
+    6. Integration test verifies: request to `/r?to=https://example.com` returns 302 with correct Location header
+    7. Integration test verifies: request without `to` parameter returns 400 error
+    8. Endpoint handles URL-encoded destinations correctly (e.g., `%20` for spaces)
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/architecture.md" title="Architecture Document" section="Framework" snippet="Hono Web Framework v4.10+ - Ultra-fast routing, TypeScript-first, KV binding support, minimal bundle (~14KB), perfect for multi-endpoint service"/>
+      <doc path="docs/architecture.md" title="Architecture Document" section="Runtime" snippet="Cloudflare Workers compatibility_date: 2025-10-24 - Edge-level execution, global distribution, sub-5ms latency, serverless scaling, KV integration"/>
+      <doc path="docs/architecture.md" title="Architecture Document" section="Project Structure" snippet="routes/redirect.ts - /r endpoint - canonical server-side redirect"/>
+      <doc path="docs/architecture.md" title="Architecture Document" section="Language" snippet="TypeScript v5.9+ strict mode configuration"/>
+      <doc path="docs/architecture.md" title="Architecture Document" section="Testing" snippet="Use Vitest v4.0+ with Miniflare for accurate Workers runtime emulation"/>
+      <doc path="docs/architecture.md" title="Architecture Document" section="Executive Summary" snippet="Edge-level performance (sub-5ms processing)"/>
+      <doc path="docs/epics.md" title="Epics Document" section="Story 1.3" snippet="Complete acceptance criteria and prerequisites for basic redirect endpoint"/>
+    </docs>
+    <code>
+      <code path="routes/redirect.ts" kind="endpoint" symbol="GET /r" lines="route-definition" reason="Main redirect endpoint implementation"/>
+      <code path="src/index.ts" kind="entry-point" symbol="app.route" lines="route-registration" reason="Register redirect route with Hono app"/>
+      <code path="wrangler.toml" kind="config" symbol="REDIRECT_KV" lines="kv-namespace" reason="KV namespace binding from Story 1.1"/>
+    </code>
+    <dependencies>
+      <dependency path="src/index.ts" reason="Entry point for route registration"/>
+      <dependency path="wrangler.toml" reason="KV namespace binding configuration"/>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="performance" description="Redirect processing must complete within sub-5ms latency budget"/>
+    <constraint type="architecture" description="Use Hono framework v4.10+ for routing and request handling"/>
+    <constraint type="runtime" description="Deploy to Cloudflare Workers with compatibility_date 2025-10-24"/>
+    <constraint type="typescript" description="Follow TypeScript v5.9+ strict mode configuration"/>
+    <constraint type="testing" description="Use Vitest v4.0+ with Miniflare for integration testing"/>
+  </constraints>
+
+  <interfaces>
+    <interface name="RedirectEndpoint" location="routes/redirect.ts" signature="GET /r?to=<url>" returns="Response (302 redirect or 400 error)"/>
+    <interface name="HonoRequest" location="hono" methods="req.query('to'), req.header()" reason="Extract query parameters and headers"/>
+    <interface name="HonoResponse" location="hono" methods="redirect(), status(), header()" reason="Create HTTP redirect response"/>
+  </interfaces>
+
+  <tests>
+    <standards>
+      <standard tool="Vitest v4.0+" purpose="Integration testing"/>
+      <standard tool="Miniflare" purpose="Accurate Cloudflare Workers runtime emulation"/>
+      <standard coverage="endpoint-behavior" description="Test all redirect scenarios and error conditions"/>
+    </standards>
+    <locations>
+      <location path="tests/integration/redirect-endpoint.test.ts" description="Integration tests for /r endpoint"/>
+    </locations>
+    <ideas>
+      <test-idea type="integration" description="Test valid redirect with Location header verification"/>
+      <test-idea type="integration" description="Test missing 'to' parameter returns 400 error"/>
+      <test-idea type="integration" description="Test URL-encoded destinations (e.g., spaces, special characters)"/>
+      <test-idea type="integration" description="Test Cache-Control: no-cache header presence"/>
+      <test-idea type="performance" description="Verify redirect processing time under 5ms"/>
+    </ideas>
+  </tests>
+</story-context>

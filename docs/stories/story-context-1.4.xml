@@ -1,0 +1,87 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>4</storyId>
+    <title>Custom Error Classes and Global Error Handler</title>
+    <status>drafted</status>
+    <generatedAt>2025-10-25</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-1.4.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>centralized error handling with custom error classes</iWant>
+    <soThat>system returns consistent, meaningful error responses with appropriate HTTP status codes</soThat>
+    <tasks>
+      - [ ] Create RedirectError class in lib/errors.ts (AC: #1)
+      - [ ] Implement global error handler in src/index.ts (AC: #2)
+      - [ ] Create error response format (AC: #3, #4, #7)
+      - [ ] Add logging to error handler (AC: #8)
+      - [ ] Write unit tests for error handling (AC: #5)
+      - [ ] Write integration tests (AC: #6)
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. `RedirectError` class created in `lib/errors.ts` extending Error with properties: `statusCode`, `code`
+    2. Global error handler registered in `src/index.ts` using `app.onError()`
+    3. `RedirectError` instances return JSON: `{error: message, code: errorCode}` with correct status code
+    4. Unknown errors return 500 with generic message and log full error details
+    5. Unit tests cover: 400 validation error, 404 not found, 500 internal error
+    6. Integration test: invalid URL returns 400 with proper error JSON
+    7. Error responses use consistent format across all endpoints
+    8. Console logging includes error details for debugging
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/architecture.md" title="Architecture Document" section="Error Handling" snippet="Custom error classes for type-safe error handling, structured logging for Cloudflare dashboard visibility"/>
+      <doc path="docs/architecture.md" title="Architecture Document" section="Project Structure" snippet="File: src/lib/errors.ts - Custom error class location"/>
+      <doc path="docs/architecture.md" title="Architecture Document" section="Language" snippet="TypeScript v5.9+ strict mode configuration"/>
+      <doc path="docs/architecture.md" title="Architecture Document" section="Testing" snippet="Use Vitest v4.0+ with Miniflare for accurate Workers runtime emulation"/>
+      <doc path="docs/epics.md" title="Epics Document" section="Story 1.4" snippet="Complete acceptance criteria and prerequisites for custom error handling"/>
+    </docs>
+    <code>
+      <code path="src/index.ts" kind="entry-point" symbol="app.onError" lines="register-error-handler" reason="Global error handler registration point"/>
+      <code path="src/lib/errors.ts" kind="custom-error" symbol="RedirectError" lines="class-definition" reason="Custom error class with statusCode and code properties"/>
+    </code>
+    <dependencies>
+      <dependency path="src/index.ts" reason="Entry point for error handler registration"/>
+      <dependency path="src/lib/validation.ts" reason="Will use RedirectError for validation failures"/>
+      <dependency path="routes/redirect.ts" reason="Will throw RedirectError for invalid requests"/>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="pattern" description="Use Hono's built-in error handling middleware (app.onError())"/>
+    <constraint type="architecture" description="Follow TypeScript strict mode configuration"/>
+    <constraint type="testing" description="Use Vitest v4.0+ with Miniflare for runtime emulation"/>
+    <constraint type="logging" description="Use structured logging for Cloudflare dashboard visibility"/>
+    <constraint type="format" description="Error responses must use consistent JSON format"/>
+  </constraints>
+
+  <interfaces>
+    <interface name="RedirectError" location="src/lib/errors.ts" methods="constructor(message, statusCode, code)" properties="statusCode: number, code: string"/>
+    <interface name="GlobalErrorHandler" location="src/index.ts" signature="onError(err, c)" returns="Response"/>
+  </interfaces>
+
+  <tests>
+    <standards>
+      <standard tool="Vitest v4.0+" purpose="Unit and integration testing"/>
+      <standard tool="Miniflare" purpose="Accurate Cloudflare Workers runtime emulation"/>
+      <standard coverage="unit,integration" description="Test both error scenarios and response formats"/>
+    </standards>
+    <locations>
+      <location path="tests/lib/errors.test.ts" description="Unit tests for RedirectError class"/>
+      <location path="tests/integration/error-handling.test.ts" description="Integration tests for global error handler"/>
+    </locations>
+    <ideas>
+      <test-idea type="unit" description="Test RedirectError with different status codes (400, 404, 500)"/>
+      <test-idea type="unit" description="Test error code property and message handling"/>
+      <test-idea type="integration" description="Test global error handler with RedirectError instances"/>
+      <test-idea type="integration" description="Test unknown errors return 500 with logging"/>
+      <test-idea type="integration" description="Test error response format consistency"/>
+    </ideas>
+  </tests>
+</story-context>

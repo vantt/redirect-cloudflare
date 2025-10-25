@@ -21,6 +21,13 @@
 # Retrospective Status:
 #   - optional: Can be completed but not required
 #   - completed: Retrospective has been done
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epics should be 'contexted' before stories can be 'drafted'
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically drafts next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', SM reviews, then Dev moves to 'done'
 
 generated: 2025-10-25
 project: cloudflareRedirect
@@ -32,28 +39,32 @@ development_status:
   epic-1: backlog
   1-1-project-initialization-with-hono-framework: done
   1-2-kv-data-structure-and-crud-operations: done
-  1-3-basic-r-endpoint-with-redirect-logic: ready-for-dev
-  1-4-custom-error-classes-and-global-error-handler: backlog
-  1-5-redirect-type-support-301-vs-302: backlog
-  epic-1-retrospective: optional
+  1-3-basic-r-endpoint-with-redirect-logic: done
+  1-4-custom-error-classes-and-global-error-handler: ready-for-dev
+  1-5-redirect-type-support-301-vs-302: ready-for-dev
+   backlog
   epic-2: backlog
-  2-1-tracking-parameter-extraction-from-destination-urls: backlog
-  2-2-ga4-measurement-protocol-payload-builder: backlog
-  2-3-ga4-measurement-protocol-http-integration: backlog
-  2-4-integrated-tracking-in-redirect-flow: backlog
+  2-1-tracking-placeholder-stubs-and-flags: ready-for-dev
   epic-2-retrospective: optional
   epic-3: backlog
   3-1-client-side-bootstrap-html-at-root-endpoint: backlog
   3-2-legacy-url-backward-compatibility-testing: backlog
   epic-3-retrospective: optional
   epic-4: backlog
-  epic-4-retrospective: optional
+   backlog
   epic-5: backlog
   5-1-debug-mode-implementation-for-redirect-endpoint: backlog
   5-2-structured-logging-infrastructure: backlog
   epic-5-retrospective: optional
+  epic-7: backlog
+  7-1-tracking-parameter-extraction-from-destination-urls: backlog
+  7-2-ga4-measurement-protocol-payload-builder: backlog
+  7-3-ga4-measurement-protocol-http-integration: backlog
+  7-4-integrated-tracking-in-redirect-flow: backlog
+  epic-7-retrospective: optional
   epic-6: backlog
   6-1-zod-schema-validation-with-hono-validator-middleware: backlog
   6-2-protocol-validation-and-open-redirect-prevention: backlog
   6-3-optional-domain-allowlist-configuration: backlog
   epic-6-retrospective: optional
+

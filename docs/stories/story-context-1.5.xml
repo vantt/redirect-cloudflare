@@ -1,0 +1,90 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>5</storyId>
+    <title>Redirect Type Support (301 vs 302)</title>
+    <status>drafted</status>
+    <generatedAt>2025-10-25</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-1.5.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>system administrator</asA>
+    <iWant>system to support both permanent (301) and temporary (302) redirects based on configuration</iWant>
+    <soThat>I can optimize SEO for permanent links while maintaining flexibility for temporary campaigns</soThat>
+    <tasks>
+      - [ ] Update redirect logic to check KV for redirect data (AC: #1)
+      - [ ] Implement redirect type mapping (AC: #2)
+      - [ ] Add fallback for direct redirects (AC: #3)
+      - [ ] Write integration tests (AC: #4, #5, #6)
+      - [ ] Add error handling for malformed data (AC: #7)
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. `routes/redirect.ts` modified to check KV for redirect data (uses `getRedirect()` from Story 1.2)
+    2. If URL found in KV: redirect using type from `RedirectData.type` ('permanent' → 301, 'temporary' → 302)
+    3. If URL not in KV: fallback to 302 redirect (temporary) for direct `/r?to=...` usage
+    4. Integration test: KV entry with `type: 'permanent'` returns 301 redirect
+    5. Integration test: KV entry with `type: 'temporary'` returns 302 redirect
+    6. Integration test: Direct `/r?to=...` (not in KV) returns 302 redirect
+    7. Error handling: malformed KV data falls back to 302 and logs warning
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/architecture.md" title="Architecture Document" section="Data Store" snippet="Cloudflare KV (JSON objects) - Flexible JSON structure allows metadata (redirect type, creation date), extensible for future features, KV `.get(key, 'json')` auto-parses efficiently"/>
+      <doc path="docs/architecture.md" title="Architecture Document" section="Testing" snippet="Use Vitest v4.0+ with Miniflare for accurate Workers runtime emulation"/>
+      <doc path="docs/epics.md" title="Epics Document" section="Story 1.5" snippet="Complete acceptance criteria and prerequisites for redirect type support"/>
+      <doc path="docs/stories/story-1.2.md" title="KV Operations Story" section="Implementation" snippet="RedirectData interface and getRedirect/putRedirect functions"/>
+    </docs>
+    <code>
+      <code path="routes/redirect.ts" kind="endpoint" symbol="getRedirect" lines="kv-lookup" reason="Check KV for redirect data before processing"/>
+      <code path="lib/kv-store.ts" kind="utility" symbol="getRedirect" lines="function-definition" reason="KV data retrieval function from Story 1.2"/>
+      <code path="lib/errors.ts" kind="error-handler" symbol="RedirectError" lines="class-definition" reason="Error handling from Story 1.4"/>
+      <code path="src/types/env.ts" kind="types" symbol="RedirectData" lines="interface-definition" reason="Data structure with type field"/>
+    </code>
+    <dependencies>
+      <dependency path="lib/kv-store.ts" reason="getRedirect() function for KV data retrieval"/>
+      <dependency path="routes/redirect.ts" reason="Main redirect endpoint to modify"/>
+      <dependency path="lib/errors.ts" reason="Error handling for malformed data"/>
+      <dependency path="src/types/env.ts" reason="RedirectData interface with type field"/>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="performance" description="Redirect processing must complete within sub-5ms latency budget"/>
+    <constraint type="architecture" description="Use KV `.get(key, 'json')` for efficient JSON parsing"/>
+    <constraint type="error-handling" description="Malformed data should not break redirect flow"/>
+    <constraint type="seo" description="Use correct HTTP status codes (301 vs 302) for SEO optimization"/>
+    <constraint type="testing" description="Use Vitest v4.0+ with Miniflare for integration testing"/>
+  </constraints>
+
+  <interfaces>
+    <interface name="RedirectData" location="src/types/env.ts" methods="get(key)" properties="url: string, type: 'permanent'|'temporary', created: string"/>
+    <interface name="getRedirect" location="lib/kv-store.ts" signature="getRedirect(path, kv)" returns="RedirectData | null"/>
+    <interface name="RedirectLogic" location="routes/redirect.ts" signature="handleRedirect(request, env)" returns="Response"/>
+  </interfaces>
+
+  <tests>
+    <standards>
+      <standard tool="Vitest v4.0+" purpose="Integration testing"/>
+      <standard tool="Miniflare" purpose="Accurate Cloudflare Workers runtime emulation"/>
+      <standard coverage="redirect-types" description="Test both 301 and 302 redirect scenarios"/>
+      <standard coverage="error-scenarios" description="Test malformed KV data handling"/>
+    </standards>
+    <locations>
+      <location path="tests/integration/redirect-types.test.ts" description="Integration tests for 301/302 redirects"/>
+      <location path="tests/unit/redirect-logic.test.ts" description="Unit tests for redirect type mapping"/>
+    </locations>
+    <ideas>
+      <test-idea type="integration" description="Test KV entry with type 'permanent' returns 301 redirect"/>
+      <test-idea type="integration" description="Test KV entry with type 'temporary' returns 302 redirect"/>
+      <test-idea type="integration" description="Test direct redirect (not in KV) returns 302 redirect"/>
+      <test-idea type="integration" description="Test malformed KV data falls back to 302 with warning"/>
+      <test-idea type="unit" description="Test redirect type mapping logic"/>
+      <test-idea type="unit" description="Test error handling for invalid redirect data"/>
+    </ideas>
+  </tests>
+</story-context>
