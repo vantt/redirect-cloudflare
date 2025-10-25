@@ -55,11 +55,11 @@ development_status:
   5-1-debug-mode-implementation-for-redirect-endpoint: done
   5-2-structured-logging-infrastructure: done
   epic-5-retrospective: completed
-  epic-6: backlog
+  epic-6: done
   6-1-zod-schema-validation-with-hono-validator-middleware: done
   6-2-protocol-validation-and-open-redirect-prevention: done
   6-3-optional-domain-allowlist-configuration: done
-  epic-6-retrospective: optional
+  epic-6-retrospective: completed
   epic-7: backlog
   7-1-tracking-parameter-extraction-from-destination-urls: drafted
   7-2-analytics-provider-interface-and-neutral-event-model: backlog
