@@ -162,7 +162,7 @@ Provide minimal scaffolding (stubs and flags) for future tracking integration wi
 
 **Covers PRD Requirements:** Preparation for FR2/FR3 (deferred); no GA4 wiring in P0
 
-**Story Count:** 1 story
+**Story Count:** 7 stories
 
 ---
 
@@ -490,18 +490,19 @@ So that [benefit/value].
 **Architecture Reference:** See [architecture.md](./architecture.md) for technical decisions, implementation patterns, and component mappings.
 
 **PRD Reference:** See [prd.md](./prd.md) for functional requirements, non-functional requirements, and business context.
- ## Epic 7: Full Tracking (GA4 Integration)
+
+## Epic 7: Analytics Abstraction (Multi-Service)
 
 **Priority:** P1 (Important)
 
 **Expanded Goal:**
-Implement full GA4 tracking based on prepared stubs in Epic 2, including parameter extraction, payload building, HTTP integration, and redirect flow wiring with proper error handling and performance constraints.
+Provide a vendor‑neutral analytics layer: extract tracking data, define a neutral event model and provider interface, route events to one or more providers with isolation, and ensure non‑blocking behavior and observability.
 
-**Architecture Components:** lib/tracking.ts, outes/redirect.ts
+**Architecture Components:** `src/lib/analytics/*`, `src/lib/tracking.ts`, `src/routes/redirect.ts`
 
-**Covers PRD Requirements:** FR2 (Pre-redirect tracking), FR3 (GA4 integration), NFR5 (Tracking reliability)
+**Covers PRD Requirements:** FR2 (Pre‑redirect tracking)
 
-**Story Count:** 4 stories
+**Story Count:** 7 stories
 
 ---
 
@@ -525,7 +526,117 @@ Implement full GA4 tracking based on prepared stubs in Epic 2, including paramet
 
 ---
 
-### Story 7.2: GA4 Measurement Protocol Payload Builder
+
+### Story 7.2: Analytics Provider Interface and Neutral Event Model
+
+**As a** system architect,
+**I want** a vendor‑neutral AnalyticsEvent model and AnalyticsProvider interface,
+**So that** business events are decoupled from vendor payloads and easy to extend.
+
+**Acceptance Criteria:**
+1. Define AnalyticsEvent (event name + attributes map) and AnalyticsProvider interface (e.g., send(event: AnalyticsEvent): Promise<void>)
+2. Document minimal taxonomy: edirect_click with mapped attributes (utm_source, utm_medium, utm_campaign, utm_content, utm_term, xptdk, ref)
+3. TypeScript interfaces exported (e.g., src/lib/analytics/types.ts, src/lib/analytics/provider.ts)
+4. Examples included showing how a provider adapts neutral event → vendor payload
+5. Unit tests validate type contracts and basic mapping examples
+
+**Prerequisites:** Story 7.1
+
+---
+
+### Story 7.3: Analytics Router (Multi‑Service Fan‑Out)
+
+**As a** developer,
+**I want** a router that dispatches a neutral AnalyticsEvent to multiple providers concurrently with isolation,
+**So that** adding/removing providers is simple and failures don’t affect each other.
+
+**Acceptance Criteria:**
+1. Implement outeAnalyticsEvent(event, providers) that fans‑out concurrently
+2. Provider errors are caught and logged; other providers continue (isolation)
+3. Supports zero, one, or many providers without special casing
+4. Unit tests cover single/multiple providers, failure of one provider, and no‑provider case
+
+**Prerequisites:** Stories 7.1, 7.2
+
+---
+
+### Story 7.4: Provider Registry + Feature Flags (Env Config)
+
+**As a** platform engineer,
+**I want** a registry reading ANALYTICS_PROVIDERS env to enable/disable providers,
+**So that** we can configure providers per environment without code changes.
+
+**Acceptance Criteria:**
+1. Parse ANALYTICS_PROVIDERS (comma‑separated); unknown tokens → warn and ignore
+2. Registry instantiates known providers (e.g., ga4) behind interfaces
+3. Misconfiguration never breaks redirect path; falls back to empty provider set
+4. Unit tests cover empty/multi/unknown providers and warnings
+
+**Prerequisites:** Stories 7.2, 7.3
+
+---
+
+### Story 7.5: Timeout + Reliability Policy (Non‑Blocking)
+
+**As a** reliability engineer,
+**I want** per‑provider timeouts and non‑blocking guarantees,
+**So that** analytics never delays or blocks the redirect response.
+
+**Acceptance Criteria:**
+1. Apply default per‑provider timeout (e.g., 2s) via AbortSignal.timeout() or equivalent
+2. Router enforces overall return within budget regardless of provider hangs
+3. Failures/Timeouts logged with structured logs; no throws to request path
+4. Tests: timeout fired; hung provider isolated; router returns promptly
+
+**Prerequisites:** Stories 7.3, 5.2 (logging), 1.4 (error handling pattern)
+
+---
+
+### Story 7.6: Observability (Structured Logs + Basic Counters)
+
+**As a** DevOps engineer,
+**I want** structured logs and lightweight counters for analytics routing,
+**So that** we can monitor success/failure rates and timing without PII.
+
+**Acceptance Criteria:**
+1. Emit JSON logs for dispatch attempt, success, failure, and duration per provider
+2. Ensure no PII; redact/omit sensitive fields; consistent schema across providers
+3. Optional counters/metrics placeholders for future integration
+4. Tests assert log schema and presence of timing fields
+
+**Prerequisites:** Story 5.2 (Structured logging)
+
+---
+
+### Story 7.7: Test Harness + Provider Mocks
+
+**As a** developer,
+**I want** provider mocks and an end‑to‑end test harness for the router,
+**So that** we can verify behavior across success/failure/timeout paths.
+
+**Acceptance Criteria:**
+1. Mocks for providers implementing AnalyticsProvider
+2. E2E tests covering: no providers, single provider, multi‑provider, fail, timeout
+3. Developer guide: how to add a new provider (steps + example)
+
+**Prerequisites:** Stories 7.2, 7.3, 7.5
+
+---## Epic 8: Google Analytics 4 Integration
+
+**Priority:** P1 (Important)
+
+**Expanded Goal:**
+Deliver GA4-specific analytics integration behind the generalized tracking abstraction. Build payloads, integrate HTTP send with timeout/error isolation, and wire into the redirect flow without impacting performance or stability.
+
+**Architecture Components:** `lib/tracking.ts`, `routes/redirect.ts`
+
+**Covers PRD Requirements:** FR3 (GA4 integration), NFR5 (Tracking reliability)
+
+**Story Count:** 3 stories
+
+---
+
+### Story 8.1: GA4 Measurement Protocol Payload Builder
 
 **As a** developer,
 **I want** to construct valid GA4 Measurement Protocol payloads from tracking parameters,
@@ -547,7 +658,7 @@ Implement full GA4 tracking based on prepared stubs in Epic 2, including paramet
 
 ---
 
-### Story 7.3: GA4 Measurement Protocol HTTP Integration
+### Story 8.2: GA4 Measurement Protocol HTTP Integration
 
 **As a** system,
 **I want** to send tracking events to GA4 Measurement Protocol endpoint via HTTP POST,
@@ -564,11 +675,11 @@ Implement full GA4 tracking based on prepared stubs in Epic 2, including paramet
 8. Unit test verifies timeout is properly configured
 9. Environment variables `GA4_MEASUREMENT_ID` and `GA4_API_SECRET` used from `c.env`
 
-**Prerequisites:** Story 7.2 (Payload builder), Story 1.1 (Env bindings for GA4 config)
+**Prerequisites:** Story 8.1 (Payload builder), Story 1.1 (Env bindings for GA4 config)
 
 ---
 
-### Story 7.4: Integrated Tracking in Redirect Flow
+### Story 8.3: Integrated GA4 in Redirect Flow
 
 **As a** end user,
 **I want** my analytics to be tracked before I'm redirected,
@@ -584,7 +695,7 @@ Implement full GA4 tracking based on prepared stubs in Epic 2, including paramet
 7. Structured log entry created for tracking attempt (success/failure)
 8. Performance: tracking adds <100ms latency in happy path (within sub-5ms total budget)
 
-**Prerequisites:** Story 7.1 (extraction), Story 7.2 (payload builder), Story 7.3 (GA4 send), Story 1.5 (redirect flow to integrate into)
+**Prerequisites:** Story 7.1 (extraction), Story 8.1 (payload builder), Story 8.2 (GA4 send), Story 1.5 (redirect flow to integrate into)
 
 ---
  ## Epic 4: URL Management API

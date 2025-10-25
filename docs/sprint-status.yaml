@@ -62,9 +62,17 @@ development_status:
   epic-6-retrospective: optional
   epic-7: backlog
   7-1-tracking-parameter-extraction-from-destination-urls: drafted
-  7-2-ga4-measurement-protocol-payload-builder: backlog
-  7-3-ga4-measurement-protocol-http-integration: backlog
-  7-4-integrated-tracking-in-redirect-flow: backlog
+  7-2-analytics-provider-interface-and-neutral-event-model: backlog
+  7-3-analytics-router-multi-service-fan-out: backlog
+  7-4-provider-registry-feature-flags-env-config: backlog
+  7-5-timeout-reliability-policy-non-blocking: backlog
+  7-6-observability-structured-logs-basic-counters: backlog
+  7-7-test-harness-provider-mocks: backlog
   epic-7-retrospective: optional
+  epic-8: backlog
+  8-1-ga4-measurement-protocol-payload-builder: backlog
+  8-2-ga4-measurement-protocol-http-integration: backlog
+  8-3-integrated-ga4-in-redirect-flow: backlog
+  epic-8-retrospective: optional
   epic-4: backlog
   epic-4-retrospective: optional

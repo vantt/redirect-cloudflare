@@ -1,4 +1,4 @@
-﻿# BMM Workflow Status
+# BMM Workflow Status
 
 ## Project Configuration
 
@@ -21,7 +21,7 @@ PHASE_4_COMPLETE: false
 
 ## Next Action
 
-NEXT_ACTION: Plan next epic: finalize validation (6.2–6.3), then enable GA4 (7.2–7.4)
+NEXT_ACTION: Plan next epic: finalize validation (6.2-6.3), then enable GA4 (8.1-8.3)
 NEXT_COMMAND: *sprint-planning
 NEXT_AGENT: sm
 
