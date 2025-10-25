@@ -1,100 +1,61 @@
-<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+﻿<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
   <metadata>
     <epicId>3</epicId>
     <storyId>2</storyId>
     <title>Legacy URL Backward Compatibility Testing</title>
-    <status>drafted</status>
-    <generatedAt>2025-10-25</generatedAt>
+    <status>Done</status>
+    <generatedAt>2025-10-25T21:11:17+07:00</generatedAt>
     <generator>BMAD Story Context Workflow</generator>
     <sourceStoryPath>docs/stories/story-3.2.md</sourceStoryPath>
   </metadata>
 
   <story>
-    <asA>QA engineer</asA>
-    <iWant>comprehensive tests proving legacy URLs work correctly</iWant>
-    <soThat>we can deploy without breaking existing user links</soThat>
-    <tasks>
-      - Write integration tests for legacy hash formats and root fallback
-      - Verify upgrade mapping to /r?to= with preserved tracking params
-      - Verify isNoRedirect=1 maps to n=1
-      - Validate encoding and special characters handling
-      - Add perf assertion for <50ms overhead vs direct /r
-    </tasks>
+    <asA>QA engineer,</asA>
+    <iWant>comprehensive tests proving legacy URLs work correctly,</iWant>
+    <soThat>we can confidently deploy without breaking existing user links</soThat>
+    <tasks>- [x] Add legacy bootstrap tests under `cloudflareRedirect/test/routes/bootstrap-legacy.test.ts`
+- [x] Cover upgrade mapping to `/r?to=...` and preserve `utm_*`
+- [x] Cover `isNoRedirect=1` → `n=1` behavior
+- [x] Cover root `/` fallback to `DEFAULT_REDIRECT_URL`
+- [x] Encoding and special characters cases (spaces, UTF-8)
+- [x] Malformed fragment handling (graceful)
+- [x] Performance assertion (&lt;50ms overhead) with timing hooks
+
+### Review Follow-ups (AI)
+- [x] [AI-Review][High] Fix Vitest configuration to enable test execution
+- [x] [AI-Review][High] Validate all 19 tests execute successfully
+- [x] [AI-Review][High] Confirm all acceptance criteria pass in runtime
+- [x] [AI-Review][Medium] Evaluate test environment accuracy
+- [x] [AI-Review][Low] Add additional security test cases</tasks>
   </story>
 
-  <acceptanceCriteria>
-    1. Integration suite covers key legacy patterns and preserves params
-    2. E2E flow: legacy URL → bootstrap → upgrade → final redirect
-    3. Encoding correctness for upgraded URLs
-    4. Special characters (spaces, UTF-8) work
-    5. Malformed fragments fail gracefully
-    6. Perf: upgrade adds <50ms overhead vs direct /r
-    7. CI stability: tests pass consistently
-  </acceptanceCriteria>
+  <acceptanceCriteria>1. Integration test suite covers legacy URL scenarios:
+   - `/#https://example.com` â†’ upgrades to `/r?to=https://example.com`
+   - `/#https://example.com?utm_source=fb` â†’ preserves tracking params
+   - `/?isNoRedirect=1#https://example.com` â†’ upgrades with `n=1` parameter
+   - `/` (no hash) â†’ redirects to `DEFAULT_REDIRECT_URL`
+2. E2E test verifies complete flow: legacy URL â†’ bootstrap â†’ upgrade â†’ final redirect
+3. Tests verify URL encoding is handled correctly in upgrade process
+4. Tests verify special characters in destination URLs work (spaces, UTF-8)
+5. Tests verify fragment with malformed URLs fail gracefully
+6. Performance test: bootstrap upgrade adds &lt;50ms overhead vs direct `/r` call
+7. All tests pass consistently in CI/CD pipeline</acceptanceCriteria>
 
   <artifacts>
-    <docs>
-      <doc path="docs/epics.md" title="Epics" section="Story 3.2" snippet="Backward compatibility for legacy URLs and upgrade flow"/>
-      <doc path="docs/epics.md" title="Epics" section="Story 3.1" snippet="Bootstrap endpoint behavior for legacy hash upgrade"/>
-      <doc path="docs/architecture.md" title="Architecture" section="Project Structure" snippet="Routing and redirect patterns for / and /r"/>
-      <doc path="docs/prd.md" title="PRD" section="Compatibility" snippet="Do not break existing legacy links; provide upgrade path"/>
-    </docs>
-    <code>
-      <artifact>
-        <path>cloudflareRedirect/src/index.ts</path>
-        <kind>entry-point</kind>
-        <symbol>root route / (bootstrap)</symbol>
-        <lines>1-80</lines>
-        <reason>Legacy hash handling and upgrade mapping</reason>
-      </artifact>
-      <artifact>
-        <path>cloudflareRedirect/src/routes/redirect.ts</path>
-        <kind>endpoint</kind>
-        <symbol>GET /r</symbol>
-        <lines>1-120</lines>
-        <reason>Final redirect target for upgraded URLs</reason>
-      </artifact>
-      <artifact>
-        <path>cloudflareRedirect/test/routes/bootstrap-legacy.test.ts</path>
-        <kind>tests</kind>
-        <symbol>legacy upgrade suite</symbol>
-        <lines>1-200</lines>
-        <reason>Integration coverage for legacy formats and mapping</reason>
-      </artifact>
-    </code>
-    <dependencies>
-      <dependency path="cloudflareRedirect/src/routes/bootstrap.ts" reason="Bootstrap route for legacy upgrade if implemented in 3.1"/>
-      <dependency path="cloudflareRedirect/src/routes/redirect.ts" reason="Redirect endpoint for final hop"/>
-    </dependencies>
+    <docs><doc><path>docs/architecture.md</path><title>Decision Architecture</title><section>General</section><snippet># Decision Architecture ## Executive Summary </snippet></doc><doc><path>docs/epics.md</path><title>cloudflareRedirect - Epic Breakdown</title><section>General</section><snippet># cloudflareRedirect - Epic Breakdown **Author:** vanTT </snippet></doc><doc><path>docs/prd.md</path><title>Jamstack URL Shortener Service Product Requirements Document (PRD)</title><section>General</section><snippet># Jamstack URL Shortener Service Product Requirements Document (PRD) ## 1. Goals and Background Context</snippet></doc><doc><path>docs/research/old_url_structure.md</path><title>URL Structure Specification</title><section>General</section><snippet># URL Structure Specification ## Overview </snippet></doc><doc><path>docs/research/solution_analysis.md</path><title>Hosting Solution Analysis for URL Redirect Service</title><section>General</section><snippet># Hosting Solution Analysis for URL Redirect Service ## Overview </snippet></doc><doc><path>docs/epic-2-technical-architecture.md</path><title>Epic 2: Analytics Tracking Infrastructure - Technical Architecture</title><section>General</section><snippet># Epic 2: Analytics Tracking Infrastructure - Technical Architecture ## Executive Summary</snippet></doc><doc><path>docs/stories/story-3.1.md</path><title>Story 3.1: Client-Side Bootstrap HTML at Root Endpoint</title><section>General</section><snippet># Story 3.1: Client-Side Bootstrap HTML at Root Endpoint Status: Done</snippet></doc><doc><path>docs/stories/story-1.3.md</path><title>Story 1.3: Basic /r Endpoint with Redirect Logic</title><section>General</section><snippet># Story 1.3: Basic /r Endpoint with Redirect Logic Status: Review Passed </snippet></doc></docs>
+    <code><codeRef><path>cloudflareRedirect/src/routes/bootstrap.ts</path><kind>route</kind><symbol>GET /</symbol><lines>11-91</lines><reason>Handles legacy fragment URLs, upgrades to /r with encoding and optional n=1</reason></codeRef><codeRef><path>cloudflareRedirect/src/routes/redirect.ts</path><kind>route</kind><symbol>GET /r</symbol><lines>39-99</lines><reason>Server-side redirect endpoint consuming ?to= and returning 301/302</reason></codeRef><codeRef><path>cloudflareRedirect/src/routes/redirect.ts</path><kind>function</kind><symbol>getRedirectQuery(req)</symbol><lines>7-27</lines><reason>Parses and decodes ?to=, validates encoding, throws RedirectError</reason></codeRef><codeRef><path>cloudflareRedirect/src/routes/redirect.ts</path><kind>function</kind><symbol>createRedirectResponse(destination, type)</symbol><lines>23-43</lines><reason>Builds Response with Location and cache headers for 301/302</reason></codeRef><codeRef><path>cloudflareRedirect/src/index.ts</path><kind>app</kind><symbol>route(&apos;/&apos;, bootstrapApp)</symbol><lines>9-14</lines><reason>Mounts legacy bootstrap at root</reason></codeRef><codeRef><path>cloudflareRedirect/src/index.ts</path><kind>app</kind><symbol>route(&apos;/r&apos;, redirectApp)</symbol><lines>12-17</lines><reason>Mounts redirect endpoint</reason></codeRef><codeRef><path>cloudflareRedirect/test/routes/bootstrap-legacy.test.ts</path><kind>test</kind><symbol>bootstrap-legacy tests</symbol><lines></lines><reason>Integration coverage of legacy upgrade scenarios</reason></codeRef><codeRef><path>cloudflareRedirect/test/e2e/legacy-upgrade.e2e.test.ts</path><kind>test</kind><symbol>legacy-upgrade e2e</symbol><lines></lines><reason>E2E coverage of full flow</reason></codeRef></code>
+    <dependencies><node><package name="hono" version="^4.4.0"/><package name="zod" version="^3.23.8"/><devPackage name="@cloudflare/workers-types" version="^4.20241004.0"/><devPackage name="@types/node" version="^24.9.1"/><devPackage name="jsdom" version="^27.0.1"/><devPackage name="miniflare" version="^3.20250718.2"/><devPackage name="typescript" version="^5.9.0"/><devPackage name="vitest" version="^4.0.3"/><devPackage name="wrangler" version="^3.80.0"/></node></dependencies>
   </artifacts>
 
-  <constraints>
-    <constraint type="performance" description="Upgrade adds <50ms overhead vs direct /r"/>
-    <constraint type="compatibility" description="Do not break legacy formats; preserve tracking params"/>
-  </constraints>
-
-  <interfaces>
-    <interface name="BootstrapUpgrade" location="src/routes/bootstrap.ts" signature="/#<url> → /r?to=<url>[&params]"/>
-    <interface name="RootFallback" location="src/index.ts" signature="/ → DEFAULT_REDIRECT_URL when no hash"/>
-    <interface name="DebugFlagMapping" location="bootstrap" signature="isNoRedirect=1 → n=1"/>
-  </interfaces>
-
+  <constraints><rule>Use Hono for routing (do not implement raw fetch handlers)</rule><rule>Bootstrap must upgrade fragment URLs to /r with encodeURIComponent</rule><rule>Preserve UTM parameters; append n=1 when isNoRedirect=1 is present</rule><rule>DEFAULT_REDIRECT_URL must handle no-hash root requests</rule><rule>Throw RedirectError for missing/invalid parameters with proper status</rule><rule>Prefer Miniflare for local testing to emulate Workers behavior</rule></constraints>
+  <interfaces><interface><name>GET /</name><kind>HTTP endpoint</kind><signature>GET / -&gt; HTML bootstrap if hash present, else redirects to DEFAULT_REDIRECT_URL</signature><path>cloudflareRedirect/src/routes/bootstrap.ts</path></interface><interface><name>GET /r?to={url}</name><kind>HTTP endpoint</kind><signature>GET /r requires ?to (URL-encoded); returns 301/302 based on KV or default 302</signature><path>cloudflareRedirect/src/routes/redirect.ts</path></interface></interfaces>
   <tests>
-    <standards>
-      <standard tool="Vitest v4.0+" purpose="Integration testing"/>
-      <standard tool="Miniflare" purpose="Workers runtime emulation"/>
-    </standards>
-    <locations>
-      <location path="cloudflareRedirect/test/routes/bootstrap-legacy.test.ts" description="Legacy upgrade integration tests"/>
-      <location path="cloudflareRedirect/test/e2e/legacy-upgrade.e2e.test.ts" description="E2E legacy → upgrade → redirect flow"/>
-    </locations>
-    <ideas>
-      <test-idea type="integration" description="/#https://example.com → /r?to=https://example.com"/>
-      <test-idea type="integration" description="/?isNoRedirect=1#https://example.com → /r?to=...&n=1"/>
-      <test-idea type="integration" description="Preserve utm_* and URL-encoded values"/>
-      <test-idea type="integration" description="Malformed fragment handled gracefully"/>
-      <test-idea type="performance" description="Upgrade adds <50ms vs direct /r"/>
-    </ideas>
+    <standards>Vitest-based test suite with Miniflare simulating Cloudflare Workers. Integration tests cover route behavior with Hono Request/Response; E2E tests simulate full legacy-hash→bootstrap→/r redirect flow; unit tests validate parsing/encoding and error paths. Tests run headless, assert status, headers, and Location, and include timing assertions for performance.</standards>
+    <locations>cloudflareRedirect/test/**/*.test.ts; cloudflareRedirect/test/integration/*.test.ts; cloudflareRedirect/test/e2e/*.test.ts; cloudflareRedirect/test/routes/*.test.ts; cloudflareRedirect/test/unit/*.test.ts</locations>
+    <ideas><idea ac="AC1">Add cases for utm_* preservation through bootstrap→/r upgrade; assert query retention.</idea><idea ac="AC2">E2E: navigate to /#dest → receive bootstrap HTML → JS upgrades to /r → final 302/301 to dest.</idea><idea ac="AC3">Ensure decodeURIComponent errors produce 400 INVALID_ENCODING; include malformed % sequences.</idea><idea ac="AC4">Destinations with spaces and UTF-8 (e.g., café) redirect correctly; Location is properly encoded.</idea><idea ac="AC5">Malformed fragment (empty hash, non-URL) handled gracefully with informative HTML or safe redirect.</idea><idea ac="AC6">Measure bootstrap path vs direct /r; assert delta <50ms using performance.now() baseline.</idea><idea ac="AC7">CI: run full suite, ensure deterministic results and no flakiness; include retry logic where safe.</idea></ideas>
   </tests>
 </story-context>
+
+
+
 

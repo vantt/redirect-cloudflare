@@ -1,0 +1,93 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>5</epicId>
+    <storyId>1</storyId>
+    <title>Debug Mode Implementation for Redirect Endpoint</title>
+    <status>drafted</status>
+    <generatedAt>2025-10-25</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-5.1.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer or QA tester</asA>
+    <iWant>to use debug mode (n=1) to see tracking data without redirect</iWant>
+    <soThat>I can verify tracking parameters and payload before deployment</soThat>
+    <tasks>
+      - Update /r handler to read query param n ('0' | '1')
+      - When n=1 return JSON payload (no redirect) with destination, tracking_params, redirect_type, note
+      - Keep normal redirect for n=0 or omitted
+      - Ensure Zod schema accepts optional n (enum '0' | '1')
+      - Integration tests for n=1 (200 JSON), n=0 (302), default (302)
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. /r checks n query parameter ('0' | '1')
+    2. n=1 returns JSON instead of redirect with required fields
+    3. n=0 or omitted keeps normal redirect behavior
+    4. Zod schema updated to accept optional n
+    5. Debug mode extracts tracking but does not send GA4
+    6. Integration test: /r?to=https://example.com&n=1 returns 200 JSON (no redirect)
+    7. Integration test: /r?to=https://example.com&n=0 returns 302 redirect (normal)
+    8. Integration test: /r?to=https://example.com returns 302 redirect (default)
+    9. Debug response includes all tracking params found in destination URL
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics.md" title="Epics" section="Story 5.1" snippet="Debug mode (n=1) returns JSON for verification"/>
+      <doc path="docs/architecture.md" title="Architecture" section="Testing" snippet="Vitest + Miniflare for integration tests"/>
+      <doc path="docs/prd.md" title="PRD" section="/r Debug JSON" snippet="If n=1 (no redirect): return debug JSON/HTML showing payload and destination"/>
+      <doc path="docs/prd.md" title="PRD" section="Upgrade Mapping" snippet="isNoRedirect outside fragment maps to n=1 when upgrading to /r"/>
+      <doc path="docs/research/solution_analysis.md" title="Solution Analysis" section="Tracking" snippet="Tracking guaranteed before redirect"/>
+      <doc path="docs/epic-2-technical-architecture.md" title="Epic 2 Tech Architecture" section="Redirect Integration Points" snippet="Pre-redirect tracking data capture in redirect flow"/>
+      <doc path="docs/stories/story-6.1.md" title="Story 6.1" section="Zod Schema" snippet="n: z.enum(['0','1']).optional()"/>
+    </docs>
+    <code>
+      <artifact>
+        <path>cloudflareRedirect/src/routes/redirect.ts</path>
+        <kind>endpoint</kind>
+        <symbol>Debug mode branch (n=1) JSON response</symbol>
+        <lines>1-180</lines>
+        <reason>Implements conditional behavior for debug mode</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/lib/validation.ts</path>
+        <kind>library</kind>
+        <symbol>redirectSchema includes optional n</symbol>
+        <lines>1-80</lines>
+        <reason>Schema support for n</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <dependency path="package.json" reason="@hono/zod-validator for schema enforcement"/>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="behavior" description="Never perform redirect when n=1; return JSON only"/>
+    <constraint type="consistency" description="JSON fields and casing consistent across responses"/>
+  </constraints>
+
+  <interfaces>
+    <interface name="DebugQueryParam" location="routes/redirect.ts" signature="n: '0' | '1' (optional)"/>
+    <interface name="DebugJsonPayload" location="routes/redirect.ts" signature="{ destination, tracking_params, redirect_type, note }"/>
+  </interfaces>
+
+  <tests>
+    <standards>
+      <standard tool="Vitest v4.0+" purpose="Integration testing"/>
+      <standard tool="Miniflare" purpose="Workers runtime emulation"/>
+    </standards>
+    <locations>
+      <location path="cloudflareRedirect/test/routes/redirect-debug.test.ts" description="n=1 returns JSON; n=0/default redirect"/>
+    </locations>
+    <ideas>
+      <test-idea type="integration" description="/r?to=...&n=1 returns 200 JSON with required fields"/>
+      <test-idea type="integration" description="/r?to=...&n=0 returns 302 redirect"/>
+      <test-idea type="integration" description="/r?to=... returns 302 redirect (default)"/>
+    </ideas>
+  </tests>
+</story-context>
+
