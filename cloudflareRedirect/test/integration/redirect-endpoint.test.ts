@@ -18,7 +18,10 @@ describe('/r endpoint', () => {
     expect(res.headers.get('Content-Type')).toBe('application/json')
     
     const body = await res.json()
-    expect(body).toEqual({ error: 'Missing required parameter: to' })
+    expect(body).toEqual({ 
+      error: 'Missing required parameter: to',
+      code: 'MISSING_PARAM'
+    })
   })
 
   it('should handle URL-encoded destinations correctly', async () => {
@@ -38,6 +41,9 @@ describe('/r endpoint', () => {
     expect(res.headers.get('Content-Type')).toBe('application/json')
     
     const body = await res.json()
-    expect(body).toHaveProperty('error')
+    expect(body).toEqual({ 
+      error: 'Invalid URL encoding',
+      code: 'INVALID_ENCODING'
+    })
   })
 })

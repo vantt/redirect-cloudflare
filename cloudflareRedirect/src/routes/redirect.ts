@@ -1,19 +1,20 @@
 import { Hono } from 'hono'
 import { HonoRequest } from 'hono'
+import { RedirectError } from '../lib/errors'
 
-export const getRedirectQuery = (req: HonoRequest): string | null => {
+export const getRedirectQuery = (req: HonoRequest): string => {
   const toParam = req.query('to')
   
   if (!toParam) {
-    return null
+    throw new RedirectError('Missing required parameter: to', 400, 'MISSING_PARAM')
   }
   
   try {
     // Decode URL parameter to handle URL-encoded characters
     return decodeURIComponent(toParam)
   } catch (error) {
-    // If decoding fails, return null to trigger error response
-    return null
+    // If decoding fails, throw RedirectError to trigger error response
+    throw new RedirectError('Invalid URL encoding', 400, 'INVALID_ENCODING')
   }
 }
 
@@ -27,26 +28,17 @@ export const createRedirectResponse = (destination: string): Response => {
   })
 }
 
-export const createErrorResponse = (message: string, status: number = 400): Response => {
-  return new Response(JSON.stringify({ error: message }), {
-    status,
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-}
-
 // Create Hono app for redirect routes
 const app = new Hono()
 
 app.get('/', (c) => {
-  const destination = getRedirectQuery(c.req)
-  
-  if (!destination) {
-    return createErrorResponse('Missing required parameter: to', 400)
+  try {
+    const destination = getRedirectQuery(c.req)
+    return createRedirectResponse(destination)
+  } catch (error) {
+    // Let the global error handler handle RedirectError instances
+    throw error
   }
-  
-  return createRedirectResponse(destination)
 })
 
 export default app

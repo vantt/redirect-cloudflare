@@ -39,7 +39,7 @@ development_status:
   1-1-project-initialization-with-hono-framework: done
   1-2-kv-data-structure-and-crud-operations: done
   1-3-basic-r-endpoint-with-redirect-logic: done
-  1-4-custom-error-classes-and-global-error-handler: ready-for-dev
+  1-4-custom-error-classes-and-global-error-handler: done
   1-5-redirect-type-support-301-vs-302: ready-for-dev
   epic-1-retrospective: optional
   epic-2: backlog
