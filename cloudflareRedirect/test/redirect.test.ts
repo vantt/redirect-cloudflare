@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import app from '../../src/index'
+import app from '../src/index'
 
 describe('/r endpoint', () => {
   it('should redirect to valid URL with 302 status', async () => {

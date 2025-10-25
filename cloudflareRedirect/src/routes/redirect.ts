@@ -1,3 +1,4 @@
+import { Hono } from 'hono'
 import { HonoRequest } from 'hono'
 
 export const getRedirectQuery = (req: HonoRequest): string | null => {
@@ -34,3 +35,18 @@ export const createErrorResponse = (message: string, status: number = 400): Resp
     }
   })
 }
+
+// Create Hono app for redirect routes
+const app = new Hono()
+
+app.get('/', (c) => {
+  const destination = getRedirectQuery(c.req)
+  
+  if (!destination) {
+    return createErrorResponse('Missing required parameter: to', 400)
+  }
+  
+  return createRedirectResponse(destination)
+})
+
+export default app
