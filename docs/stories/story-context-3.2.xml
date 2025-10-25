@@ -1,0 +1,100 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>2</storyId>
+    <title>Legacy URL Backward Compatibility Testing</title>
+    <status>drafted</status>
+    <generatedAt>2025-10-25</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-3.2.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>QA engineer</asA>
+    <iWant>comprehensive tests proving legacy URLs work correctly</iWant>
+    <soThat>we can deploy without breaking existing user links</soThat>
+    <tasks>
+      - Write integration tests for legacy hash formats and root fallback
+      - Verify upgrade mapping to /r?to= with preserved tracking params
+      - Verify isNoRedirect=1 maps to n=1
+      - Validate encoding and special characters handling
+      - Add perf assertion for <50ms overhead vs direct /r
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. Integration suite covers key legacy patterns and preserves params
+    2. E2E flow: legacy URL → bootstrap → upgrade → final redirect
+    3. Encoding correctness for upgraded URLs
+    4. Special characters (spaces, UTF-8) work
+    5. Malformed fragments fail gracefully
+    6. Perf: upgrade adds <50ms overhead vs direct /r
+    7. CI stability: tests pass consistently
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics.md" title="Epics" section="Story 3.2" snippet="Backward compatibility for legacy URLs and upgrade flow"/>
+      <doc path="docs/epics.md" title="Epics" section="Story 3.1" snippet="Bootstrap endpoint behavior for legacy hash upgrade"/>
+      <doc path="docs/architecture.md" title="Architecture" section="Project Structure" snippet="Routing and redirect patterns for / and /r"/>
+      <doc path="docs/prd.md" title="PRD" section="Compatibility" snippet="Do not break existing legacy links; provide upgrade path"/>
+    </docs>
+    <code>
+      <artifact>
+        <path>cloudflareRedirect/src/index.ts</path>
+        <kind>entry-point</kind>
+        <symbol>root route / (bootstrap)</symbol>
+        <lines>1-80</lines>
+        <reason>Legacy hash handling and upgrade mapping</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/routes/redirect.ts</path>
+        <kind>endpoint</kind>
+        <symbol>GET /r</symbol>
+        <lines>1-120</lines>
+        <reason>Final redirect target for upgraded URLs</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/test/routes/bootstrap-legacy.test.ts</path>
+        <kind>tests</kind>
+        <symbol>legacy upgrade suite</symbol>
+        <lines>1-200</lines>
+        <reason>Integration coverage for legacy formats and mapping</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <dependency path="cloudflareRedirect/src/routes/bootstrap.ts" reason="Bootstrap route for legacy upgrade if implemented in 3.1"/>
+      <dependency path="cloudflareRedirect/src/routes/redirect.ts" reason="Redirect endpoint for final hop"/>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="performance" description="Upgrade adds <50ms overhead vs direct /r"/>
+    <constraint type="compatibility" description="Do not break legacy formats; preserve tracking params"/>
+  </constraints>
+
+  <interfaces>
+    <interface name="BootstrapUpgrade" location="src/routes/bootstrap.ts" signature="/#<url> → /r?to=<url>[&params]"/>
+    <interface name="RootFallback" location="src/index.ts" signature="/ → DEFAULT_REDIRECT_URL when no hash"/>
+    <interface name="DebugFlagMapping" location="bootstrap" signature="isNoRedirect=1 → n=1"/>
+  </interfaces>
+
+  <tests>
+    <standards>
+      <standard tool="Vitest v4.0+" purpose="Integration testing"/>
+      <standard tool="Miniflare" purpose="Workers runtime emulation"/>
+    </standards>
+    <locations>
+      <location path="cloudflareRedirect/test/routes/bootstrap-legacy.test.ts" description="Legacy upgrade integration tests"/>
+      <location path="cloudflareRedirect/test/e2e/legacy-upgrade.e2e.test.ts" description="E2E legacy → upgrade → redirect flow"/>
+    </locations>
+    <ideas>
+      <test-idea type="integration" description="/#https://example.com → /r?to=https://example.com"/>
+      <test-idea type="integration" description="/?isNoRedirect=1#https://example.com → /r?to=...&n=1"/>
+      <test-idea type="integration" description="Preserve utm_* and URL-encoded values"/>
+      <test-idea type="integration" description="Malformed fragment handled gracefully"/>
+      <test-idea type="performance" description="Upgrade adds <50ms vs direct /r"/>
+    </ideas>
+  </tests>
+</story-context>
+

@@ -1,0 +1,101 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>6</epicId>
+    <storyId>1</storyId>
+    <title>Zod Schema Validation with Hono Validator Middleware</title>
+    <status>drafted</status>
+    <generatedAt>2025-10-25</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-6.1.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>security-conscious developer</asA>
+    <iWant>all incoming URL parameters validated using Zod schemas before processing</iWant>
+    <soThat>malformed or malicious inputs are rejected early with clear error messages</soThat>
+    <tasks>
+      - Add zod and @hono/zod-validator dependencies (documented for local install)
+      - Create lib/validation.ts exporting redirectSchema
+      - Apply zValidator('query', redirectSchema) to /r endpoint
+      - Use c.req.valid('query') for typed access
+      - Write unit + integration tests for valid/invalid/missing/optional cases
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. Dependencies added: zod@^4.1.0 and @hono/zod-validator@^0.7.0
+    2. lib/validation.ts exports redirectSchema (to: url, n: enum('0','1') optional)
+    3. /r uses zValidator('query', redirectSchema)
+    4. Invalid inputs return 400 with validation error message
+    5. Validated data accessible via c.req.valid('query') with TS inference
+    6. Unit tests for schema validity cases
+    7. Integration: /r?to=invalid-url returns 400
+    8. Integration: /r (no params) returns 400 with "to is required"
+    9. TS enforcement for validated types
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics.md" title="Epics" section="Story 6.1" snippet="Zod schema validation for /r query with typed access"/>
+      <doc path="docs/architecture.md" title="Architecture" section="Error Handling" snippet="Global error handler and JSON error shape alignment with validation"/>
+      <doc path="docs/architecture.md" title="Architecture" section="Testing" snippet="Vitest + Miniflare for integration tests"/>
+      <doc path="docs/prd.md" title="PRD" section="NFR (Security/Robustness)" snippet="Reject malformed inputs with clear messages"/>
+    </docs>
+    <code>
+      <artifact>
+        <path>cloudflareRedirect/src/lib/validation.ts</path>
+        <kind>library</kind>
+        <symbol>redirectSchema</symbol>
+        <lines>1-80</lines>
+        <reason>Zod schema for /r query validation</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/routes/redirect.ts</path>
+        <kind>endpoint</kind>
+        <symbol>zValidator('query', redirectSchema)</symbol>
+        <lines>1-120</lines>
+        <reason>Apply middleware and use c.req.valid('query')</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/index.ts</path>
+        <kind>entry-point</kind>
+        <symbol>Route registration</symbol>
+        <lines>1-60</lines>
+        <reason>Ensure /r route wiring consistent</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <dependency path="package.json" reason="zod and @hono/zod-validator dependencies"/>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="error-format" description="Return 400 JSON aligned with global error handler"/>
+    <constraint type="typescript" description="Use TS inference from validated data via c.req.valid('query')"/>
+    <constraint type="testing" description="Cover valid/invalid/missing/optional query scenarios"/>
+  </constraints>
+
+  <interfaces>
+    <interface name="redirectSchema" location="src/lib/validation.ts" signature="z.object({ to: z.string().url(), n: z.enum(['0','1']).optional() })"/>
+    <interface name="zValidator" location="@hono/zod-validator" signature="zValidator('query', schema)"/>
+    <interface name="ValidatedQueryAccess" location="Hono Request" signature="c.req.valid('query')"/>
+  </interfaces>
+
+  <tests>
+    <standards>
+      <standard tool="Vitest v4.0+" purpose="Unit and integration testing"/>
+      <standard tool="Miniflare" purpose="Workers runtime emulation"/>
+    </standards>
+    <locations>
+      <location path="cloudflareRedirect/test/lib/validation-schema.test.ts" description="Unit: schema validation cases"/>
+      <location path="cloudflareRedirect/test/routes/redirect-validation.test.ts" description="Integration: 400 responses for invalid/missing"/>
+    </locations>
+    <ideas>
+      <test-idea type="unit" description="Valid URL + optional n passes"/>
+      <test-idea type="unit" description="Invalid URL fails with message"/>
+      <test-idea type="integration" description="/r without to returns 400"/>
+      <test-idea type="integration" description="/r?to=invalid-url returns 400"/>
+    </ideas>
+  </tests>
+</story-context>
+

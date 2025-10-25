@@ -1,4 +1,5 @@
-# generated: 2025-10-25T15:30:00.000Z
+﻿
+# generated: 2025-10-25
 # project: cloudflareRedirect
 # project_key: cloudflareRedirect
 # tracking_system: file-system
@@ -29,7 +30,7 @@
 # - SM typically drafts next story after previous one is 'done' to incorporate learnings
 # - Dev moves story to 'review', SM reviews, then Dev moves to 'done'
 
-generated: 2025-10-25T15:30:00.000Z
+generated: 2025-10-25
 project: cloudflareRedirect
 project_key: cloudflareRedirect
 tracking_system: file-system
@@ -48,20 +49,22 @@ development_status:
   epic-2-retrospective: optional
   epic-3: backlog
   3-1-client-side-bootstrap-html-at-root-endpoint: done
-  3-2-legacy-url-backward-compatibility-testing: backlog
+  3-2-legacy-url-backward-compatibility-testing: ready-for-dev
   epic-3-retrospective: optional
   epic-5: backlog
   5-1-debug-mode-implementation-for-redirect-endpoint: backlog
   5-2-structured-logging-infrastructure: backlog
   epic-5-retrospective: optional
   epic-6: backlog
-  6-1-zod-schema-validation-with-hono-validator-middleware: backlog
+  6-1-zod-schema-validation-with-hono-validator-middleware: ready-for-dev
   6-2-protocol-validation-and-open-redirect-prevention: backlog
   6-3-optional-domain-allowlist-configuration: backlog
   epic-6-retrospective: optional
   epic-7: backlog
-  7-1-tracking-parameter-extraction-from-destination-urls: backlog
+  7-1-tracking-parameter-extraction-from-destination-urls: drafted
   7-2-ga4-measurement-protocol-payload-builder: backlog
   7-3-ga4-measurement-protocol-http-integration: backlog
   7-4-integrated-tracking-in-redirect-flow: backlog
   epic-7-retrospective: optional
+  epic-4: backlog
+  epic-4-retrospective: optional
