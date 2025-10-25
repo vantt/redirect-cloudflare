@@ -58,7 +58,7 @@ development_status:
   epic-6: backlog
   6-1-zod-schema-validation-with-hono-validator-middleware: done
   6-2-protocol-validation-and-open-redirect-prevention: done
-  6-3-optional-domain-allowlist-configuration: drafted
+  6-3-optional-domain-allowlist-configuration: done
   epic-6-retrospective: optional
   epic-7: backlog
   7-1-tracking-parameter-extraction-from-destination-urls: drafted

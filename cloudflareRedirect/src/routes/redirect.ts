@@ -4,7 +4,7 @@ import { HonoRequest } from 'hono'
 import { RedirectError } from '../lib/errors'
 import { getRedirect } from '../lib/kv-store'
 import { appLogger } from '../utils/logger'
-import { redirectSchema } from '../lib/validation'
+import { redirectSchema, validateDestinationDomain } from '../lib/validation'
 import { extractTrackingParams } from '../lib/tracking'
 import type { RedirectData, Env } from '../types/env'
 
@@ -79,6 +79,13 @@ app.get('/', zValidator('query', redirectSchema), async (c) => {
       return createDebugResponse(destination)
     }
     // Normal redirect flow (n=0 or n not provided)
+    
+    // Domain allowlist validation
+    const allowedDomains = c.env.ALLOWED_DOMAINS
+    if (!validateDestinationDomain(destination, allowedDomains)) {
+      throw new RedirectError('Domain not allowed', 403, 'DOMAIN_NOT_ALLOWED')
+    }
+    
     const redirectData = await getRedirect(destination, c.env.REDIRECT_KV)
     
     if (redirectData && redirectData.type && (redirectData.type === 'permanent' || redirectData.type === 'temporary')) {

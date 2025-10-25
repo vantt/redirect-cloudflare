@@ -1,0 +1,99 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>6</epicId>
+    <storyId>3</storyId>
+    <title>Optional Domain Allowlist Configuration</title>
+    <status>drafted</status>
+    <generatedAt>2025-10-25</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-6.3.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>enterprise administrator</asA>
+    <iWant>to optionally restrict redirects to specific trusted domains</iWant>
+    <soThat>I can enforce governance and prevent redirects to unauthorized destinations</soThat>
+    <tasks>
+      - Add ALLOWED_DOMAINS binding and parsing
+      - Implement validateDestinationDomain and unit tests
+      - Integrate validation in /r flow before redirect
+      - Integration tests with and without allowlist
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. Env var ALLOWED_DOMAINS added to types/env.ts (optional string)
+    2. lib/validation.ts exports validateDestinationDomain(url, allowedDomains)
+    3. Hostname must match exact domain or subdomain of allowed list
+    4. If ALLOWED_DOMAINS empty/undefined: allow all domains
+    5. /r calls validation; throw RedirectError 403 if forbidden
+    6. Unit tests: exact, subdomain, non-match, undefined list (permissive)
+    7. Integration: ALLOWED_DOMAINS="example.com,trusted.org" → allow example.com, sub.example.com; forbid evil.com (403 "Domain not allowed")
+    8. Integration: without ALLOWED_DOMAINS → all domains allowed
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics.md" title="Epics" section="Story 6.3" snippet="Optional allowlist; exact or subdomain match; 403 on forbidden"/>
+      <doc path="docs/architecture.md" title="Architecture" section="Validation & Security" snippet="Zod + validator; prevent open redirects; governance controls"/>
+      <doc path="docs/prd.md" title="PRD" section="Security" snippet="Prevent open redirect; consider domain allowlist governance"/>
+      <doc path="docs/stories/story-6.1.md" title="Story 6.1" section="Zod Schema" snippet="redirectSchema base; supports query validation for /r"/>
+      <doc path="docs/stories/story-6.2.md" title="Story 6.2" section="Protocol Validation" snippet="http/https only; complements domain allowlist"/>
+    </docs>
+    <code>
+      <artifact>
+        <path>cloudflareRedirect/src/types/env.ts</path>
+        <kind>types</kind>
+        <symbol>ALLOWED_DOMAINS binding</symbol>
+        <lines>1-120</lines>
+        <reason>Expose optional allowlist via env bindings</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/lib/validation.ts</path>
+        <kind>library</kind>
+        <symbol>validateDestinationDomain(url, allowedDomains)</symbol>
+        <lines>1-160</lines>
+        <reason>Centralized allowlist check and parsing</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/routes/redirect.ts</path>
+        <kind>endpoint</kind>
+        <symbol>Invoke allowlist validation; throw 403 RedirectError</symbol>
+        <lines>1-200</lines>
+        <reason>Enforce governance before issuing redirect</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <dependency path="package.json" reason="zod and @hono/zod-validator for request validation"/>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="security" description="Forbid non-allowlisted domains when ALLOWED_DOMAINS is set"/>
+    <constraint type="governance" description="Match exact hostname or subdomains only; avoid partial overmatch"/>
+    <constraint type="consistency" description="Return structured 403 error JSON (Story 1.4)"/>
+  </constraints>
+
+  <interfaces>
+    <interface name="AllowedDomainsEnv" location="types/env.ts" signature="ALLOWED_DOMAINS?: string (comma-separated)"/>
+    <interface name="ValidateDestinationDomain" location="lib/validation.ts" signature="(url: string, allowed: string | undefined) => boolean"/>
+  </interfaces>
+
+  <tests>
+    <standards>
+      <standard tool="Vitest v4.0+" purpose="Unit and integration testing"/>
+      <standard tool="Miniflare" purpose="Workers runtime emulation"/>
+    </standards>
+    <locations>
+      <location path="cloudflareRedirect/test/lib/validation-allowlist.test.ts" description="validateDestinationDomain unit tests"/>
+      <location path="cloudflareRedirect/test/routes/redirect-allowlist.test.ts" description="/r 403 on forbidden domains"/>
+    </locations>
+    <ideas>
+      <test-idea type="unit" description="Exact domain and subdomain accepted; unrelated domain rejected"/>
+      <test-idea type="unit" description="Undefined/empty allowlist → allow all"/>
+      <test-idea type="integration" description="ALLOWED_DOMAINS set → /r blocks evil.com with 403"/>
+      <test-idea type="integration" description="No ALLOWED_DOMAINS → /r allows any valid http(s) domain"/>
+    </ideas>
+  </tests>
+</story-context>
+
