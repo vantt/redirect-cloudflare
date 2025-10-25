@@ -5,6 +5,7 @@ import { RedirectError } from '../lib/errors'
 import { getRedirect } from '../lib/kv-store'
 import { appLogger } from '../utils/logger'
 import { redirectSchema } from '../lib/validation'
+import { extractTrackingParams } from '../lib/tracking'
 import type { RedirectData, Env } from '../types/env'
 
 export const getRedirectQuery = (req: HonoRequest): string => {
@@ -21,6 +22,32 @@ export const getRedirectQuery = (req: HonoRequest): string => {
     // If decoding fails, throw RedirectError to trigger error response
     throw new RedirectError('Invalid URL encoding', 400, 'INVALID_ENCODING')
   }
+}
+
+export const createDebugResponse = (destination: string): Response => {
+  // Extract tracking parameters for debug mode
+  const trackingParams = extractTrackingParams(destination)
+  
+  const debugPayload = {
+    destination,
+    tracking_params: trackingParams,
+    redirect_type: "302",
+    note: "Debug mode - redirect suppressed"
+  }
+  
+  appLogger.info('Debug mode response', {
+    destination,
+    tracking_params_count: Object.keys(trackingParams).length,
+    has_tracking: Object.keys(trackingParams).length > 0
+  })
+  
+  return new Response(JSON.stringify(debugPayload, null, 2), {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache'
+    }
+  })
 }
 
 export const createRedirectResponse = (destination: string, type: 'permanent' | 'temporary' = 'temporary'): Response => {
@@ -45,8 +72,13 @@ app.get('/', zValidator('query', redirectSchema), async (c) => {
     // Get validated query parameters
     const query = c.req.valid('query')
     const destination = query.to
+    const debugMode = query.n === '1'
     
-    // Check if destination exists in KV store
+    // Debug mode: return JSON instead of redirect
+    if (debugMode) {
+      return createDebugResponse(destination)
+    }
+    // Normal redirect flow (n=0 or n not provided)
     const redirectData = await getRedirect(destination, c.env.REDIRECT_KV)
     
     if (redirectData && redirectData.type && (redirectData.type === 'permanent' || redirectData.type === 'temporary')) {

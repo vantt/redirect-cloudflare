@@ -52,7 +52,7 @@ development_status:
   3-2-legacy-url-backward-compatibility-testing: done
   epic-3-retrospective: completed
   epic-5: backlog
-  5-1-debug-mode-implementation-for-redirect-endpoint: drafted
+  5-1-debug-mode-implementation-for-redirect-endpoint: done
   5-2-structured-logging-infrastructure: done
   epic-5-retrospective: optional
   epic-6: backlog
