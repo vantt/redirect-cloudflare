@@ -1,0 +1,207 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>1.3</storyId>
+    <title>Basic /r Endpoint with Redirect Logic</title>
+    <status>Draft</status>
+    <generatedAt>2025-10-25</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/delivery/story-1.3.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>end user</asA>
+    <iWant>the `/r` endpoint to redirect me to the destination URL</iWant>
+    <soThat>I can access target pages through short URLs</soThat>
+    <tasks>
+      - Create /r endpoint in routes/redirect.ts using Hono
+      - Validate `to` parameter exists (throw RedirectError if missing)
+      - Perform URL decoding on `to` parameter
+      - Return HTTP 302 redirect with Location header
+      - Set Cache-Control: no-cache response header
+      - Write integration tests for valid redirect and error cases
+      - Register route in src/index.ts
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. GET `/r?to=<url>` endpoint implemented in `routes/redirect.ts`
+    2. Endpoint validates `to` parameter exists (throws error if missing)
+    3. Endpoint performs URL decoding on `to` parameter
+    4. Endpoint returns HTTP 302 redirect with `Location` header set to destination
+    5. Response includes `Cache-Control: no-cache` header
+    6. Integration test verifies: request to `/r?to=https://example.com` returns 302 with correct Location header
+    7. Integration test verifies: request without `to` parameter returns 400 error
+    8. Endpoint handles URL-encoded destinations correctly (e.g., `%20` for spaces)
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Decision Architecture</title>
+        <section>Hono Routing Pattern</section>
+        <snippet>Defines route handler pattern using Hono's `app.get()` with async context. Use `c.req.query()` for parameter extraction, `c.redirect(destination, statusCode)` for redirects, and `c.redirect(destination, 302, { 'Cache-Control': 'no-cache' })` for cache control headers.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Decision Architecture</title>
+        <section>Error Handling Pattern</section>
+        <snippet>Use RedirectError class for expected errors with specific HTTP codes. Throw RedirectError('Missing destination parameter', 400, 'MISSING_PARAM') for validation failures. Global error handler in src/index.ts catches and formats errors as JSON responses.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Decision Architecture</title>
+        <section>API Contracts - GET /r</section>
+        <snippet>Canonical server-side redirect endpoint. Query parameters: `to` (required, URL-encoded destination), `n` (optional, '0'|'1' for debug mode). Success: 302 redirect with Location header. Error: 400 with JSON error response.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Decision Architecture</title>
+        <section>ADR-001: Use Hono Framework</section>
+        <snippet>Decision to use Hono v4.10+ for ultra-fast routing, built-in middleware (logger, error handling), type-safe context (c.env, c.req, c.json), and excellent TypeScript support. ~14KB bundle overhead acceptable for DX benefits.</snippet>
+      </doc>
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Product Requirements Document</title>
+        <section>FR1: Server-Side Redirects</section>
+        <snippet>System must perform server-side 301 (permanent) or 302 (temporary) redirects from short URL to destination URL. This story implements the foundational 302 redirect; Story 1.5 will add 301 support based on KV data.</snippet>
+      </doc>
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Product Requirements Document</title>
+        <section>FR7: URL Encoding</section>
+        <snippet>System must correctly handle URL-encoded characters within destination URL. Use decodeURIComponent() for proper decoding of percent-encoded characters like %20 (space), %3A (colon).</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>Epic Breakdown</title>
+        <section>Epic 1, Story 1.3</section>
+        <snippet>Complete acceptance criteria breakdown for basic /r endpoint with redirect logic. Prerequisites: Story 1.1 (Hono routing foundation). Note: Story 1.4 (error handling) is recommended prerequisite for RedirectError class.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>cloudflareRedirect/src/index.ts</path>
+        <kind>entry point</kind>
+        <symbol>Hono app initialization</symbol>
+        <lines>1-7</lines>
+        <reason>Main entry point - new redirect route will be registered here using app.route() or direct GET handler</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/types/env.ts</path>
+        <kind>types</kind>
+        <symbol>Env interface</symbol>
+        <lines>1-4</lines>
+        <reason>Environment bindings type definition - route handler will use Env['Bindings'] for type safety with c.env</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/lib/kv-store.ts</path>
+        <kind>library</kind>
+        <symbol>getRedirect, putRedirect functions</symbol>
+        <lines>1-34</lines>
+        <reason>KV operations module from Story 1.2 - not used in this story but will be integrated in Story 1.5 for 301/302 redirect type support</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <node>
+        <dependency name="hono" version="^4.4.0" type="production">Hono web framework - provides routing, context (c.req, c.redirect), middleware</dependency>
+        <dependency name="zod" version="^3.23.8" type="production">Schema validation (used in future Story 6.1 for Zod validator middleware)</dependency>
+        <dependency name="typescript" version="^5.9.0" type="development">TypeScript compiler with strict mode</dependency>
+        <dependency name="vitest" version="^4.0.0" type="development">Testing framework for unit and integration tests</dependency>
+        <dependency name="miniflare" version="^3.20240904.0" type="development">Cloudflare Workers runtime simulator for integration testing</dependency>
+        <dependency name="@cloudflare/workers-types" version="^4.20241004.0" type="development">TypeScript type definitions for Cloudflare Workers APIs</dependency>
+        <dependency name="wrangler" version="^3.80.0" type="development">Cloudflare Workers CLI for deployment and local development</dependency>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    - MUST use Hono's c.req.query() for query parameter extraction (NOT manual URL parsing)
+    - MUST use c.redirect(destination, 302) for redirect responses (Hono helper method)
+    - MUST perform URL decoding using decodeURIComponent() before redirect
+    - MUST set Cache-Control: no-cache header using c.redirect(destination, 302, { 'Cache-Control': 'no-cache' })
+    - HTTP 302 (temporary) redirect is default; Story 1.5 will add 301 support based on KV data
+    - MUST throw RedirectError for missing `to` parameter (requires Story 1.4 error classes)
+    - If Story 1.4 not yet implemented: throw standard Error temporarily, update to RedirectError later
+    - File naming: kebab-case.ts (redirect.ts, not Redirect.ts)
+    - Function naming: camelCase
+    - MUST use async/await convention (NEVER .then() chains)
+    - Route handler pattern: app.get('/r', async (c) => { ... })
+    - Testing: Co-locate integration tests in test/routes/redirect.test.ts
+    - MUST verify parameter validation (missing `to` returns 400 error)
+    - MUST verify URL decoding (encoded characters like %20 handled correctly)
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>GET /r</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        GET /r?to=&lt;url-encoded-destination&gt;
+
+        Query Parameters:
+        - to (required): URL-encoded destination URL
+
+        Success Response:
+        HTTP/1.1 302 Found
+        Location: &lt;decoded-destination&gt;
+        Cache-Control: no-cache
+
+        Error Response:
+        HTTP/1.1 400 Bad Request
+        Content-Type: application/json
+        { "error": "Missing destination parameter", "code": "MISSING_PARAM" }
+      </signature>
+      <path>cloudflareRedirect/src/routes/redirect.ts</path>
+    </interface>
+    <interface>
+      <name>Hono Context (c)</name>
+      <kind>framework context</kind>
+      <signature>
+        interface Context {
+          req: {
+            query(key: string): string | undefined
+          }
+          redirect(url: string, statusCode: number, headers?: Record&lt;string, string&gt;): Response
+          env: Env['Bindings']
+        }
+      </signature>
+      <path>hono</path>
+    </interface>
+    <interface>
+      <name>RedirectError (future)</name>
+      <kind>custom error class</kind>
+      <signature>
+        class RedirectError extends Error {
+          constructor(message: string, statusCode: number, code: string)
+        }
+      </signature>
+      <path>cloudflareRedirect/src/lib/errors.ts (Story 1.4)</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Use Vitest v4.0 for all testing. Integration tests should verify HTTP responses using Miniflare's Workers runtime simulation.
+      Test file location: test/routes/redirect.test.ts
+      Use describe/it blocks for test organization following Arrange-Act-Assert pattern.
+      Test both success paths (valid redirect) and error paths (missing parameter, malformed input).
+      Verify HTTP status codes, Location headers, and Cache-Control headers in redirect responses.
+    </standards>
+    <locations>
+      - cloudflareRedirect/test/routes/redirect.test.ts - Integration tests for /r endpoint
+    </locations>
+    <ideas>
+      <test ac="1">Test GET /r route exists and responds</test>
+      <test ac="2">Test missing `to` parameter returns 400 error with JSON body</test>
+      <test ac="3">Test URL-encoded `to` parameter is decoded correctly (e.g., %20 to space)</test>
+      <test ac="4">Test valid request returns 302 status code with Location header set to destination</test>
+      <test ac="5">Test response includes Cache-Control: no-cache header</test>
+      <test ac="6">Integration test: /r?to=https://example.com returns 302 with Location: https://example.com</test>
+      <test ac="7">Integration test: /r (no query params) returns 400 error</test>
+      <test ac="8">Test URL-encoded special characters decoded: %3A (colon), %2F (slash), %3F (question mark)</test>
+      <test ac="8">Test URL-encoded UTF-8 characters work correctly (e.g., Vietnamese characters)</test>
+    </ideas>
+  </tests>
+</story-context>

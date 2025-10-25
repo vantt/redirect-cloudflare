@@ -1,0 +1,23 @@
+{
+  "name": "cloudflareRedirect",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "build": "tsc -p .",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241004.0",
+    "miniflare": "^3.20240904.0",
+    "typescript": "^5.9.0",
+    "vitest": "^4.0.0",
+    "wrangler": "^3.80.0"
+  },
+  "dependencies": {
+    "hono": "^4.4.0",
+    "zod": "^3.23.8"
+  }
+}
+

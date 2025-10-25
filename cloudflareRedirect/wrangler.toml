@@ -1,0 +1,10 @@
+name = "cloudflare_redirect"
+main = "src/index.ts"
+compatibility_date = "2025-10-24"
+
+[[kv_namespaces]]
+binding = "REDIRECT_KV"
+preview_id = "04adc1306db64f7d9d29f5e3343a3d7f" 
+id = "66ac68eae673447a9baf6ce94f7abff6"
+
+

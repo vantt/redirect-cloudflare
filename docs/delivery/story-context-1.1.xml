@@ -1,0 +1,50 @@
+﻿<story-context>
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>1</storyId>
+    <title>Project Initialization with Hono Framework</title>
+    <status>ContextReadyDraft</status>
+    <generatedAt>2025-10-25T07:38:25Z</generatedAt>
+    <sourceStoryPath>docs/delivery/story-1.1.md</sourceStoryPath>
+  </metadata>
+  <story>
+    <asA>developer</asA>
+    <iWant>to initialize the Cloudflare Workers project with Hono framework and basic configuration</iWant>
+    <soThat>we have a working foundation with TypeScript, testing setup, and deployment pipeline ready for development</soThat>
+  </story>
+  <acceptanceCriteria>
+    <ac>Project initialized using `npm create hono@latest cloudflareRedirect --template cloudflare-workers`</ac>
+    <ac>TypeScript v5.9+ configured with strict mode enabled</ac>
+    <ac>Wrangler configuration (`wrangler.toml`) set with compatibility_date 2025-10-24</ac>
+    <ac>KV namespace created and bound as `REDIRECT_KV` in wrangler.toml</ac>
+    <ac>Environment bindings type definition created in `src/types/env.ts`</ac>
+    <ac>Vitest v4.0+ and Miniflare configured for testing</ac>
+    <ac>Basic "Hello World" endpoint responds at `/` with 200 OK</ac>
+    <ac>Local dev server runs successfully via `npm run dev`</ac>
+    <ac>Project deploys to Cloudflare Workers staging environment</ac>
+    <ac>README.md updated with setup instructions</ac>
+  </acceptanceCriteria>
+  <artifacts>
+    <docs>
+      <doc><path>docs\prd.md</path><title>PRD</title><snippet># Jamstack URL Shortener Service Product Requirements Document (PRD)  ## 1. Goals and Background Context</snippet></doc>
+      <doc><path>docs\architecture.md</path><title>Architecture</title><snippet># Decision Architecture  ## Executive Summary</snippet></doc>
+    </docs>
+    <code />
+    <dependencies>
+      <pkg>typescript@^5.9</pkg>
+      <pkg>hono@^4</pkg>
+      <pkg>zod@^4</pkg>
+      <pkg>vitest@^4</pkg>
+      <pkg>miniflare@^3</pkg>
+      <pkg>wrangler@^3</pkg>
+      <pkg>cloudflare-workers</pkg>
+    </dependencies>
+  </artifacts>
+  <constraints>Use Cloudflare Workers with Hono; TypeScript strict; KV JSON; Vitest+Miniflare testing.</constraints>
+  <interfaces />
+  <tests>
+    <standards>Vitest + Miniflare; unit and integration tests; emulate Workers runtime.</standards>
+    <locations>test/</locations>
+    <ideas>Bootstrap route returns 200; Config loads; Wrangler envs.</ideas>
+  </tests>
+</story-context>

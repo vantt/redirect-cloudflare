@@ -1,0 +1,186 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>1.2</storyId>
+    <title>KV Data Structure and CRUD Operations</title>
+    <status>Draft</status>
+    <generatedAt>2025-10-25</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/delivery/story-1.2.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>to implement KV storage operations with JSON-based redirect data structure</iWant>
+    <soThat>the system can store and retrieve URL mappings with metadata (redirect type, creation date)</soThat>
+    <tasks>
+      - Implement RedirectData interface in src/types/env.ts
+      - Create lib/kv-store.ts with getRedirect() and putRedirect() functions
+      - Use KV's .get(key, 'json') for auto-parsing
+      - Write comprehensive unit and integration tests with Miniflare
+      - Implement error handling for malformed JSON
+      - Ensure TypeScript type enforcement
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. RedirectData interface defined in src/types/env.ts with fields: url, type ('permanent'|'temporary'), created (ISO 8601)
+    2. lib/kv-store.ts implements getRedirect(path, kv) function returning RedirectData | null
+    3. lib/kv-store.ts implements putRedirect(path, data, kv) function
+    4. Functions use KV's .get(key, 'json') for auto-parsing
+    5. Unit tests cover: successful get, get with non-existent key, successful put, JSON parsing
+    6. Miniflare integration tests verify KV operations with real namespace simulation
+    7. Error handling for malformed JSON in KV store
+    8. TypeScript types enforce correct data structure usage
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Decision Architecture</title>
+        <section>Implementation Patterns #4: KV Storage Pattern</section>
+        <snippet>Defines RedirectData interface and async/await pattern for getRedirect() and putRedirect() functions. Uses KV's .get(key, 'json') for efficient auto-parsing with ~1ms overhead.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Decision Architecture</title>
+        <section>ADR-002: JSON Objects in KV (not simple strings)</section>
+        <snippet>Rationale for JSON-based storage: future-proof extensibility for metadata (hits, expiry, tags), 301/302 redirect type storage, ~1ms parse overhead acceptable within sub-5ms budget.</snippet>
+      </doc>
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Product Requirements Document</title>
+        <section>FR1: Server-Side Redirects</section>
+        <snippet>System must perform server-side 301 (permanent) or 302 (temporary) redirects from short URL to destination URL.</snippet>
+      </doc>
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Product Requirements Document</title>
+        <section>FR4: Link Management</section>
+        <snippet>System must provide mechanism for managing mapping between short URLs and destination URLs via CRUD API backed by Cloudflare KV.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>Epic Breakdown</title>
+        <section>Epic 1, Story 1.2</section>
+        <snippet>Complete acceptance criteria breakdown for KV data structure implementation with prerequisites (Story 1.1 completed).</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>cloudflareRedirect/src/types/env.ts</path>
+        <kind>types</kind>
+        <symbol>Env interface</symbol>
+        <lines>1-4</lines>
+        <reason>Existing environment bindings interface - Story 1.2 will add RedirectData interface to this file</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/index.ts</path>
+        <kind>entry point</kind>
+        <symbol>Hono app initialization</symbol>
+        <lines>N/A</lines>
+        <reason>Main entry point - KV binding REDIRECT_KV already configured and available via c.env</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <node>
+        <dependency name="hono" version="^4.4.0" type="production">Hono web framework - provides c.env context for KV access</dependency>
+        <dependency name="zod" version="^3.23.8" type="production">Schema validation (used in future stories)</dependency>
+        <dependency name="typescript" version="^5.9.0" type="development">TypeScript compiler with strict mode</dependency>
+        <dependency name="vitest" version="^4.0.0" type="development">Testing framework for unit and integration tests</dependency>
+        <dependency name="miniflare" version="^3.20240904.0" type="development">Cloudflare Workers runtime simulator for testing KV operations</dependency>
+        <dependency name="@cloudflare/workers-types" version="^4.20241004.0" type="development">TypeScript type definitions for Cloudflare Workers APIs including KVNamespace</dependency>
+        <dependency name="wrangler" version="^3.80.0" type="development">Cloudflare Workers CLI for deployment and local development</dependency>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    - MUST use JSON-based storage (ADR-002): RedirectData as JSON object, not simple string
+    - MUST use KV's .get(key, 'json') for efficient auto-parsing
+    - MUST use named exports (not default exports) for tree-shaking optimization
+    - MUST use async/await convention (NEVER use .then() chains)
+    - MUST follow TypeScript strict mode - all types must be explicitly defined
+    - File naming: kebab-case.ts (kv-store.ts, not kvStore.ts or KVStore.ts)
+    - Function naming: camelCase (getRedirect, putRedirect)
+    - Interface naming: PascalCase (RedirectData)
+    - Error handling: Return null for not found/malformed, log errors without throwing
+    - Testing: Co-locate tests in test/lib/ directory with .test.ts suffix
+    - Performance budget: KV operations must stay within sub-5ms target (~2-3ms for reads)
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>RedirectData</name>
+      <kind>TypeScript interface</kind>
+      <signature>
+        interface RedirectData {
+          url: string
+          type: 'permanent' | 'temporary'
+          created: string // ISO 8601
+        }
+      </signature>
+      <path>cloudflareRedirect/src/types/env.ts</path>
+    </interface>
+    <interface>
+      <name>getRedirect</name>
+      <kind>async function</kind>
+      <signature>
+        async function getRedirect(
+          path: string,
+          kv: KVNamespace
+        ): Promise&lt;RedirectData | null&gt;
+      </signature>
+      <path>cloudflareRedirect/src/lib/kv-store.ts</path>
+    </interface>
+    <interface>
+      <name>putRedirect</name>
+      <kind>async function</kind>
+      <signature>
+        async function putRedirect(
+          path: string,
+          data: RedirectData,
+          kv: KVNamespace
+        ): Promise&lt;void&gt;
+      </signature>
+      <path>cloudflareRedirect/src/lib/kv-store.ts</path>
+    </interface>
+    <interface>
+      <name>KVNamespace</name>
+      <kind>Cloudflare Workers API</kind>
+      <signature>
+        interface KVNamespace {
+          get&lt;T&gt;(key: string, type?: 'text' | 'json' | 'arrayBuffer' | 'stream'): Promise&lt;T | null&gt;
+          put(key: string, value: string | ArrayBuffer | ReadableStream): Promise&lt;void&gt;
+        }
+      </signature>
+      <path>@cloudflare/workers-types</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Use Vitest v4.0 + Miniflare for all testing. Co-locate tests in test/lib/ directory with .test.ts suffix.
+      Unit tests should use Miniflare's KV simulation for accurate behavior testing.
+      Integration tests should verify get/put roundtrip with actual KV namespace.
+      Follow Arrange-Act-Assert pattern. Use describe/it blocks for test organization.
+      Mock external dependencies but use real Miniflare KV simulation for KV operations.
+    </standards>
+    <locations>
+      - cloudflareRedirect/test/lib/kv-store.test.ts - Unit and integration tests for KV operations
+    </locations>
+    <ideas>
+      <test ac="1">Test RedirectData interface type enforcement prevents invalid data structures at compile time</test>
+      <test ac="2">Test getRedirect returns RedirectData object when key exists in KV</test>
+      <test ac="2">Test getRedirect returns null when key does not exist</test>
+      <test ac="3">Test putRedirect successfully stores RedirectData in KV namespace</test>
+      <test ac="4">Test KV .get(key, 'json') auto-parses JSON and returns typed object</test>
+      <test ac="5">Integration test: Put RedirectData then get it back (roundtrip)</test>
+      <test ac="6">Use Miniflare to create KV namespace simulation for integration tests</test>
+      <test ac="7">Test getRedirect handles malformed JSON gracefully (returns null, logs error)</test>
+      <test ac="7">Test getRedirect with corrupted KV data returns null instead of throwing</test>
+      <test ac="8">Verify TypeScript compilation fails with wrong RedirectData structure</test>
+    </ideas>
+  </tests>
+</story-context>
