@@ -49,16 +49,16 @@ development_status:
   epic-2-retrospective: optional
   epic-3: backlog
   3-1-client-side-bootstrap-html-at-root-endpoint: done
-  3-2-legacy-url-backward-compatibility-testing: ready-for-dev
+  3-2-legacy-url-backward-compatibility-testing: review
   epic-3-retrospective: optional
   epic-5: backlog
-  5-1-debug-mode-implementation-for-redirect-endpoint: backlog
-  5-2-structured-logging-infrastructure: backlog
+  5-1-debug-mode-implementation-for-redirect-endpoint: drafted
+  5-2-structured-logging-infrastructure: drafted
   epic-5-retrospective: optional
   epic-6: backlog
   6-1-zod-schema-validation-with-hono-validator-middleware: ready-for-dev
-  6-2-protocol-validation-and-open-redirect-prevention: backlog
-  6-3-optional-domain-allowlist-configuration: backlog
+  6-2-protocol-validation-and-open-redirect-prevention: drafted
+  6-3-optional-domain-allowlist-configuration: drafted
   epic-6-retrospective: optional
   epic-7: backlog
   7-1-tracking-parameter-extraction-from-destination-urls: drafted

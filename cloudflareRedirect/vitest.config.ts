@@ -1,3 +1,5 @@
+/// <reference types="vitest" />
+
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
@@ -6,7 +8,7 @@ export default defineConfig({
     environment: 'node',
     include: ['**/*.test.ts'],
     exclude: ['node_modules', 'dist'],
-    testTimeout: 10000, // 10 seconds for all tests
-    hookTimeout: 10000, // 10 seconds for hooks
+    testTimeout: 10000,
+    hookTimeout: 10000,
   },
 })
