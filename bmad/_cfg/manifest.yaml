@@ -1,0 +1,16 @@
+installation:
+  version: 6.0.0-alpha.0
+  installDate: '2025-10-24T14:18:34.004Z'
+  lastUpdated: '2025-10-24T14:18:34.004Z'
+modules:
+  - core
+  - bmb
+  - bmm
+  - cis
+ides:
+  - claude-code
+  - codex
+  - gemini
+  - crush
+  - qwen
+  - trae
