@@ -12,61 +12,79 @@
   <story>
     <asA>security engineer</asA>
     <iWant>to enforce HTTP/HTTPS-only destination URLs and prevent open redirects</iWant>
-    <soThat>unsafe schemes and protocol-relative URLs are rejected</soThat>
+    <soThat>unsafe schemes and protocol-relative destinations are rejected</soThat>
     <tasks>
-      - Add Zod refine to redirectSchema allowing only http/https
-      - Reject javascript:, data:, file:, ftp:, protocol-relative //
-      - Add tests for accepted and rejected schemes
-      - Ensure consistent 400 error JSON with message
+      - Add refine to redirectSchema to allow only http/https
+      - Guard redirect flow to fail fast on invalid schemes
+      - Unit tests for scheme validation and message text
+      - Integration tests for 400 responses on invalid schemes
     </tasks>
   </story>
 
   <acceptanceCriteria>
-    1. Zod refine limits scheme to http/https with clear error message
-    2. Non-HTTP schemes and protocol-relative URLs rejected
-    3. Empty/whitespace strings rejected
-    4. Unit tests for scheme validation; integration tests return 400
+    1. Zod schema refinement: allow only http:// or https:// URLs (error: "Only HTTP/HTTPS URLs allowed")
+    2. Reject non-HTTP schemes: javascript:, data:, file:, ftp:, protocol-relative //
+    3. Reject empty and whitespace-only strings
+    4. Unit tests cover rejected schemes and accepted URLs
+    5. Integration test: /r?to=javascript:alert(1) returns 400 with message
+    6. Integration test: /r?to=data:text/html,<script>... returns 400
   </acceptanceCriteria>
 
   <artifacts>
     <docs>
-      <doc path="docs/epics.md" title="Epics" section="Story 6.2" snippet="Protocol validation and open redirect prevention"/>
-      <doc path="docs/architecture.md" title="Architecture" section="Security" snippet="URL validation and safe redirects"/>
+      <doc path="docs/epics.md" title="Epics" section="Story 6.2" snippet="Protocol validation prevents open redirects; reject non-HTTP schemes"/>
+      <doc path="docs/architecture.md" title="Architecture" section="Validation" snippet="Zod + Hono validator for request validation; security-critical URL validation"/>
+      <doc path="docs/prd.md" title="PRD" section="Security" snippet="Prevent open-redirect vulnerabilities; sanitize and validate URL parameters"/>
+      <doc path="docs/epics.md" title="Epics" section="Security Tests" snippet="Integration tests for javascript: and data: URLs should 400"/>
+      <doc path="docs/stories/story-6.1.md" title="Story 6.1" section="Zod Schema" snippet="redirectSchema; n: z.enum(['0','1']).optional(); base for 6.2 refine"/>
     </docs>
     <code>
       <artifact>
         <path>cloudflareRedirect/src/lib/validation.ts</path>
         <kind>library</kind>
-        <symbol>redirectSchema refine for scheme</symbol>
-        <lines>1-100</lines>
-        <reason>Scheme restriction logic</reason>
+        <symbol>redirectSchema refine: http/https only</symbol>
+        <lines>1-120</lines>
+        <reason>Central place to enforce protocol validation</reason>
       </artifact>
       <artifact>
         <path>cloudflareRedirect/src/routes/redirect.ts</path>
         <kind>endpoint</kind>
-        <symbol>Validation applied before redirect</symbol>
-        <lines>1-140</lines>
-        <reason>Enforces validated inputs</reason>
+        <symbol>Guard before redirect on invalid URL</symbol>
+        <lines>1-200</lines>
+        <reason>Ensure fail-fast and consistent 400 responses</reason>
       </artifact>
     </code>
     <dependencies>
-      <dependency path="package.json" reason="zod / @hono/zod-validator for validation"/>
+      <dependency path="package.json" reason="zod and @hono/zod-validator for schema enforcement"/>
     </dependencies>
   </artifacts>
 
   <constraints>
-    <constraint type="security" description="No non-HTTP schemes or protocol-relative URLs"/>
+    <constraint type="security" description="Reject non-http(s) schemes and protocol-relative URLs"/>
+    <constraint type="consistency" description="Return 400 with standardized error JSON (Story 1.4)"/>
+    <constraint type="performance" description="Validate early to preserve sub-5ms latency"/>
   </constraints>
 
   <interfaces>
-    <interface name="redirectSchemaRefine" location="src/lib/validation.ts" signature=".refine(url => startsWith('http://') || startsWith('https://'))"/>
+    <interface name="RedirectQuery" location="lib/validation.ts" signature="to: string (http|https only), n?: '0'|'1'"/>
+    <interface name="ErrorResponse" location="utils/errors.ts" signature="{ error: string, code?: string }"/>
   </interfaces>
 
   <tests>
+    <standards>
+      <standard tool="Vitest v4.0+" purpose="Unit and integration testing"/>
+      <standard tool="Miniflare" purpose="Workers runtime emulation"/>
+    </standards>
     <locations>
-      <location path="cloudflareRedirect/test/lib/validation-scheme.test.ts" description="Unit: accepted/rejected schemes"/>
-      <location path="cloudflareRedirect/test/routes/redirect-scheme.test.ts" description="Integration: 400 for invalid schemes"/>
+      <location path="cloudflareRedirect/test/lib/validation.test.ts" description="Scheme validation: http/https accept; others reject"/>
+      <location path="cloudflareRedirect/test/routes/redirect-security.test.ts" description="/r rejects invalid schemes with 400"/>
     </locations>
+    <ideas>
+      <test-idea type="unit" description="redirectSchema accepts http/https and rejects javascript:/data:/file:/ftp:"/>
+      <test-idea type="integration" description="/r?to=javascript:alert(1) returns 400 with message"/>
+      <test-idea type="integration" description="/r?to=data:text/html,<script>... returns 400"/>
+      <test-idea type="integration" description="/r?to=https://example.com returns 302 (allowed)"/>
+    </ideas>
   </tests>
 </story-context>
 

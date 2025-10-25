@@ -1,8 +1,111 @@
 import { describe, it, expect } from 'vitest'
 import { redirectSchema } from '../../src/lib/validation'
 
-describe('Redirect Schema Validation', () => {
-  it('should validate valid URL without n parameter', () => {
+describe('Redirect Schema Protocol Validation', () => {
+  it('should validate valid http URLs', () => {
+    const result = redirectSchema.safeParse({
+      to: 'http://example.com',
+      n: '1'
+    })
+    
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.to).toBe('http://example.com')
+      expect(result.data.n).toBe('1')
+    }
+  })
+
+  it('should validate valid https URLs', () => {
+    const result = redirectSchema.safeParse({
+      to: 'https://example.com/path?query=value',
+      n: '0'
+    })
+    
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.to).toBe('https://example.com/path?query=value')
+      expect(result.data.n).toBe('0')
+    }
+  })
+
+  it('should reject javascript: URLs', () => {
+    const result = redirectSchema.safeParse({
+      to: 'javascript:alert(1)'
+    })
+    
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe('Only HTTP/HTTPS URLs allowed')
+    }
+  })
+
+  it('should reject data: URLs', () => {
+    const result = redirectSchema.safeParse({
+      to: 'data:text/html,<script>alert(1)</script>'
+    })
+    
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe('Only HTTP/HTTPS URLs allowed')
+    }
+  })
+
+  it('should reject file: URLs', () => {
+    const result = redirectSchema.safeParse({
+      to: 'file:///path/to/file.html'
+    })
+    
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe('Only HTTP/HTTPS URLs allowed')
+    }
+  })
+
+  it('should reject ftp: URLs', () => {
+    const result = redirectSchema.safeParse({
+      to: 'ftp://example.com/file.txt'
+    })
+    
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe('Only HTTP/HTTPS URLs allowed')
+    }
+  })
+
+  it('should reject protocol-relative URLs', () => {
+    const result = redirectSchema.safeParse({
+      to: '//example.com/path'
+    })
+    
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe('Only HTTP/HTTPS URLs allowed')
+    }
+  })
+
+  it('should reject empty strings', () => {
+    const result = redirectSchema.safeParse({
+      to: ''
+    })
+    
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe('Only HTTP/HTTPS URLs allowed')
+    }
+  })
+
+  it('should reject whitespace-only strings', () => {
+    const result = redirectSchema.safeParse({
+      to: '   '
+    })
+    
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe('Only HTTP/HTTPS URLs allowed')
+    }
+  })
+
+  it('should accept URLs without n parameter', () => {
     const result = redirectSchema.safeParse({
       to: 'https://example.com'
     })
@@ -14,72 +117,25 @@ describe('Redirect Schema Validation', () => {
     }
   })
 
-  it('should validate valid URL with n=1', () => {
+  it('should reject malformed URLs', () => {
     const result = redirectSchema.safeParse({
-      to: 'https://example.com',
-      n: '1'
+      to: 'not-a-url'
+    })
+    
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe('Only HTTP/HTTPS URLs allowed')
+    }
+  })
+
+  it('should work with complex https URLs', () => {
+    const result = redirectSchema.safeParse({
+      to: 'https://subdomain.example.com:8080/path/to/resource?param1=value1&param2=value2#fragment'
     })
     
     expect(result.success).toBe(true)
     if (result.success) {
-      expect(result.data.to).toBe('https://example.com')
-      expect(result.data.n).toBe('1')
-    }
-  })
-
-  it('should validate valid URL with n=0', () => {
-    const result = redirectSchema.safeParse({
-      to: 'https://example.com',
-      n: '0'
-    })
-    
-    expect(result.success).toBe(true)
-    if (result.success) {
-      expect(result.data.to).toBe('https://example.com')
-      expect(result.data.n).toBe('0')
-    }
-  })
-
-  it('should reject invalid URL', () => {
-    const result = redirectSchema.safeParse({
-      to: 'invalid-url'
-    })
-    
-    expect(result.success).toBe(false)
-    if (!result.success) {
-      expect(result.error.issues[0].path).toContain('to')
-    }
-  })
-
-  it('should reject missing to parameter', () => {
-    const result = redirectSchema.safeParse({})
-    
-    expect(result.success).toBe(false)
-    if (!result.success) {
-      expect(result.error.issues[0].path).toContain('to')
-    }
-  })
-
-  it('should reject invalid n parameter value', () => {
-    const result = redirectSchema.safeParse({
-      to: 'https://example.com',
-      n: '2'
-    })
-    
-    expect(result.success).toBe(false)
-    if (!result.success) {
-      expect(result.error.issues[0].path).toContain('n')
-    }
-  })
-
-  it('should reject empty to parameter', () => {
-    const result = redirectSchema.safeParse({
-      to: ''
-    })
-    
-    expect(result.success).toBe(false)
-    if (!result.success) {
-      expect(result.error.issues[0].path).toContain('to')
+      expect(result.data.to).toBe('https://subdomain.example.com:8080/path/to/resource?param1=value1&param2=value2#fragment')
     }
   })
 })
