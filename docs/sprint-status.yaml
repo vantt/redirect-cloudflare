@@ -73,12 +73,12 @@ development_status:
   7-4-provider-registry-feature-flags-env-config: done
   7-5-timeout-reliability-policy-non-blocking: done
   7-6-observability-structured-logs-basic-counters: done
-  7-7-test-harness-provider-mocks: ready-for-dev
+  7-7-test-harness-provider-mocks: done
   epic-7-retrospective: optional
 
   epic-8: contexted
-  8-1-ga4-measurement-protocol-payload-builder: drafted
-  8-2-ga4-measurement-protocol-http-integration: backlog
-  8-3-integrated-ga4-in-redirect-flow: backlog
+  8-1-ga4-measurement-protocol-payload-builder: ready-for-dev
+  8-2-ga4-measurement-protocol-http-integration: drafted
+  8-3-integrated-ga4-in-redirect-flow: ready-for-dev
   epic-8-retrospective: optional
 

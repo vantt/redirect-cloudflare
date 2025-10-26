@@ -1,0 +1,62 @@
+﻿<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>7</epicId>
+    <storyId>7</storyId>
+    <title>Test\ Harness\ \+\ Provider\ Mocks</title>
+    <status>drafted</status>
+    <generatedAt>2025-10-26</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-7.7.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>a test harness and provider mocks for the analytics router</iWant>
+    <soThat>we can verify behavior across success/failure/timeout without blocking redirects</soThat>
+    <tasks>- [ ] Create provider mocks implementing AnalyticsProvider (AC:1)
+      - [ ] Success mock, failure mock, timeout mock
+      - [ ] Build E2E test harness with Miniflare (AC:2)
+      - [ ] Cases: no providers | single | multi | fail | timeout
+      - [ ] Write developer guide for adding a provider (AC:3)
+      - [ ] Steps, example skeleton, env config notes</tasks>
+  </story>
+
+  <acceptanceCriteria>    1. Mocks for providers implementing AnalyticsProvider
+    2. E2E tests covering: no providers, single provider, multi-provider, fail, timeout
+    3. Developer guide: how to add a new provider (steps + example)</acceptanceCriteria>
+
+  <artifacts>
+    <docs>      <doc path="docs/epics.md" title="Epics" section="Story 7.7" snippet="Provider mocks and E2E harness requirements"/>
+      <doc path="docs/architecture.md" title="Architecture" section="Analytics Abstraction (Epic 7)" snippet="Router, provider interface, timeout policy"/>
+      <doc path="docs/tech-spec-epic-7.md" title="Tech Spec Epic 7" section="Testing Strategy" snippet="Mocks, harness, multi-provider scenarios"/>
+      <doc path="docs/prd.md" title="PRD" section="NFR5" snippet="Reliability before redirect; do not block user flow"/></docs>
+    <code>      <artifact>
+        <path>cloudflareRedirect/src/lib/analytics/provider.ts</path>
+        <kind>library</kind>
+        <symbol>AnalyticsProvider interface</symbol>
+        <lines>1-200</lines>
+        <reason>Define mock contract for providers</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/lib/analytics/router.ts</path>
+        <kind>library</kind>
+        <symbol>routeAnalyticsEvent</symbol>
+        <lines>1-240</lines>
+        <reason>E2E harness targets router fan-out behavior</reason>
+      </artifact></code>
+    <dependencies>      <dependency path="cloudflareRedirect/package.json" reason="Test tooling (Vitest/Miniflare)"/>
+      <dependency path="cloudflareRedirect/wrangler.toml" reason="Bindings and env for tests"/></dependencies>
+  </artifacts>
+
+  <constraints>    <constraint type="non-blocking" description="Tests must not block redirect flow"/>
+    <constraint type="timeout" description="Per-provider timeout ~2s per ADR-003"/></constraints>
+  <interfaces>    <interface name="AnalyticsProvider" location="src/lib/analytics/provider.ts" signature="send(event: AnalyticsEvent): Promise&lt;void&gt;"/></interfaces>
+  <tests>
+    <standards>      <standard tool="Vitest v4.0+" purpose="Unit/E2E with Miniflare"/></standards>
+    <locations>      <location path="cloudflareRedirect/test/lib/analytics/router.e2e.test.ts" description="Multi-provider scenarios"/></locations>
+    <ideas>      <test-idea type="e2e" description="No providers => router completes without errors"/>
+      <test-idea type="e2e" description="Single/multi providers: success/fail/timeout"/>
+      <test-idea type="unit" description="Provider mocks shape and error handling"/></ideas>
+  </tests>
+</story-context>
+

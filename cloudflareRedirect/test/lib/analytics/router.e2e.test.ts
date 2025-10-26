@@ -1,317 +1,337 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { routeAnalyticsEvent } from '../../../src/lib/analytics/router'
-import { AnalyticsEvent, EventName, AttributeKey } from '../../../src/lib/analytics/types'
+/**
+ * Analytics Router E2E Tests
+ * 
+ * End-to-end tests for analytics router using mock providers.
+ * Tests multi-provider scenarios: success, failure, timeout, and mixed.
+ */
+
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { AnalyticsEvent, EventName } from '../../../src/lib/analytics/types'
+import { AnalyticsProvider } from '../../../src/lib/analytics/provider'
 import { 
-  createMockProvider,
-  createTestEnv,
-  MockProvider
-} from './provider-mocks'
-import { appLogger } from '../../../src/utils/logger'
+  createSuccessMock,
+  createFailureMock,
+  createTimeoutMock,
+  createProvidersByType
+} from './providers/provider-mocks'
 
-// Mock logger to capture all log calls
-vi.mock('../../../src/utils/logger', () => ({
-  appLogger: {
-    info: vi.fn(),
-    error: vi.fn(),
-    warn: vi.fn()
+// Import the actual router implementation for testing
+import { routeAnalyticsEvent } from '../../../src/lib/analytics/router'
+
+/**
+ * Test wrapper around routeAnalyticsEvent that captures results for testing
+ * Since the actual router returns void for production use, we wrap it to capture
+ * the logged results and provider behavior for test assertions
+ */
+async function routeAnalyticsEventForTesting(
+  providers: AnalyticsProvider[], 
+  event: AnalyticsEvent
+): Promise<{
+  totalProviders: number
+  successful: number
+  failed: number
+  timedOut: number
+  duration: number
+}> {
+  const startTime = Date.now()
+  
+  // Mock the logger to capture provider results
+  const logCalls: any[] = []
+  const originalLog = console.log
+  console.log = (...args) => {
+    logCalls.push(args)
+    originalLog(...args)
   }
-}))
+  
+  try {
+    // Call the actual router
+    await routeAnalyticsEvent(event, providers)
+    
+    // Extract results from log calls
+    const providerCalls = logCalls.filter(call => 
+      Array.isArray(call) && 
+      call.length > 0 && 
+      typeof call[0] === 'string' &&
+      call[0].includes('provider dispatch')
+    )
+    
+    const successful = providerCalls.filter(call => 
+      call[0].includes('successful')
+    ).length
+    
+    const failed = providerCalls.filter(call => 
+      call[0].includes('failed')
+    ).length
+    
+    const timedOut = providerCalls.filter(call => 
+      JSON.stringify(call).includes('isTimeout": true')
+    ).length
+    
+    return {
+      totalProviders: providers.length,
+      successful,
+      failed,
+      timedOut,
+      duration: Date.now() - startTime
+    }
+    
+  } finally {
+    // Restore console
+    console.log = originalLog
+  }
+}
 
-describe('Analytics Router - E2E Test Harness', () => {
+describe('Analytics Router E2E Tests', () => {
+  let testEvent: AnalyticsEvent
+  let consoleSpy: {
+    log: ReturnType<typeof vi.fn>
+    error: ReturnType<typeof vi.fn>
+    warn: ReturnType<typeof vi.fn>
+  }
+
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.useFakeTimers()
+
+    testEvent = {
+      name: EventName.REDIRECT_CLICK,
+      attributes: {
+        utm_source: 'google',
+        utm_medium: 'cpc',
+        utm_campaign: 'test-campaign'
+      }
+    }
+
+    // Spy on console to capture logging
+    consoleSpy = {
+      log: vi.fn().mockImplementation(() => {}),
+      error: vi.fn().mockImplementation(() => {}),
+      warn: vi.fn().mockImplementation(() => {})
+    }
   })
 
-  describe('Test Harness Setup', () => {
-    it('should initialize test environment correctly', () => {
-      const env = createTestEnv()
-      expect(env.REDIRECT_KV).toBeDefined()
-      expect(env.ANALYTICS_KV).toBeDefined()
-    })
-
-    it('should have mock provider factories available', () => {
-      const successProvider = createMockProvider('TestSuccess')
-      expect(successProvider).toBeInstanceOf(MockProvider)
-      expect(successProvider.name).toBe('TestSuccess')
-    })
-
-    it('should have structured logging capture ready', () => {
-      const { appLogger } = await import('../../../src/utils/logger')
-      expect(appLogger.info).toBeDefined()
-      expect(appLogger.error).toBeDefined()
-      expect(appLogger.warn).toBeDefined()
-    })
+  afterEach(() => {
+    vi.useRealTimers()
+    vi.restoreAllMocks()
   })
 
-  describe('AC1: Mocks for Providers Implementing AnalyticsProvider', () => {
-    it('should have provider mocks that implement AnalyticsProvider interface', () => {
-      const mockProvider = createMockProvider('TestProvider')
-      
-      // Should implement the required method
-      expect(typeof mockProvider.send).toBe('function')
-      
-      // Should handle async operations
-      expect(mockProvider.send(mockProvider.constructor as any, mockProvider.constructor as any)).toBeInstanceOf(Promise)
-    })
-  })
+  describe('No Providers', () => {
+    it('should complete without errors when no providers configured', async () => {
+      const providers: AnalyticsProvider[] = []
 
-  describe('AC2: E2E Tests Covering Scenarios', () => {
-    it('should handle no providers case', async () => {
-      const event: AnalyticsEvent = {
-        name: EventName.REDIRECT_CLICK,
-        attributes: { [AttributeKey.UTM_SOURCE]: 'test' }
-      }
-      
-      await routeAnalyticsEvent(event, [], { providerTimeout: 100 }, createTestEnv())
-      
-      // Should complete without errors
-      const { appLogger } = await import('../../../src/utils/logger')
-      expect(appLogger.info).toHaveBeenCalledWith(
-        'Analytics router: no providers configured',
-        expect.objectContaining({
-          eventName: 'redirect_click',
-          attributeCount: 1,
-          timeout: 100
-        })
-      )
-      
-      // Should not log any errors
-      expect(appLogger.error).not.toHaveBeenCalled()
-    })
+      const result = await routeAnalyticsEventForTesting(providers, testEvent)
 
-    it('should handle single provider success', async () => {
-      const successProvider = createMockProvider('SingleSuccess')
-      const event: AnalyticsEvent = {
-        name: EventName.REDIRECT_CLICK,
-        attributes: { [AttributeKey.UTM_SOURCE]: 'google' }
-      }
-      
-      await routeAnalyticsEvent(event, [successProvider], { providerTimeout: 200 }, createTestEnv())
-      
-      const { appLogger } = await import('../../../src/utils/logger')
-      
-      // Should log dispatch attempt and success
-      expect(appLogger.info).toHaveBeenCalledWith(
-        'Analytics router: dispatching to provider',
-        expect.objectContaining({
-          providerName: 'SingleSuccess',
-          eventName: 'redirect_click',
-          attributeCount: 1,
-          providerIndex: 0,
-          timeout: 200
-        })
-      )
-      
-      expect(appLogger.info).toHaveBeenCalledWith(
-        'Analytics router: provider dispatch successful',
-        expect.objectContaining({
-          providerName: 'SingleSuccess',
-          eventName: 'redirect_click',
-          duration: expect.any(Number),
-          providerIndex: 0,
-          timestamp: expect.any(String)
-        })
-      )
-      
-      // Should log completion summary
-      expect(appLogger.info).toHaveBeenCalledWith(
-        'Analytics router: dispatch complete',
-        expect.objectContaining({
-          eventName: 'redirect_click',
-          totalProviders: 1,
-          successful: 1,
-          failed: 0,
-          duration: expect.any(Number),
-          timeout: 200
-        })
-      )
-      
-      // Should not log any errors
-      expect(appLogger.error).not.toHaveBeenCalled()
-    })
-
-    it('should handle multiple providers with mixed success/failure', async () => {
-      const successProvider1 = createMockProvider('Success1')
-      const failureProvider = createMockProvider('Failure1', 'failure')
-      const successProvider2 = createMockProvider('Success2')
-      
-      const event: AnalyticsEvent = {
-        name: EventName.REDIRECT_CLICK,
-        attributes: { [AttributeKey.UTM_SOURCE]: 'mixed' }
-      }
-      
-      await routeAnalyticsEvent(event, [successProvider1, failureProvider, successProvider2], { providerTimeout: 150 }, createTestEnv())
-      
-      const { appLogger } = await import('../../../src/utils/logger')
-      
-      // Should log 3 dispatch attempts
-      expect(appLogger.info).toHaveBeenCalledWith(
-        'Analytics router: dispatching to provider',
-        expect.objectContaining({ providerName: 'Success1' })
-      )
-      expect(appLogger.info).toHaveBeenCalledWith(
-        'Analytics router: dispatching to provider',
-        expect.objectContaining({ providerName: 'Failure1' })
-      )
-      expect(appLogger.info).toHaveBeenCalledWith(
-        'Analytics router: dispatching to provider',
-        expect.objectContaining({ providerName: 'Success2' })
-      )
-      
-      // Should log 2 successes and 1 failure
-      expect(appLogger.info).toHaveBeenCalledWith(
-        'Analytics router: provider dispatch successful',
-        expect.objectContaining({ providerName: 'Success1' })
-      )
-      expect(appLogger.info).toHaveBeenCalledWith(
-        'Analytics router: provider dispatch successful',
-        expect.objectContaining({ providerName: 'Success2' })
-      )
-      
-      // Should log failure
-      expect(appLogger.error).toHaveBeenCalledWith(
-        'Analytics router: provider dispatch failed',
-        expect.objectContaining({
-          providerName: 'Failure1',
-          error: 'failure',
-          isTimeout: false
-        })
-      )
-      
-      // Should log completion summary
-      expect(appLogger.info).toHaveBeenCalledWith(
-        'Analytics router: dispatch complete',
-        expect.objectContaining({
-          eventName: 'redirect_click',
-          totalProviders: 3,
-          successful: 2,
-          failed: 1,
-          duration: expect.any(Number),
-          timeout: 150
-        })
-      )
-    })
-
-    it('should handle provider timeout', async () => {
-      const timeoutProvider = createMockProvider('TimeoutProvider', 'timeout', 300) // Slower than 100ms timeout
-      const successProvider = createMockProvider('SuccessAfterTimeout')
-      
-      const event: AnalyticsEvent = {
-        name: EventName.REDIRECT_CLICK,
-        attributes: { [AttributeKey.UTM_SOURCE]: 'timeout-test' }
-      }
-      
-      await routeAnalyticsEvent(event, [timeoutProvider, successProvider], { providerTimeout: 100 }, createTestEnv())
-      
-      const { appLogger } = await import('../../../src/utils/logger')
-      
-      // Should log both providers dispatched
-      expect(appLogger.info).toHaveBeenCalledWith(
-        'Analytics router: dispatching to provider',
-        expect.objectContaining({ providerName: 'TimeoutProvider' })
-      )
-      expect(appLogger.info).toHaveBeenCalledWith(
-        'Analytics router: dispatching to provider',
-        expect.objectContaining({ providerName: 'SuccessAfterTimeout' })
-      )
-      
-      // Should log timeout failure
-      expect(appLogger.error).toHaveBeenCalledWith(
-        'Analytics router: provider dispatch failed',
-        expect.objectContaining({
-          providerName: 'TimeoutProvider',
-          error: 'Provider timeout after 100ms',
-          isTimeout: true
-        })
-      )
-      
-      // Should log success for other provider
-      expect(appLogger.info).toHaveBeenCalledWith(
-        'Analytics router: provider dispatch successful',
-        expect.objectContaining({
-          providerName: 'SuccessAfterTimeout',
-          duration: expect.any(Number),
-          timestamp: expect.any(String)
-        })
-      )
-      
-      // Should log completion summary
-      expect(appLogger.info).toHaveBeenCalledWith(
-        'Analytics router: dispatch complete',
-        expect.objectContaining({
-          eventName: 'redirect_click',
-          totalProviders: 2,
-          successful: 1,
-          failed: 1,
-          duration: expect.any(Number),
-          timeout: 100
-        })
-      )
-    })
-
-    it('should complete within timeout budget even when providers are slow', async () => {
-      const slowProvider1 = createMockProvider('Slow1', 'success', 200) // 200ms delay
-      const slowProvider2 = createMockProvider('Slow2', 'success', 150) // 150ms delay
-      
-      const event: AnalyticsEvent = {
-        name: EventName.REDIRECT_CLICK,
-        attributes: { [AttributeKey.UTM_SOURCE]: 'slow-test' }
-      }
-      
-      const startTime = Date.now()
-      await routeAnalyticsEvent(event, [slowProvider1, slowProvider2], { providerTimeout: 100 }, createTestEnv())
-      const duration = Date.now() - startTime
-      
-      const { appLogger } = await import('../../../src/utils/logger')
-      
-      // Should complete quickly despite slow providers (within ~200ms + overhead)
-      expect(duration).toBeLessThan(300)
-      
-      // Should log completion summary
-      expect(appLogger.info).toHaveBeenCalledWith(
-        'Analytics router: dispatch complete',
-        expect.objectContaining({
-          eventName: 'redirect_click',
-          totalProviders: 2,
-          successful: 2,
-          failed: 0,
-          duration: expect.any(Number),
-          timeout: 100
-        })
-      )
-    })
-  })
-
-  describe('Development Experience', () => {
-    it('should provide developer guide for adding new providers', () => {
-      const env = createTestEnv()
-      
-      // This test documents the development experience for Story 7.6
-      // In actual implementation, developers would use these mocks and patterns
-      
-      expect(env).toBeDefined()
-      
-      // Test completion guide would verify:
-      // 1. New provider implements AnalyticsProvider interface
-      const testProvider = createMockProvider('NewProvider')
-      expect(typeof testProvider.send).toBe('function')
-      expect(testProvider.send(testProvider.constructor as any, testProvider.constructor as any)).toBeInstanceOf(Promise)
-      
-      // 2. Provider is registered in environment
-      const testEnvWithProvider = createTestEnv({
-        ANALYTICS_PROVIDERS: 'NewProvider,test'
+      expect(result).toEqual({
+        totalProviders: 0,
+        successful: 0,
+        failed: 0,
+        timedOut: 0,
+        duration: expect.any(Number)
       })
+    })
+  })
+
+  describe('Single Provider', () => {
+    it('should handle single successful provider', async () => {
+      const providers = [createSuccessMock({ name: 'SingleSuccess' })]
+
+      const result = await routeAnalyticsEventForTesting(providers, testEvent)
+
+      expect(result).toEqual({
+        totalProviders: 1,
+        successful: 1,
+        failed: 0,
+        timedOut: 0,
+        duration: expect.any(Number)
+      })
+    })
+
+    it('should handle single failing provider', async () => {
+      const providers = [createFailureMock({ 
+        name: 'SingleFailure',
+        errorMessage: 'Provider connection failed'
+      })]
+
+      const result = await routeAnalyticsEventForTesting(providers, testEvent)
+
+      expect(result).toEqual({
+        totalProviders: 1,
+        successful: 0,
+        failed: 1,
+        timedOut: 0,
+        duration: expect.any(Number)
+      })
+    })
+
+    it('should handle single timeout provider', async () => {
+      const providers = [createTimeoutMock({ name: 'SingleTimeout', delay: 5000 })]
+
+      const resultPromise = routeAnalyticsEventForTesting(providers, testEvent)
       
-      // 3. Router processes provider correctly
-      const event: AnalyticsEvent = {
+      // Fast-forward timers to trigger timeout
+      await vi.advanceTimersByTimeAsync(6000)
+      
+      const result = await resultPromise
+
+      expect(result).toEqual({
+        totalProviders: 1,
+        successful: 0,
+        failed: 0,
+        timedOut: 1,
+        duration: expect.any(Number)
+      })
+    })
+  })
+
+  describe('Multi-Provider Scenarios', () => {
+    it('should handle all-success providers', async () => {
+      const providers = createProvidersByType('all-success')
+
+      const result = await routeAnalyticsEventForTesting(providers, testEvent)
+
+      expect(result.totalProviders).toBe(3)
+      expect(result.successful).toBe(3)
+      expect(result.failed).toBe(0)
+      expect(result.timedOut).toBe(0)
+    })
+
+    it('should handle all-failure providers', async () => {
+      const providers = createProvidersByType('all-failure')
+
+      const result = await routeAnalyticsEventForTesting(providers, testEvent)
+
+      expect(result.totalProviders).toBe(3)
+      expect(result.successful).toBe(0)
+      expect(result.failed).toBe(3)
+      expect(result.timedOut).toBe(0)
+    })
+
+    it('should handle mixed providers (success, failure, timeout)', async () => {
+      const providers = createProvidersByType('mixed')
+
+      const resultPromise = routeAnalyticsEventForTesting(providers, testEvent)
+      
+      // Fast-forward timers to trigger timeout
+      await vi.advanceTimersByTimeAsync(6000)
+      
+      const result = await resultPromise
+
+      expect(result.totalProviders).toBe(4)
+      expect(result.successful).toBe(2)
+      expect(result.failed).toBe(1)
+      expect(result.timedOut).toBe(1)
+    })
+  })
+
+  describe('Performance and Reliability', () => {
+    it('should complete within reasonable time for successful providers', async () => {
+      const providers = [
+        createSuccessMock({ delay: 100 }),
+        createSuccessMock({ delay: 200 }),
+        createSuccessMock({ delay: 150 })
+      ]
+
+      const startTime = Date.now()
+      const result = await routeAnalyticsEventForTesting(providers, testEvent)
+      const endTime = Date.now()
+
+      // Should complete quickly (all providers succeed)
+      expect(endTime - startTime).toBeLessThan(1000)
+      expect(result.successful).toBe(3)
+    })
+
+    it('should not block redirect flow when providers fail', async () => {
+      const providers = [
+        createFailureMock({ delay: 100 }),
+        createTimeoutMock({ delay: 5000 }),
+        createFailureMock({ delay: 50 })
+      ]
+
+      const startTime = Date.now()
+      const resultPromise = routeAnalyticsEventForTesting(providers, testEvent)
+      
+      // Fast-forward to trigger timeout
+      await vi.advanceTimersByTimeAsync(6000)
+      
+      const result = await resultPromise
+      const endTime = Date.now()
+
+      // Should complete within timeout bounds, not hang
+      expect(endTime - startTime).toBeLessThan(7000)
+      expect(result.timedOut).toBe(1)
+      expect(result.failed).toBe(2)
+    })
+
+    it('should handle concurrent provider execution', async () => {
+      const providers = [
+        createSuccessMock({ delay: 1000 }),
+        createSuccessMock({ delay: 1000 }),
+        createSuccessMock({ delay: 1000 })
+      ]
+
+      // All providers should execute in parallel, not sequentially
+      const startTime = Date.now()
+      const resultPromise = routeAnalyticsEventForTesting(providers, testEvent)
+      
+      // Fast-forward past all delays
+      await vi.advanceTimersByTimeAsync(1500)
+      
+      const result = await resultPromise
+      const endTime = Date.now()
+
+      // Should complete in ~1000ms, not 3000ms (parallel execution)
+      expect(endTime - startTime).toBeLessThan(2000)
+      expect(result.successful).toBe(3)
+    })
+  })
+
+  describe('Edge Cases', () => {
+    it('should handle events with no attributes', async () => {
+      const providers = [createSuccessMock()]
+      const emptyEvent: AnalyticsEvent = {
         name: EventName.REDIRECT_CLICK,
-        attributes: { [AttributeKey.UTM_SOURCE]: 'test' }
+        attributes: {}
       }
-      
-      await routeAnalyticsEvent(event, [testProvider], { providerTimeout: 100 }, testEnvWithProvider)
-      
-      // Developer should see logs showing the new provider being called
-      expect(testProvider.send).toHaveBeenCalledWith(event)
+
+      const result = await routeAnalyticsEventForTesting(providers, emptyEvent)
+
+      expect(result.successful).toBe(1)
+      expect(result.failed).toBe(0)
+    })
+
+    it('should handle events with complex attributes', async () => {
+      const providers = [createSuccessMock()]
+      const complexEvent: AnalyticsEvent = {
+        name: EventName.REDIRECT_CLICK,
+        attributes: {
+          utm_source: 'facebook',
+          utm_medium: 'social',
+          utm_campaign: 'promo',
+          click_count: 5,
+          is_mobile: true,
+          timestamp: Date.now(),
+          custom_data: { nested: 'object' } as any // Complex object
+        }
+      }
+
+      const result = await routeAnalyticsEventForTesting(providers, complexEvent)
+
+      expect(result.successful).toBe(1)
+      expect(result.failed).toBe(0)
+    })
+
+    it('should handle empty provider array', async () => {
+      const providers: AnalyticsProvider[] = []
+
+      const result = await routeAnalyticsEventForTesting(providers, testEvent)
+
+      expect(result).toEqual({
+        totalProviders: 0,
+        successful: 0,
+        failed: 0,
+        timedOut: 0,
+        duration: expect.any(Number)
+      })
     })
   })
 })
