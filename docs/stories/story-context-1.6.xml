@@ -1,0 +1,178 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>6</storyId>
+    <title>Environment Configuration Management</title>
+    <status>Draft</status>
+    <generatedAt>2025-10-26</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-1.6.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>centralized environment configuration loading and validation</iWant>
+    <soThat>all environment variables are properly validated at startup and easy to manage across development and production environments</soThat>
+    <tasks>
+      <task id="1" ac="1,2,3">Create lib/config.ts module with env validation functions</task>
+      <task id="2" ac="4">Update src/index.ts with startup validation</task>
+      <task id="3" ac="5">Create .env.example file</task>
+      <task id="4" ac="6">Update README.md with environment configuration documentation</task>
+      <task id="5" ac="7">Write unit tests for config module</task>
+      <task id="6" ac="8">Write integration test for startup validation</task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1">Create lib/config.ts module with exported functions: loadConfig(env: Env), validateRequiredEnvVars(env: Env), getEnvValue&lt;T&gt;(key: string, defaultValue?: T)</criterion>
+    <criterion id="2">Define required vs optional environment variables. Required: None for MVP (all env vars have sensible defaults or are optional). Optional: ALLOWED_DOMAINS, ENABLE_TRACKING, DEFAULT_REDIRECT_URL, ANALYTICS_PROVIDERS, GA4_MEASUREMENT_ID, GA4_API_SECRET, ANALYTICS_TIMEOUT_MS</criterion>
+    <criterion id="3">Config module includes validation logic: If ANALYTICS_PROVIDERS includes "ga4", validate that GA4_MEASUREMENT_ID and GA4_API_SECRET are set. If ALLOWED_DOMAINS is set, validate format (comma-separated domains). If ANALYTICS_TIMEOUT_MS is set, validate it's a positive number</criterion>
+    <criterion id="4">Update src/index.ts to call validateRequiredEnvVars() on startup (catches config errors early)</criterion>
+    <criterion id="5">Create .env.example file documenting all available environment variables with descriptions and example values</criterion>
+    <criterion id="6">Update README.md with "Environment Configuration" section: List all environment variables, Document required vs optional, Provide setup instructions for local development, Link to .env.example</criterion>
+    <criterion id="7">Unit tests cover: Valid configuration loads successfully, Missing required vars throw descriptive errors, Invalid format vars throw descriptive errors, Default values work correctly, Type safety of getEnvValue&lt;T&gt;()</criterion>
+    <criterion id="8">Integration test verifies startup validation catches misconfiguration</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Product Requirements Document</title>
+        <section>Section 4.1: Environment Configuration Management</section>
+        <snippet>Configuration Strategy: Local Development uses .env file (gitignored), Production uses wrangler.toml environment sections and Cloudflare dashboard secrets. Startup validation ensures required env vars are set before processing requests. Documents all environment variables with Required/Default/Description table.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Decision Architecture</title>
+        <section>Environment Config</section>
+        <snippet>Type-Safe Wrangler Bindings: TypeScript type safety for env vars, clear public/secret separation, multi-environment support (dev/staging/prod)</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Decision Architecture</title>
+        <section>Project Structure</section>
+        <snippet>src/lib/ directory contains shared modules for kv-store, validation, tracking, and errors. Entry point is src/index.ts with Hono app initialization.</snippet>
+      </doc>
+      <doc>
+        <path>cloudflareRedirect/.env.example</path>
+        <title>Environment Variable Template</title>
+        <section>Complete variable documentation</section>
+        <snippet>Already created by PM agent with comprehensive documentation for all env vars: ALLOWED_DOMAINS, ENABLE_TRACKING, DEFAULT_REDIRECT_URL, ANALYTICS_PROVIDERS, GA4_MEASUREMENT_ID, GA4_API_SECRET, ANALYTICS_TIMEOUT_MS. Includes section headers and usage notes.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>cloudflareRedirect/src/index.ts</path>
+        <kind>entry-point</kind>
+        <symbol>app</symbol>
+        <lines>1-52</lines>
+        <reason>Main application entry point where validateRequiredEnvVars() should be called on startup. Currently initializes Hono app, mounts routes, and sets up global error handler.</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/lib/errors.ts</path>
+        <kind>error-handling</kind>
+        <symbol>RedirectError</symbol>
+        <lines>1-15</lines>
+        <reason>Custom error class that can be used for throwing descriptive validation errors. Supports statusCode and code properties for proper HTTP error responses.</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/types/env.ts</path>
+        <kind>type-definition</kind>
+        <symbol>Env</symbol>
+        <lines>1-12</lines>
+        <reason>Defines Env interface with all environment variable types. Already includes all variables that need validation: ALLOWED_DOMAINS, ENABLE_TRACKING, DEFAULT_REDIRECT_URL, ANALYTICS_PROVIDERS, GA4_MEASUREMENT_ID, GA4_API_SECRET, ANALYTICS_TIMEOUT_MS, plus KV namespace bindings.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <typescript>5.9.0</typescript>
+      <hono>4.4.0</hono>
+      <zod>4.1.0</zod>
+      <vitest>4.0.3</vitest>
+      <miniflare>3.20250718.2</miniflare>
+      <wrangler>4.45.0</wrangler>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>TypeScript strict mode enabled - all code must pass strict type checking</constraint>
+    <constraint>Cloudflare Workers environment - no Node.js APIs, use Workers-compatible patterns only</constraint>
+    <constraint>Type-safe environment variable access through Env interface defined in src/types/env.ts</constraint>
+    <constraint>Validation errors must use RedirectError class from lib/errors.ts for consistent error handling</constraint>
+    <constraint>All env vars are optional by default - no hard requirements for MVP deployment</constraint>
+    <constraint>Conditional validation: GA4 credentials only required when ANALYTICS_PROVIDERS includes "ga4"</constraint>
+    <constraint>Startup validation must fail fast - throw errors during app initialization, not at runtime</constraint>
+    <constraint>Environment configuration must support multi-environment: dev/staging/production via wrangler.toml</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>Env</name>
+      <kind>TypeScript Interface</kind>
+      <signature>
+        export interface Env {
+          REDIRECT_KV: KVNamespace
+          ANALYTICS_KV: KVNamespace
+          ALLOWED_DOMAINS?: string
+          ENABLE_TRACKING?: string
+          DEFAULT_REDIRECT_URL?: string
+          ANALYTICS_PROVIDERS?: string
+          GA4_MEASUREMENT_ID?: string
+          GA4_API_SECRET?: string
+          ANALYTICS_TIMEOUT_MS?: string
+        }
+      </signature>
+      <path>cloudflareRedirect/src/types/env.ts</path>
+    </interface>
+    <interface>
+      <name>RedirectError</name>
+      <kind>Error Class</kind>
+      <signature>
+        class RedirectError extends Error {
+          public readonly statusCode: number
+          public readonly code: string
+          constructor(message: string, statusCode?: number, code?: string)
+        }
+      </signature>
+      <path>cloudflareRedirect/src/lib/errors.ts</path>
+    </interface>
+    <interface>
+      <name>validateRequiredEnvVars</name>
+      <kind>Function (to be created)</kind>
+      <signature>export function validateRequiredEnvVars(env: Env): void</signature>
+      <path>cloudflareRedirect/src/lib/config.ts</path>
+    </interface>
+    <interface>
+      <name>loadConfig</name>
+      <kind>Function (to be created)</kind>
+      <signature>export function loadConfig(env: Env): ConfigObject</signature>
+      <path>cloudflareRedirect/src/lib/config.ts</path>
+    </interface>
+    <interface>
+      <name>getEnvValue</name>
+      <kind>Generic Function (to be created)</kind>
+      <signature>export function getEnvValue&lt;T&gt;(key: string, defaultValue?: T): T</signature>
+      <path>cloudflareRedirect/src/lib/config.ts</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Use Vitest v4.0+ for all testing with Miniflare for accurate Cloudflare Workers runtime emulation. Unit tests go in test/lib/, integration tests in test/integration/. Test files follow pattern *.test.ts. Use descriptive test names and organize with describe blocks. Mock external dependencies using Vitest mocking utilities.</standards>
+    <locations>
+      <location>test/lib/config.test.ts</location>
+      <location>test/integration/startup-validation.test.ts</location>
+    </locations>
+    <ideas>
+      <idea ac="1,7">Unit test for loadConfig() that verifies it returns a config object with all environment values properly parsed and typed</idea>
+      <idea ac="1,7">Unit test for validateRequiredEnvVars() with valid config - should not throw</idea>
+      <idea ac="3,7">Unit test for validateRequiredEnvVars() when ANALYTICS_PROVIDERS includes "ga4" but GA4_MEASUREMENT_ID is missing - should throw descriptive error</idea>
+      <idea ac="3,7">Unit test for validateRequiredEnvVars() when ANALYTICS_PROVIDERS includes "ga4" but GA4_API_SECRET is missing - should throw descriptive error</idea>
+      <idea ac="3,7">Unit test for validateRequiredEnvVars() when ALLOWED_DOMAINS has invalid format (not comma-separated) - should throw descriptive error</idea>
+      <idea ac="3,7">Unit test for validateRequiredEnvVars() when ANALYTICS_TIMEOUT_MS is not a positive number - should throw descriptive error</idea>
+      <idea ac="1,7">Unit test for getEnvValue&lt;T&gt;() with various types (string, number, boolean) to verify type safety</idea>
+      <idea ac="7">Unit test for getEnvValue&lt;T&gt;() with default values when env var is undefined</idea>
+      <idea ac="8">Integration test that initializes app with invalid config (missing GA4 credentials when provider enabled) and verifies startup fails with descriptive error</idea>
+      <idea ac="8">Integration test that initializes app with valid config and verifies startup succeeds</idea>
+    </ideas>
+  </tests>
+</story-context>

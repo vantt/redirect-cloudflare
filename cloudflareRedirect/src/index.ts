@@ -3,8 +3,33 @@ import redirectApp from './routes/redirect'
 import bootstrapApp from './routes/bootstrap'
 import { RedirectError } from './lib/errors'
 import { appLogger } from './utils/logger'
+import { validateRequiredEnvVars } from './lib/config'
 
 const app = new Hono()
+
+// Validate environment configuration on startup (first middleware)
+// This ensures all required env vars are properly configured before processing requests
+app.use('*', async (c, next) => {
+  // Only validate if env is available (skip in test environments where env might not be set)
+  if (c.env) {
+    try {
+      validateRequiredEnvVars(c.env)
+    } catch (error) {
+      if (error instanceof RedirectError) {
+        appLogger.error('Environment configuration validation failed', {
+          error: error.message,
+          code: error.code
+        })
+        return c.json({
+          error: error.message,
+          code: error.code
+        }, error.statusCode as 500)
+      }
+      throw error
+    }
+  }
+  await next()
+})
 
 // Custom logger middleware since @hono/logger doesn't exist in Workers environment
 // Note: Using custom implementation instead of Hono's logger due to Workers constraints
