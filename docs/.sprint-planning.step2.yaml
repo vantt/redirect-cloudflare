@@ -1,0 +1,11 @@
+workflow: sprint-planning
+step: 2
+status: completed
+baseline_structure:
+  epic_entry_status_default: backlog
+  story_entry_status_default: backlog
+  retrospective_entry_status_default: optional
+strategy: |
+  Existing status file detected; will preserve advanced statuses and
+  never downgrade. Baseline structure inferred from epics will be used
+  only for missing items.

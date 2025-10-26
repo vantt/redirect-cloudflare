@@ -1,0 +1,13 @@
+workflow: sprint-planning
+step: 3
+status: completed
+detection_summary:
+  epics_contexted: 3
+  stories_drafted: 1
+  stories_ready_for_dev: 2
+  stories_in_progress: 0
+  stories_done: 20
+preservation_rule_applied: true
+sources:
+  - docs/sprint-status.yaml
+  - docs/stories/

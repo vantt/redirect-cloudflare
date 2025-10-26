@@ -1,0 +1,16 @@
+workflow: sprint-planning
+step: 1
+status: completed
+epics_location: docs
+epics_pattern: "epic*.md | epics.md"
+found_files:
+  - docs/epic-2-technical-architecture.md
+  - docs/epics.md
+parse_summary:
+  source: docs/epics.md
+  epic_headers_found: 2
+  story_headers_found: 23
+notes: |
+  Parsed epics and stories from docs/epics.md. Non-standard file
+  docs/epic-2-technical-architecture.md was discovered by pattern but
+  excluded from parsing to avoid mixing with epic inventory.

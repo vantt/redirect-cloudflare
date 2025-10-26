@@ -1,0 +1,34 @@
+workflow: retrospective
+step: 2
+status: completed
+completed_epic: 7
+next_epic: 8
+sources:
+  - docs/tech-spec-epic-8.md
+  - docs/sprint-status.yaml
+summary:
+  next_epic_status: contexted
+  planned_stories:
+    - id: 8-1
+      title: GA4 Measurement Protocol payload builder
+      status: ready-for-dev
+    - id: 8-2
+      title: GA4 Measurement Protocol HTTP integration
+      status: drafted
+    - id: 8-3
+      title: Integrated GA4 in redirect flow
+      status: ready-for-dev
+analysis:
+  dependencies_on_completed_epic: |
+    Epic 8 builds on Epic 7’s analytics abstraction (provider interface,
+    router, and registry). The GA4 provider will plug into the existing
+    fan-out and timeout policy without altering redirect flow.
+  preparation_gaps:
+    - GA4 credentials available via environment: GA4_MEASUREMENT_ID, GA4_API_SECRET
+    - Finalize and validate GA4 payload mapping from TrackingParams
+    - Integration tests with Miniflare for `/r` including provider timeouts
+    - Structured logging fields aligned with observability schema
+  risks_unknowns:
+    - External GA4 API variability/latency; ensure 2s timeout honored
+    - Payload schema drift; keep mapping isolated and test-covered
+    - Rate limiting or abuse controls if event volume spikes
