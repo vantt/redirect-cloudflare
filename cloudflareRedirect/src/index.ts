@@ -4,6 +4,7 @@ import bootstrapApp from './routes/bootstrap'
 import { RedirectError } from './lib/errors'
 import { appLogger } from './utils/logger'
 import { validateRequiredEnvVars } from './lib/config'
+import type { Env } from './types/env'
 
 const app = new Hono()
 
@@ -11,9 +12,9 @@ const app = new Hono()
 // This ensures all required env vars are properly configured before processing requests
 app.use('*', async (c, next) => {
   // Only validate if env is available (skip in test environments where env might not be set)
-  if (c.env) {
+  if (c.env && typeof c.env === 'object' && Object.keys(c.env).length > 0) {
     try {
-      validateRequiredEnvVars(c.env)
+      validateRequiredEnvVars(c.env as Env)
     } catch (error) {
       if (error instanceof RedirectError) {
         appLogger.error('Environment configuration validation failed', {

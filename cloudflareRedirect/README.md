@@ -17,9 +17,55 @@ npm run dev
 ```
 
 ## Testing
-```
+
+```bash
 npm test
 ```
+
+### Testing Environment
+
+This project includes comprehensive test environment fixtures and helpers to ensure consistent testing across unit and integration tests.
+
+#### Test Fixtures Location
+
+- **Environment fixtures**: `test/fixtures/env.ts` - Shared test environment presets
+- **Test helpers**: `test/helpers/config.ts` - Convenience wrappers around fixtures
+- **Example usage**: `test/fixtures/env.test.ts` - Living documentation for fixture patterns
+
+#### Common Test Patterns
+
+**Basic test environment:**
+```typescript
+import { createMockEnv } from './test/helpers/config.ts'
+
+const env = createMockEnv()
+// Returns minimal Env with safe defaults
+```
+
+**GA4-enabled test environment:**
+```typescript
+import { testEnvWithGA4 } from './test/fixtures/env.ts'
+
+const env = testEnvWithGA4
+// Pre-configured with GA4 credentials for analytics testing
+```
+
+**Custom test environment:**
+```typescript
+import { createMockEnv } from './test/helpers/config.ts'
+
+const env = createMockEnv({
+  ENABLE_TRACKING: 'true',
+  ANALYTICS_PROVIDERS: 'ga4',
+  GA4_MEASUREMENT_ID: 'G-CUSTOM123'
+})
+```
+
+#### Test Environment Documentation
+
+See [`.env.test`](./.env.test) for detailed documentation of test environment variables and usage examples. This file serves as a reference for creating test environments with different configurations.
+
+For production environment configuration guidance, see **Story 1.6: Environment Configuration Management** in the project documentation.
 
 ## Deploy
 ```
