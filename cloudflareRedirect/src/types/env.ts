@@ -8,6 +8,7 @@ export interface Env {
   GA4_MEASUREMENT_ID?: string // Google Analytics 4 Measurement ID
   GA4_API_SECRET?: string // Google Analytics 4 API Secret
   MIXPANEL_TOKEN?: string // Mixpanel API Token
+  ANALYTICS_TIMEOUT_MS?: string // Per-provider timeout in milliseconds (default: "2000")
 }
 
 export interface RedirectData {

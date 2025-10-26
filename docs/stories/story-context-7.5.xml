@@ -1,0 +1,91 @@
+﻿<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>7</epicId>
+    <storyId>5</storyId>
+    <title>Timeout + Reliability Policy (Non-Blocking)</title>
+    <status>drafted</status>
+    <generatedAt>2025-10-26</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-7.5.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>reliability engineer</asA>
+    <iWant>per-provider timeouts and non-blocking guarantees</iWant>
+    <soThat>analytics never delays or blocks the redirect response</soThat>
+    <tasks>
+      - Integrate per-provider timeout (default 2s) into router around provider.send(event)
+      - Isolate errors/timeouts with try/catch; never throw to caller
+      - Ensure router returns promptly even if a provider hangs
+      - Emit structured logs for attempt/success/failure/timeout with duration
+      - Unit tests: timeout fired; hung provider isolated; router completes under budget
+      - Optional: support env ANALYTICS_TIMEOUT_MS with safe default
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. Apply default per-provider timeout (e.g., 2s) via AbortSignal.timeout() or equivalent
+    2. Router enforces overall return within budget regardless of provider hangs
+    3. Failures/Timeouts logged with structured logs; no throws to request path
+    4. Tests: timeout fired; hung provider isolated; router returns promptly
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics.md" title="Epics" section="Story 7.5" snippet="Per-provider timeout, non-blocking router, structured logging"/>
+      <doc path="docs/architecture.md" title="Architecture" section="Analytics Abstraction (Epic 7)" snippet="Router fan-out with per-provider timeout and isolation"/>
+      <doc path="docs/architecture.md" title="Architecture" section="Sequence Diagram (ASCII)" snippet="/r builds event, registry loads providers, router fan-out with per-provider timeout"/>
+    </docs>
+    <code>
+      <artifact>
+        <path>cloudflareRedirect/src/lib/analytics/router.ts</path>
+        <kind>library</kind>
+        <symbol>routeAnalyticsEvent with timeout policy</symbol>
+        <lines>1-220</lines>
+        <reason>Integrates timeout and isolation into dispatch loop</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/lib/analytics/provider.ts</path>
+        <kind>library</kind>
+        <symbol>AnalyticsProvider</symbol>
+        <lines>1-120</lines>
+        <reason>Contract invoked by router</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/lib/analytics/types.ts</path>
+        <kind>library</kind>
+        <symbol>AnalyticsEvent</symbol>
+        <lines>1-120</lines>
+        <reason>Neutral event used by router</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <dependency path="package.json" reason="Vitest for unit tests; structured logging utilities"/>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="non-blocking" description="Router must not delay redirect response; adhere to latency budget"/>
+    <constraint type="timeout" description="Per-provider timeout default 2s; configurable via env"/>
+    <constraint type="isolation" description="One provider's failure/timeout must not affect others or throw outward"/>
+    <constraint type="logging" description="Emit structured logs (attempt/success/failure/timeout) without PII"/>
+  </constraints>
+
+  <interfaces>
+    <interface name="routeAnalyticsEvent" location="lib/analytics/router.ts" signature="(event: AnalyticsEvent, providers: AnalyticsProvider[]) => Promise&lt;void&gt;"/>
+  </interfaces>
+
+  <tests>
+    <standards>
+      <standard tool="Vitest v4.0+" purpose="Unit testing"/>
+    </standards>
+    <locations>
+      <location path="cloudflareRedirect/test/lib/analytics/router.timeout.test.ts" description="Timeout and non-blocking behavior under mixed outcomes"/>
+    </locations>
+    <ideas>
+      <test-idea type="unit" description="Timeout triggers within expected window; router returns promptly"/>
+      <test-idea type="unit" description="Hung provider isolated; other providers still execute"/>
+      <test-idea type="unit" description="Logs attempt/success/failure/timeout with durations"/>
+    </ideas>
+  </tests>
+</story-context>

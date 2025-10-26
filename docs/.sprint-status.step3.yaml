@@ -1,40 +1,4 @@
-﻿# generated: 2025-10-26 11:16:54
-# project: cloudflareRedirect
-# project_key: cloudflareRedirect
-# tracking_system: file-system
-# story_location: {project-root}/docs/stories
-
-# STATUS DEFINITIONS:
-# ==================
-# Epic Status:
-#   - backlog: Epic exists in epic file but not contexted
-#   - contexted: Epic tech context created (required before drafting stories)
-#
-# Story Status:
-#   - backlog: Story only exists in epic file
-#   - drafted: Story file created in stories folder
-#   - ready-for-dev: Draft approved and story context created
-#   - in-progress: Developer actively working on implementation
-#   - review: Under SM review (via review-story workflow)
-#   - done: Story completed
-#
-# Retrospective Status:
-#   - optional: Can be completed but not required
-#   - completed: Retrospective has been done
-#
-# WORKFLOW NOTES:
-# ===============
-# - Epics should be 'contexted' before stories can be 'drafted'
-# - Stories can be worked in parallel if team capacity allows
-# - SM typically drafts next story after previous one is 'done' to incorporate learnings
-# - Dev moves story to 'review', SM reviews, then Dev moves to 'done'
-
-generated: 2025-10-26 11:16:54
-project: cloudflareRedirect
-project_key: cloudflareRedirect
-tracking_system: file-system
-story_location: "{project-root}/docs/stories"
-development_status:
+﻿development_status:
   epic-1: done
   1-1-project-initialization-with-hono-framework: done
   1-2-kv-data-structure-and-crud-operations: done
@@ -71,9 +35,9 @@ development_status:
   7-2-analytics-provider-interface-and-neutral-event-model: done
   7-3-analytics-router-multi-service-fan-out: done
   7-4-provider-registry-feature-flags-env-config: done
-  7-5-timeout-reliability-policy-non-blocking: done
+  7-5-timeout-reliability-policy-non-blocking: ready-for-dev
   7-6-observability-structured-logs-basic-counters: backlog
-  7-7-test-harness-provider-mocks: drafted
+  7-7-test-harness-provider-mocks: backlog
   epic-7-retrospective: optional
 
   epic-8: backlog
@@ -81,4 +45,3 @@ development_status:
   8-2-ga4-measurement-protocol-http-integration: backlog
   8-3-integrated-ga4-in-redirect-flow: backlog
   epic-8-retrospective: optional
-
