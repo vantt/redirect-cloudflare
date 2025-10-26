@@ -1,5 +1,4 @@
 import { Hono } from 'hono'
-import { RedirectError } from '../lib/errors'
 import type { Env } from '../types/env'
 
 const app = new Hono<{ Bindings: Env }>()
@@ -9,43 +8,21 @@ const app = new Hono<{ Bindings: Env }>()
  * Serves minimal HTML that detects fragment-based URLs and upgrades to server-side redirects
  */
 app.get('/', (c) => {
-  // Check if user has disabled redirects via isNoRedirect parameter
-  const isNoRedirect = c.req.query('isNoRedirect') === '1'
-  
-  // If there's a hash, serve HTML with JavaScript upgrade script
-  if (c.req.url.includes('#')) {
-    const html = generateBootstrapHTML(c.req.url, isNoRedirect)
-    return c.html(html, {
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-      }
-    })
-  }
-  
-  // If no hash, redirect to default URL or show error if not configured
-  const defaultUrl = c.env.DEFAULT_REDIRECT_URL
-  
-  if (!defaultUrl) {
-    throw new RedirectError(
-      'No destination URL provided and no default redirect configured',
-      400,
-      'MISSING_DESTINATION'
-    )
-  }
-  
-  return c.redirect(defaultUrl, 302)
+  const html = generateBootstrapHTML()
+  return c.html(html, {
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    }
+  })
 })
 
 /**
  * Generate bootstrap HTML with inline JavaScript for URL upgrade
  */
-function generateBootstrapHTML(requestUrl: string, isNoRedirect: boolean): string {
-  // Extract the hash portion for the upgrade script
-  const urlWithHash = new URL(requestUrl)
-  const hash = urlWithHash.hash || ''
-  
+function generateBootstrapHTML(): string {
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -54,34 +31,24 @@ function generateBootstrapHTML(requestUrl: string, isNoRedirect: boolean): strin
     <meta name="robots" content="noindex, nofollow">
     <title>Redirecting...</title>
     <script>
-        // Minimal bootstrap script to upgrade legacy fragment URLs to server-side redirects
-        (function() {
-            var currentHash = ${JSON.stringify(hash)};
-            var isNoRedirect = ${isNoRedirect ? 'true' : 'false'};
-            
-            if (currentHash && currentHash.length > 1) {
-                // Extract destination from hash (remove # prefix)
-                var destination = currentHash.substring(1);
-                
-                // URL encode the destination for safe transport
-                var encodedDestination = encodeURIComponent(destination);
-                
-                // Build the upgrade URL with original parameters preserved
-                var upgradeUrl = '/r?to=' + encodedDestination;
-                
-                // Add debug parameter if isNoRedirect was set
-                if (isNoRedirect) {
-                    upgradeUrl += '&n=1';
-                }
-                
-                // Upgrade to server-side redirect
-                window.location.replace(upgradeUrl);
-            } else {
-                // No hash found - this should be handled by the server redirect
-                document.body.innerHTML = '<h1>Redirecting...</h1><p>Please wait while we redirect you.</p>';
-            }
-        })();
-    </script>
+    // get redirect url (part after #)
+    var path = window.location.href;
+    var hashInd = path.indexOf("#");
+    var redirectUrl = path.slice(hashInd + 1);
+
+    // get isNoRedirect value (0 or 1): https://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript/901144#901144
+    var queryParams = new URLSearchParams(window.location.search);
+    var isNoRedirect = queryParams.get("isNoRedirect");
+    var isRedirect = !Boolean(parseInt(isNoRedirect));
+
+    setTimeout(function () {
+      var newLocation = '/r?to=' + redirectUrl;
+
+      if (isRedirect && newLocation !== "") {
+        window.location.href = newLocation;
+      }
+    }, 200);
+  </script>
     <noscript>
         <div style="font-family: Arial, sans-serif; text-align: center; margin-top: 50px;">
             <h1>JavaScript Required</h1>
