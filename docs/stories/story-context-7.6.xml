@@ -1,0 +1,97 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>7</epicId>
+    <storyId>6</storyId>
+    <title>Observability (Structured Logs + Basic Counters)</title>
+    <status>drafted</status>
+    <generatedAt>2025-10-26</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-7.6.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>DevOps engineer</asA>
+    <iWant>structured logs and lightweight counters for analytics routing</iWant>
+    <soThat>we can monitor success/failure rates and timing without PII</soThat>
+    <tasks>
+      - Define log schema (attempt/success/failure/timeout): event_name, provider, status, duration_ms, timestamp_iso
+      - Add logging hooks in src/lib/analytics/router.ts for per-provider attempt/result
+      - Ensure no PII (log keys only, not attribute values); schema consistent across providers
+      - Optional counters interface for future metrics sink
+      - Unit tests to verify log shape and absence of PII
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. Emit JSON logs for dispatch attempt, success, failure, and duration per provider
+    2. Ensure no PII; redact/omit sensitive fields; consistent schema across providers
+    3. Optional counters/metrics placeholders for future integration
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics.md" title="Epics" section="Story 7.6" snippet="Structured logs for router; no PII; counters optional"/>
+      <doc path="docs/architecture.md" title="Architecture" section="Analytics Abstraction (Epic 7)" snippet="Router logging responsibilities and non-blocking goals"/>
+      <doc path="docs/architecture.md" title="Architecture" section="Sequence Diagram (ASCII)" snippet="Per-provider fan-out; log attempt/success/failure/duration"/>
+      <doc path="docs/prd.md" title="PRD" section="FR2/FR3/NFR5" snippet="Pre-redirect tracking, GA4 integration, reliability requirements (no data loss)"/>
+      <doc path="docs/tech-spec-epic-7.md" title="Tech Spec Epic 7" section="Observability & NFR" snippet="Structured logging schema, timeout policy, non-blocking analytics routing"/>
+    </docs>
+    <code>
+      <artifact>
+        <path>cloudflareRedirect/src/lib/analytics/router.ts</path>
+        <kind>library</kind>
+        <symbol>routeAnalyticsEvent logging hooks</symbol>
+        <lines>1-220</lines>
+        <reason>Inject structured logs for provider dispatch lifecycle</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/utils/logger.ts</path>
+        <kind>library</kind>
+        <symbol>appLogger</symbol>
+        <lines>1-160</lines>
+        <reason>Structured logging utility (Story 5.2)</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/routes/redirect.ts</path>
+        <kind>route</kind>
+        <symbol>GET /r handler</symbol>
+        <lines>1-200</lines>
+        <reason>Integrates analytics routing before issuing 301/302 redirect</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/lib/tracking.ts</path>
+        <kind>library</kind>
+        <symbol>trackRedirect / extractTrackingParams</symbol>
+        <lines>1-220</lines>
+        <reason>Builds neutral event from TrackingParams and bridges to providers (Epic 7 foundation, Epic 8 GA4)</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <dependency path="package.json" reason="Vitest for tests; logging deps if any"/>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="privacy" description="Do not log PII; exclude attribute values"/>
+    <constraint type="consistency" description="Use consistent JSON schema across providers"/>
+    <constraint type="non-blocking" description="Logging must not block router or redirect flow"/>
+  </constraints>
+
+  <interfaces>
+    <interface name="LogEntry" location="utils/logger.ts" signature="{ event_name, provider, status, duration_ms, timestamp_iso }"/>
+  </interfaces>
+
+  <tests>
+    <standards>
+      <standard tool="Vitest v4.0+" purpose="Unit testing"/>
+    </standards>
+    <locations>
+      <location path="cloudflareRedirect/test/lib/analytics/router.observe.test.ts" description="Verify log entries schema and no PII"/>
+    </locations>
+    <ideas>
+      <test-idea type="unit" description="Logs attempt before provider call and result after"/>
+      <test-idea type="unit" description="No attribute values appear in logs (keys only)"/>
+      <test-idea type="unit" description="Durations captured for success/failure/timeout"/>
+    </ideas>
+  </tests>
+</story-context>

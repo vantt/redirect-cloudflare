@@ -72,12 +72,12 @@ development_status:
   7-3-analytics-router-multi-service-fan-out: done
   7-4-provider-registry-feature-flags-env-config: done
   7-5-timeout-reliability-policy-non-blocking: done
-  7-6-observability-structured-logs-basic-counters: backlog
-  7-7-test-harness-provider-mocks: drafted
+  7-6-observability-structured-logs-basic-counters: done
+  7-7-test-harness-provider-mocks: ready-for-dev
   epic-7-retrospective: optional
 
-  epic-8: backlog
-  8-1-ga4-measurement-protocol-payload-builder: backlog
+  epic-8: contexted
+  8-1-ga4-measurement-protocol-payload-builder: drafted
   8-2-ga4-measurement-protocol-http-integration: backlog
   8-3-integrated-ga4-in-redirect-flow: backlog
   epic-8-retrospective: optional
