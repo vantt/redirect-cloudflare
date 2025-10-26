@@ -1,0 +1,85 @@
+﻿<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>7</epicId>
+    <storyId>2</storyId>
+    <title>Analytics Provider Interface and Neutral Event Model</title>
+    <status>drafted</status>
+    <generatedAt>2025-10-26</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-7.2.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>system architect</asA>
+    <iWant>a vendor-neutral AnalyticsEvent model and AnalyticsProvider interface</iWant>
+    <soThat>business events are decoupled from vendor payloads and easy to extend</soThat>
+    <tasks>
+      - Create src/lib/analytics/types.ts with AnalyticsEvent and AnalyticsAttributes
+      - Create src/lib/analytics/provider.ts with AnalyticsProvider interface
+      - Document neutral taxonomy: redirect_click + attribute mapping
+      - Provide example adapter mapping neutral event to vendor payload
+      - Unit tests for type contracts and example mapping
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. Define AnalyticsEvent (name + attributes map) and AnalyticsProvider interface (send(event): Promise<void>)
+    2. Minimal taxonomy documented: redirect_click with mapped attributes (utm_source, utm_medium, utm_campaign, utm_content, utm_term, xptdk, ref)
+    3. TypeScript interfaces exported in src/lib/analytics/types.ts and src/lib/analytics/provider.ts
+    4. Examples show provider adapter mapping neutral event to vendor payload
+    5. Unit tests validate type contracts and example mapping (no network)
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics.md" title="Epics" section="Story 7.2" snippet="Define vendor-neutral event and provider interface with taxonomy and examples"/>
+      <doc path="docs/architecture.md" title="Architecture" section="Analytics Abstraction (Epic 7)" snippet="Skeleton paths and TODOs for types/provider/router/registry"/>
+      <doc path="docs/architecture.md" title="Architecture" section="Sequence Diagram (ASCII)" snippet="Event built in /r, providers loaded, router fan-out with per-provider timeout"/>
+    </docs>
+    <code>
+      <artifact>
+        <path>cloudflareRedirect/src/lib/analytics/types.ts</path>
+        <kind>library</kind>
+        <symbol>AnalyticsEvent, AnalyticsAttributes</symbol>
+        <lines>1-120</lines>
+        <reason>Neutral event model definition</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/lib/analytics/provider.ts</path>
+        <kind>library</kind>
+        <symbol>AnalyticsProvider</symbol>
+        <lines>1-120</lines>
+        <reason>Provider abstraction for multi-service routing</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <dependency path="package.json" reason="TypeScript types and test tooling (Vitest)"/>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="abstraction" description="No vendor-specific fields leak into neutral types"/>
+    <constraint type="nfr" description="No network calls in this story; pure type/interface design"/>
+    <constraint type="naming" description="Use lower_snake_case attribute keys for cross-provider mapping"/>
+  </constraints>
+
+  <interfaces>
+    <interface name="AnalyticsAttributes" location="lib/analytics/types.ts" signature="Record&lt;string, string | number | boolean&gt;"/>
+    <interface name="AnalyticsEvent" location="lib/analytics/types.ts" signature="{ name: string; attributes: AnalyticsAttributes }"/>
+    <interface name="AnalyticsProvider" location="lib/analytics/provider.ts" signature="send(event: AnalyticsEvent) returns Promise&lt;void&gt;"/>
+  </interfaces>
+
+  <tests>
+    <standards>
+      <standard tool="Vitest v4.0+" purpose="Unit testing"/>
+    </standards>
+    <locations>
+      <location path="cloudflareRedirect/test/lib/analytics/types.test.ts" description="Type contracts for AnalyticsEvent and AnalyticsProvider"/>
+      <location path="cloudflareRedirect/test/lib/analytics/provider-adapter.example.test.ts" description="Example mapping neutral event to vendor payload (no network)"/>
+    </locations>
+    <ideas>
+      <test-idea type="unit" description="TypeScript enforces required fields on AnalyticsEvent"/>
+      <test-idea type="unit" description="Provider adapter transforms attributes correctly to vendor payload shape"/>
+    </ideas>
+  </tests>
+</story-context>

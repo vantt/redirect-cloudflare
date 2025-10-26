@@ -13,20 +13,49 @@
  */
 
 import { appLogger } from '../utils/logger'
+import { TrackingParams } from '../types/env'
 
 /**
  * Extract tracking parameters from destination URL
- * TODO: Implement actual UTM and platform-specific parameter extraction in Epic 7.1
  * @param destinationUrl - The URL to extract tracking parameters from
- * @returns Empty object for now, will contain tracking parameters in Epic 7
+ * @returns TrackingParams object with extracted parameters (undefined for missing ones)
  */
-export function extractTrackingParams(destinationUrl: string): Record<string, string> {
-  // TODO: Epic 7.1 - Extract UTM parameters: utm_source, utm_medium, utm_campaign, utm_content, utm_term
-  // TODO: Epic 7.1 - Extract platform-specific params: xptdk (Shopee), ref (Facebook)
-  // TODO: Epic 7.1 - Handle URL parsing errors gracefully
-  
-  // Placeholder implementation - returns empty object
-  return {}
+export function extractTrackingParams(destinationUrl: string): TrackingParams {
+  try {
+    const url = new URL(destinationUrl)
+    const params = new URLSearchParams(url.search)
+    
+    const trackingParams: TrackingParams = {}
+    
+    // Extract UTM parameters
+    const utmSource = params.get('utm_source')
+    const utmMedium = params.get('utm_medium') 
+    const utmCampaign = params.get('utm_campaign')
+    const utmContent = params.get('utm_content')
+    const utmTerm = params.get('utm_term')
+    
+    // Extract platform-specific parameters
+    const xptdk = params.get('xptdk') // Shopee
+    const ref = params.get('ref') // Facebook
+    
+    // Add to tracking params if present (URL-decode values)
+    if (utmSource) trackingParams.utm_source = decodeURIComponent(utmSource)
+    if (utmMedium) trackingParams.utm_medium = decodeURIComponent(utmMedium)
+    if (utmCampaign) trackingParams.utm_campaign = decodeURIComponent(utmCampaign)
+    if (utmContent) trackingParams.utm_content = decodeURIComponent(utmContent)
+    if (utmTerm) trackingParams.utm_term = decodeURIComponent(utmTerm)
+    if (xptdk) trackingParams.xptdk = decodeURIComponent(xptdk)
+    if (ref) trackingParams.ref = decodeURIComponent(ref)
+    
+    return trackingParams
+  } catch (error) {
+    // Handle URL parsing errors gracefully
+    appLogger.error('Failed to parse destination URL for tracking extraction', {
+      url: destinationUrl,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+    return {}
+  }
 }
 
 /**

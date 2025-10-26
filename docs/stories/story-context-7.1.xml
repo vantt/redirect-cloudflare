@@ -1,0 +1,91 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>7</epicId>
+    <storyId>1</storyId>
+    <title>Tracking Parameter Extraction from Destination URLs</title>
+    <status>drafted</status>
+    <generatedAt>2025-10-25</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-7.1.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>marketing analyst</asA>
+    <iWant>the system to extract UTM and platform-specific tracking parameters from destination URLs</iWant>
+    <soThat>I can track campaign performance and user attribution in analytics</soThat>
+    <tasks>
+      - Define TrackingParams interface in src/types/env.ts
+      - Implement extractTrackingParams(destinationUrl: string) in src/lib/tracking.ts
+      - Parse UTM + platform params; URL-decode values safely
+      - Handle errors gracefully and return {} on parsing failure
+      - Unit tests for full/partial/platform/malformed/none cases
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. lib/tracking.ts exports extractTrackingParams(destinationUrl)
+    2. Extract UTM params: utm_source, utm_medium, utm_campaign, utm_content, utm_term
+    3. Extract platform params: xptdk (Shopee), ref (Facebook)
+    4. Return TrackingParams interface with undefined for missing fields
+    5. Graceful error handling: returns {} and logs on parsing errors
+    6. Unit tests: complete UTM, partial UTM, platform params, malformed URLs, URLs without tracking params
+    7. Correct URL-decoding for parameter values
+    8. TrackingParams interface defined in src/types/env.ts
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics.md" title="Epics" section="Story 7.1" snippet="Extract UTM/platform tracking parameters; return typed object; robust decoding and error handling"/>
+      <doc path="docs/architecture.md" title="Architecture" section="Analytics Abstraction (Epic 7)" snippet="Neutral event model and extraction foundation for multi-service analytics"/>
+      <doc path="docs/prd.md" title="PRD" section="FR2" snippet="Pre-Redirect Tracking: extract and process tracking parameters before redirect"/>
+    </docs>
+    <code>
+      <artifact>
+        <path>cloudflareRedirect/src/lib/tracking.ts</path>
+        <kind>library</kind>
+        <symbol>extractTrackingParams(destinationUrl)</symbol>
+        <lines>1-160</lines>
+        <reason>Implements parameter extraction logic</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/types/env.ts</path>
+        <kind>types</kind>
+        <symbol>TrackingParams interface</symbol>
+        <lines>1-120</lines>
+        <reason>Defines typed structure for extracted params</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <dependency path="package.json" reason="URL parsing and test dependencies (Vitest/Miniflare)"/>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="purity" description="Function must be pure and side-effect free"/>
+    <constraint type="scope" description="No network or GA4 calls in this story"/>
+    <constraint type="robustness" description="Graceful handling for malformed URLs and missing params"/>
+  </constraints>
+
+  <interfaces>
+    <interface name="TrackingParams" location="types/env.ts" signature="{ utm_source?, utm_medium?, utm_campaign?, utm_content?, utm_term?, xptdk?, ref? }"/>
+    <interface name="extractTrackingParams" location="lib/tracking.ts" signature="(destinationUrl: string) => TrackingParams"/>
+  </interfaces>
+
+  <tests>
+    <standards>
+      <standard tool="Vitest v4.0+" purpose="Unit testing"/>
+      <standard tool="Miniflare" purpose="Workers runtime emulation (if needed)"/>
+    </standards>
+    <locations>
+      <location path="cloudflareRedirect/test/lib/tracking-extract.test.ts" description="Extraction scenarios: full, partial, platform, malformed, none"/>
+    </locations>
+    <ideas>
+      <test-idea type="unit" description="Parses full UTM set with correct URL-decoding"/>
+      <test-idea type="unit" description="Handles partial UTM set (missing fields undefined)"/>
+      <test-idea type="unit" description="Parses platform params: xptdk, ref"/>
+      <test-idea type="unit" description="Malformed URL returns {} and logs error"/>
+      <test-idea type="unit" description="URL without tracking params returns {}"/>
+    </ideas>
+  </tests>
+</story-context>
+

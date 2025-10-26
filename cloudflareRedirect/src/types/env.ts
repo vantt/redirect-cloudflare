@@ -19,6 +19,16 @@ export interface AnalyticsEvent {
   timestamp: string
 }
 
+export interface TrackingParams {
+  utm_source?: string
+  utm_medium?: string
+  utm_campaign?: string
+  utm_content?: string
+  utm_term?: string
+  xptdk?: string
+  ref?: string
+}
+
 export interface TrackingData {
   redirect_id: string
   destination_url: string

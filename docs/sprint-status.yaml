@@ -61,8 +61,8 @@ development_status:
   6-3-optional-domain-allowlist-configuration: done
   epic-6-retrospective: completed
   epic-7: backlog
-  7-1-tracking-parameter-extraction-from-destination-urls: drafted
-  7-2-analytics-provider-interface-and-neutral-event-model: backlog
+  7-1-tracking-parameter-extraction-from-destination-urls: done
+  7-2-analytics-provider-interface-and-neutral-event-model: done
   7-3-analytics-router-multi-service-fan-out: backlog
   7-4-provider-registry-feature-flags-env-config: backlog
   7-5-timeout-reliability-policy-non-blocking: backlog
