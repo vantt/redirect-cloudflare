@@ -1,0 +1,91 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>7</epicId>
+    <storyId>3</storyId>
+    <title>Analytics Router (Multi-Service Fan-Out)</title>
+    <status>drafted</status>
+    <generatedAt>2025-10-26</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-7.3.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>a router that dispatches a neutral AnalyticsEvent to multiple providers concurrently with isolation</iWant>
+    <soThat>adding/removing providers is simple and failures don't affect each other</soThat>
+    <tasks>
+      - Create src/lib/analytics/router.ts
+      - Export async function routeAnalyticsEvent(event: AnalyticsEvent, providers: AnalyticsProvider[]): Promise<void>
+      - Iterate providers concurrently; isolate errors (try/catch per provider)
+      - Hook structured logging (attempt/success/failure/duration per provider)
+      - Add timeout policy integration placeholder (detail in Story 7.5)
+      - Unit tests: no providers, single provider success, multi-provider with one failing
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. Implement routeAnalyticsEvent(event, providers) that fans out concurrently
+    2. Provider errors are caught and logged; other providers continue (isolation)
+    3. Supports zero, one, or many providers without special casing
+    4. Unit tests cover single/multiple providers, failure of one provider, and no-provider case
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics.md" title="Epics" section="Story 7.3" snippet="Router fans out to multiple providers with error isolation and no blocking"/>
+      <doc path="docs/architecture.md" title="Architecture" section="Analytics Abstraction (Epic 7)" snippet="Router responsibilities, non-blocking goals, structured logging"/>
+      <doc path="docs/architecture.md" title="Architecture" section="Sequence Diagram (ASCII)" snippet="/r builds event, registry loads providers, router fan-out with per-provider timeout"/>
+    </docs>
+    <code>
+      <artifact>
+        <path>cloudflareRedirect/src/lib/analytics/router.ts</path>
+        <kind>library</kind>
+        <symbol>routeAnalyticsEvent</symbol>
+        <lines>1-180</lines>
+        <reason>Core router dispatching to providers concurrently</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/lib/analytics/provider.ts</path>
+        <kind>library</kind>
+        <symbol>AnalyticsProvider interface</symbol>
+        <lines>1-120</lines>
+        <reason>Contract used by router</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/lib/analytics/types.ts</path>
+        <kind>library</kind>
+        <symbol>AnalyticsEvent</symbol>
+        <lines>1-120</lines>
+        <reason>Neutral event model consumed by router</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <dependency path="package.json" reason="Vitest for unit tests; structured logging utilities"/>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="non-blocking" description="Router must not delay redirect response; runs in fire-and-forget pattern relative to response path"/>
+    <constraint type="isolation" description="Per-provider try/catch; one provider failure must not affect others"/>
+    <constraint type="logging" description="Emit structured logs for attempt/success/failure/duration; avoid PII"/>
+  </constraints>
+
+  <interfaces>
+    <interface name="routeAnalyticsEvent" location="lib/analytics/router.ts" signature="(event: AnalyticsEvent, providers: AnalyticsProvider[]) => Promise<void>"/>
+  </interfaces>
+
+  <tests>
+    <standards>
+      <standard tool="Vitest v4.0+" purpose="Unit testing"/>
+    </standards>
+    <locations>
+      <location path="cloudflareRedirect/test/lib/analytics/router.test.ts" description="Router behavior: noop, single success, multi with failure"/>
+    </locations>
+    <ideas>
+      <test-idea type="unit" description="No providers -> completes without errors"/>
+      <test-idea type="unit" description="Multiple providers -> all invoked; one throw does not stop others"/>
+      <test-idea type="unit" description="Logs success/failure for each provider with durations"/>
+    </ideas>
+  </tests>
+</story-context>
+

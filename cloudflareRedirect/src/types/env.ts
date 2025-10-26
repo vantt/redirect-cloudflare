@@ -4,6 +4,10 @@ export interface Env {
   ALLOWED_DOMAINS?: string
   ENABLE_TRACKING?: string // Feature flag to enable/disable tracking (default: "false")
   DEFAULT_REDIRECT_URL?: string // Default URL for root endpoint when no hash provided
+  ANALYTICS_PROVIDERS?: string // Comma-separated list of provider tokens (e.g., "ga4,mixpanel")
+  GA4_MEASUREMENT_ID?: string // Google Analytics 4 Measurement ID
+  GA4_API_SECRET?: string // Google Analytics 4 API Secret
+  MIXPANEL_TOKEN?: string // Mixpanel API Token
 }
 
 export interface RedirectData {

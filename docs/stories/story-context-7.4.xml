@@ -1,0 +1,91 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>7</epicId>
+    <storyId>4</storyId>
+    <title>Provider Registry + Feature Flags (Env Config)</title>
+    <status>drafted</status>
+    <generatedAt>2025-10-26</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-7.4.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>platform engineer</asA>
+    <iWant>a registry reading ANALYTICS_PROVIDERS env to enable/disable providers</iWant>
+    <soThat>we can configure providers per environment without code changes</soThat>
+    <tasks>
+      - Create src/lib/analytics/registry.ts
+      - Export function loadProviders(env) returning AnalyticsProvider list
+      - Parse ANALYTICS_PROVIDERS (comma-separated), map known tokens to providers
+      - Warn and ignore unknown tokens; never throw on misconfiguration
+      - Return [] when env unset/empty/misconfigured
+      - Unit tests for empty/multiple/unknown cases and warnings
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. Parse ANALYTICS_PROVIDERS (comma-separated); unknown tokens warned and ignored
+    2. Registry instantiates known providers (e.g., ga4) behind interfaces
+    3. Misconfiguration never breaks redirect path; falls back to empty provider set
+    4. Unit tests cover empty/multi/unknown providers and warnings
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics.md" title="Epics" section="Story 7.4" snippet="Registry loads providers from env; unknown ignored; safety-first defaults"/>
+      <doc path="docs/architecture.md" title="Architecture" section="Analytics Abstraction (Epic 7)" snippet="Provider registry responsibilities and environment-driven enablement"/>
+      <doc path="docs/architecture.md" title="Architecture" section="Sequence Diagram (ASCII)" snippet="/r builds event, registry loads providers, router fans out"/>
+    </docs>
+    <code>
+      <artifact>
+        <path>cloudflareRedirect/src/lib/analytics/registry.ts</path>
+        <kind>library</kind>
+        <symbol>loadProviders(env)</symbol>
+        <lines>1-140</lines>
+        <reason>Loads providers based on ANALYTICS_PROVIDERS</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/lib/analytics/provider.ts</path>
+        <kind>library</kind>
+        <symbol>AnalyticsProvider interface</symbol>
+        <lines>1-120</lines>
+        <reason>Contract returned by registry</reason>
+      </artifact>
+      <artifact>
+        <path>cloudflareRedirect/src/lib/analytics/types.ts</path>
+        <kind>library</kind>
+        <symbol>AnalyticsEvent</symbol>
+        <lines>1-120</lines>
+        <reason>Neutral event model used across providers</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <dependency path="package.json" reason="Testing (Vitest) and logging utilities"/>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="safety" description="Never throw from registry; return [] on issues"/>
+    <constraint type="config" description="Environment-driven enable/disable; names lower_snake_case"/>
+    <constraint type="abstraction" description="Registry exposes only neutral AnalyticsProvider instances"/>
+  </constraints>
+
+  <interfaces>
+    <interface name="loadProviders" location="lib/analytics/registry.ts" signature="(env) => AnalyticsProvider[]"/>
+  </interfaces>
+
+  <tests>
+    <standards>
+      <standard tool="Vitest v4.0+" purpose="Unit testing"/>
+    </standards>
+    <locations>
+      <location path="cloudflareRedirect/test/lib/analytics/registry.test.ts" description="Env parsing: empty/multi/unknown with warnings"/>
+    </locations>
+    <ideas>
+      <test-idea type="unit" description="Empty env -> [] and no errors"/>
+      <test-idea type="unit" description="Multiple valid providers -> all returned"/>
+      <test-idea type="unit" description="Unknown token -> warning logged, ignored"/>
+    </ideas>
+  </tests>
+</story-context>
+

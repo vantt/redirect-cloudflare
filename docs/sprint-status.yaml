@@ -63,9 +63,9 @@ development_status:
   epic-7: backlog
   7-1-tracking-parameter-extraction-from-destination-urls: done
   7-2-analytics-provider-interface-and-neutral-event-model: done
-  7-3-analytics-router-multi-service-fan-out: backlog
-  7-4-provider-registry-feature-flags-env-config: backlog
-  7-5-timeout-reliability-policy-non-blocking: backlog
+  7-3-analytics-router-multi-service-fan-out: done
+  7-4-provider-registry-feature-flags-env-config: done
+  7-5-timeout-reliability-policy-non-blocking: ready-for-dev
   7-6-observability-structured-logs-basic-counters: backlog
   7-7-test-harness-provider-mocks: backlog
   epic-7-retrospective: optional
