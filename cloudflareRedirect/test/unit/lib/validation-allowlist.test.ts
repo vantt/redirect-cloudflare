@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { validateDestinationDomain } from '../../src/lib/validation'
+import { validateDestinationDomain } from '../../../src/lib/validation'
 
 describe('Domain Allowlist Validation', () => {
   it('should allow exact domain match', () => {

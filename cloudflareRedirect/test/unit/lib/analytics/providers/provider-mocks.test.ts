@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { AnalyticsEvent, EventName } from '../../../../src/lib/analytics/types'
+import { AnalyticsEvent, EventName } from '../../../../../src/lib/analytics/types'
 import { 
   SuccessMockProvider, 
   FailureMockProvider, 

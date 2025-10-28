@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import { Miniflare } from 'miniflare'
-import { getRedirect, putRedirect } from '../../src/lib/kv-store'
-import type { RedirectData } from '../../src/types/env'
+import { getRedirect, putRedirect } from '../../../src/lib/kv-store'
+import type { RedirectData } from '../../../src/types/env'
 
 describe('KV Store Operations', () => {
   let mf: Miniflare

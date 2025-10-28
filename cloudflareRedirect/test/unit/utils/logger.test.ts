@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { appLogger } from '../../src/utils/logger'
+import { appLogger } from '../../../src/utils/logger'
 
 describe('Structured Logger', () => {
   beforeEach(() => {

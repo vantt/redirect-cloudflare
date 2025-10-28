@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { RedirectError } from '../../src/lib/errors'
+import { RedirectError } from '../../../src/lib/errors'
 
 describe('RedirectError', () => {
   it('should create error with default values', () => {

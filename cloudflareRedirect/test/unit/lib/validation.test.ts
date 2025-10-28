@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { redirectSchema } from '../../src/lib/validation'
+import { redirectSchema } from '../../../src/lib/validation'
 
 describe('Redirect Schema Protocol Validation', () => {
   it('should validate valid http URLs', () => {

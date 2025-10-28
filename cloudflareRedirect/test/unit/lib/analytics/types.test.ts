@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { AnalyticsEvent, AnalyticsAttributes, EventName, AttributeKey } from '../../../src/lib/analytics/types'
+import { AnalyticsEvent, AnalyticsAttributes, EventName, AttributeKey } from '../../../../src/lib/analytics/types'
 
 describe('Analytics Types', () => {
   describe('AnalyticsAttributes', () => {

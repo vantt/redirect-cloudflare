@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { createRedirectResponse } from '../../src/routes/redirect'
+import { createRedirectResponse } from '../../../src/routes/redirect'
 
 describe('Redirect Response Creation', () => {
   it('should create 302 redirect for temporary type (default)', () => {

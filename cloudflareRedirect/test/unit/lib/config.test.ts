@@ -1,57 +1,15 @@
 import { describe, it, expect, vi } from 'vitest'
-import type { Env } from '../../src/types/env.js'
+import type { Env } from '../../../src/types/env.js'
+import { createMockEnv, testEnvWithGA4, testEnvMinimal, createTestEnvForDomains, createTestEnvForTimeout } from '../../helpers/config.js'
 
 // Mock config module to isolate fixture testing
-vi.mock('../../src/lib/config.js', () => ({
+vi.mock('../../../src/lib/config.js', () => ({
   loadConfig: vi.fn(),
   validateRequiredEnvVars: vi.fn(),
   getEnvValue: vi.fn()
 }))
 
-const { loadConfig, validateRequiredEnvVars, getEnvValue } = await import('../../src/lib/config.js')
-
-// Mock fixtures to avoid import issues during development
-const createMockEnv = (overrides: Partial<Env> = {}): Env => ({
-  REDIRECT_KV: {} as any,
-  ANALYTICS_KV: {} as any,
-  ALLOWED_DOMAINS: 'example.com,test.com',
-  ENABLE_TRACKING: 'false',
-  DEFAULT_REDIRECT_URL: 'https://example.com',
-  ANALYTICS_PROVIDERS: '',
-  ANALYTICS_TIMEOUT_MS: '2000',
-  ...overrides
-})
-
-const testEnvWithGA4: Env = {
-  REDIRECT_KV: {} as any,
-  ANALYTICS_KV: {} as any,
-  ALLOWED_DOMAINS: 'example.com,test.com',
-  ENABLE_TRACKING: 'true',
-  DEFAULT_REDIRECT_URL: 'https://example.com',
-  ANALYTICS_PROVIDERS: 'ga4',
-  GA4_MEASUREMENT_ID: 'G-TEST123456',
-  GA4_API_SECRET: 'test_secret_12345',
-  ANALYTICS_TIMEOUT_MS: '2000'
-}
-
-const testEnvMinimal: Env = {
-  REDIRECT_KV: {} as any,
-  ANALYTICS_KV: {} as any,
-  ENABLE_TRACKING: 'false',
-  ANALYTICS_TIMEOUT_MS: '2000'
-}
-
-const createTestEnvForDomains = (domains: string): Env => 
-  createMockEnv({ ALLOWED_DOMAINS: domains })
-
-const createTestEnvForTimeout = (timeout: number): Env => 
-  createMockEnv({ 
-    ENABLE_TRACKING: 'true',
-    ANALYTICS_PROVIDERS: 'ga4',
-    GA4_MEASUREMENT_ID: 'G-TEST123456',
-    GA4_API_SECRET: 'test_secret_12345',
-    ANALYTICS_TIMEOUT_MS: timeout.toString()
-  })
+const { loadConfig, validateRequiredEnvVars, getEnvValue } = await import('../../../src/lib/config.js')
 
 describe('config module', () => {
   describe('loadConfig', () => {
