@@ -1,4 +1,4 @@
-# Decision Architecture
+﻿# Decision Architecture
 
 ## Executive Summary
 
@@ -38,41 +38,61 @@ This establishes the base architecture with (provided by starter):
 
 ### Version Verification
 
-- Hono v4.10+ � Verified on 2025-10-25
-- TypeScript v5.9+ � Verified on 2025-10-25
-- Zod v4.1+ and @hono/zod-validator v0.7+ � Verified on 2025-10-25
-- Vitest v4.0+ � Verified on 2025-10-25
-- Cloudflare Workers compatibility_date 2025-10-24 � Set in repo
+- Hono v4.10+ — Verified on 2025-10-25
+- TypeScript v5.9+ — Verified on 2025-10-25
+- Zod v4.1+ and @hono/zod-validator v0.7+ — Verified on 2025-10-25
+- Vitest v4.0+ — Verified on 2025-10-25
+- Cloudflare Workers compatibility_date 2025-10-24 — Set in repo
 
 
 ## Project Structure
 
 ```
-cloudflareRedirect/
+
 +-- src/
-�   +-- index.ts                    # Entry point - Hono app initialization
-�   +-- routes/
-�   �   +-- redirect.ts             # /r endpoint - canonical server-side redirect
-�   �   +-- bootstrap.ts            # / endpoint - legacy client upgrade bootstrap
-�   +-- lib/
-�   �   +-- validation.ts           # Zod schemas for URL validation
-�   �   +-- tracking.ts             # GA4 Measurement Protocol integration
-�   �   +-- kv-store.ts             # KV operations (get/put redirect mappings)
-�   �   +-- errors.ts               # Custom error classes (RedirectError)
-�   +-- types/
-�   �   +-- env.ts                  # Environment bindings type definitions
-�   +-- utils/
-�       +-- logger.ts               # Custom structured logger
+¦   +-- index.ts                    # Entry point - Hono app initialization
+¦   +-- routes/
+¦   ¦   +-- redirect.ts             # /r endpoint - canonical server-side redirect
+¦   ¦   +-- bootstrap.ts            # / endpoint - legacy client upgrade bootstrap
+¦   +-- lib/
+¦   ¦   +-- analytics/              # Analytics abstraction layer
+¦   ¦   +-- validation.ts           # Zod schemas for URL validation
+¦   ¦   +-- tracking.ts             # GA4 Measurement Protocol integration
+¦   ¦   +-- kv-store.ts             # KV operations (get/put redirect mappings)
+¦   ¦   +-- errors.ts               # Custom error classes (RedirectError)
+¦   ¦   +-- config.ts               # Environment configuration management
+¦   +-- types/
+¦   ¦   +-- env.ts                  # Environment bindings type definitions
+¦   +-- utils/
+¦       +-- logger.ts               # Custom structured logger
 +-- test/
-�   +-- routes/
-�   �   +-- redirect.test.ts        # Unit tests for /r endpoint
-�   �   +-- bootstrap.test.ts       # Unit tests for / endpoint
-�   +-- lib/
-�   �   +-- validation.test.ts      # Validation logic tests
-�   �   +-- tracking.test.ts        # GA4 integration tests
-�   �   +-- kv-store.test.ts        # KV operations tests
-�   +-- integration/
-�       +-- e2e.test.ts             # End-to-end flow tests with Miniflare
+¦   +-- setup.ts                    # Global test setup
+¦   +-- helpers/                    # Test utilities & helpers
+¦   ¦   +-- config.ts               # Test environment mocks
+¦   +-- fixtures/                   # Test fixtures & mock data
+¦   ¦   +-- env.ts                  # Environment test fixtures
+¦   +-- unit/                       # Unit Tests (isolated component tests)
+¦   ¦   +-- lib/                    # Library module unit tests
+¦   ¦   ¦   +-- analytics/          # Analytics module unit tests
+¦   ¦   ¦   +-- validation.test.ts  # Validation logic tests
+¦   ¦   ¦   +-- tracking.test.ts    # Tracking functions tests
+¦   ¦   ¦   +-- kv-store.test.ts    # KV operations tests
+¦   ¦   ¦   +-- config.test.ts      # Config management tests
+¦   ¦   +-- routes/                 # Route function unit tests
+¦   ¦       +-- parse-destination.test.ts
+¦   +-- integration/                # Integration Tests (component interactions)
+¦   ¦   +-- routes/                 # HTTP route integration tests
+¦   ¦   ¦   +-- redirect-basic.test.ts
+¦   ¦   ¦   +-- redirect-validation.test.ts
+¦   ¦   ¦   +-- bootstrap-legacy.test.ts
+¦   ¦   +-- redirect-endpoint.test.ts
+¦   ¦   +-- error-handling.test.ts
+¦   +-- e2e/                        # End-to-End Tests (complete workflows)
+¦   ¦   +-- analytics-router.e2e.test.ts
+¦   ¦   +-- legacy-upgrade.e2e.test.ts
+¦   +-- utils/                      # Test utilities
+¦       +-- common.test-utils.ts
+¦       +-- mock-analytics.ts
 +-- wrangler.toml                   # Cloudflare Workers configuration
 +-- vitest.config.ts                # Vitest + Miniflare test configuration
 +-- tsconfig.json                   # TypeScript configuration
@@ -142,9 +162,11 @@ Rationale:
   - `const providers = loadProviders(c.env)` ? `await routeAnalyticsEvent(event, providers)` (non-blocking vs redirect path)
 
 - Tests (structure only)
-  - `cloudflareRedirect/test/lib/analytics/router.test.ts`
-  - `cloudflareRedirect/test/lib/analytics/registry.test.ts`
-  - Mocks for `AnalyticsProvider`
+  - `test/unit/lib/analytics/router.test.ts`
+  - `test/unit/lib/analytics/registry.test.ts`
+  - `test/integration/ga4-http-integration.test.ts`
+  - `test/e2e/analytics-router.e2e.test.ts`
+  - Mocks for `AnalyticsProvider` in `test/utils/mock-analytics.ts`
 
 ### Developer TODOs (Epic 7)
 
@@ -199,6 +221,8 @@ Rationale:
   - Accurate KV namespace simulation
   - Local development environment
   - Integration test support
+- **Test Organization:** Follow Testing Pyramid structure (Unit → Integration → E2E)
+  - See [Test Suite Structure Documentation](./test-suite-structure.md) for complete test organization, file locations, naming conventions, and best practices
 
 ### Integration Points
 
@@ -560,7 +584,7 @@ Location: https://example.com/page?utm_source=fb
 Cache-Control: no-cache
 ```
 
-**Success Response (Debug Mode, n=1):**
+**Success Response (Debug Mode, debug=1):**
 ```http
 HTTP/1.1 200 OK
 Content-Type: application/json
@@ -947,7 +971,7 @@ curl "http://localhost:8787/r?to=https://example.com"
 # Should return: 302 redirect
 
 # Test debug mode
-curl "http://localhost:8787/r?to=https://example.com&n=1"
+curl "http://localhost:8787/r?to=https://example.com&debug=1"
 # Should return: JSON with destination and tracking params
 
 # Test legacy bootstrap
@@ -1114,6 +1138,7 @@ _Generated by BMAD Decision Architecture Workflow v1.3.2_
 _Date: 2025-10-24_
 _For: vanTT_
 _Project: cloudflareRedirect (Level 2 Greenfield Software)_
+
 
 
 

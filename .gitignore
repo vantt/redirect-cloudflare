@@ -1,1 +1,7 @@
 .history
+dist
+node_modules
+.crush/
+.gemini/commands/
+.qwen/commands
+.wrangler

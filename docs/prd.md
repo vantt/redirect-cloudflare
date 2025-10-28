@@ -86,6 +86,39 @@ The primary end-user experience is invisible and instantaneous. For administrato
 *   **Code Standards:** The code will follow modern JavaScript (ES6+) standards, be formatted with Prettier, and include JSDoc comments.
 *   **Configuration:** All configuration will be managed in the `wrangler.toml` file and environment variables for secrets.
 
+### 4.1. Environment Configuration Management
+
+**Configuration Strategy:**
+- **Local Development:** Use `.env` file (gitignored) for local environment variables
+- **Production:** Use `wrangler.toml` environment sections and Cloudflare dashboard secrets
+- **Validation:** Startup validation ensures required env vars are set before processing requests
+
+**Environment Variables:**
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `ALLOWED_DOMAINS` | No | - | Comma-separated list of allowed redirect domains |
+| `ENABLE_TRACKING` | No | `"false"` | Feature flag to enable analytics tracking |
+| `DEFAULT_REDIRECT_URL` | No | - | Default URL for root endpoint when no hash provided |
+| `ANALYTICS_PROVIDERS` | No | - | Comma-separated list of analytics providers (e.g., "ga4") |
+| `GA4_MEASUREMENT_ID` | Conditional* | - | Google Analytics 4 Measurement ID |
+| `GA4_API_SECRET` | Conditional* | - | Google Analytics 4 API Secret |
+| `ANALYTICS_TIMEOUT_MS` | No | `"2000"` | Per-provider analytics timeout in milliseconds |
+
+*Required if `ANALYTICS_PROVIDERS` includes "ga4"
+
+**Configuration Files:**
+- `.env` - Local development environment variables (not committed to git)
+- `.env.example` - Template with all available variables and descriptions
+- `wrangler.toml` - Cloudflare Workers configuration with environment-specific settings
+
+**Testing Environment:**
+- Test fixtures located in `test/fixtures/env.ts` provide centralized mock Env objects
+- Use `createTestEnv(overrides)` helper to create test Env with custom values
+- Pre-configured fixtures available: `defaultTestEnv`, `testEnvWithGA4`, `testEnvMinimal`, `testEnvInvalid`
+- `.env.test` file documents test-appropriate environment variable values for reference
+- See `test/fixtures/env.test.ts` for usage examples
+
 ---
 
 ## 5. URL Strategy and Migration
@@ -185,7 +218,7 @@ Goal: Preserve existing `/#...` links for backward compatibility while upgrading
 - Server flow:
   - Validate `to` (require http/https; optional domain allowlist)
   - Perform pre-redirect tracking (extract UTM/xptdk, send GA/GTM, log edge events)
-  - If `n=1` (no redirect): return debug JSON/HTML showing payload and destination
+  - If `debug=1` (no redirect): return debug JSON/HTML showing payload and destination
   - Else: return 301/302 to `to` with appropriate headers (e.g., `Cache-Control`, `noindex`)
 
 3) Optional convenience: `/?to=...`
@@ -216,7 +249,7 @@ Example flows:
 Quick implementation notes:
 - `/`: ~1–2KB HTML + JS to parse hash, read `search`, optional beacon, then `location.replace` to `/r`
 - `/r`: Cloudflare Worker (TypeScript) validates `to`, extracts tracking, sends GA/GTM, returns 301/302
-- `isNoRedirect`: place outside fragment (e.g., `?isNoRedirect=1`) or map to `n=1` when upgrading to `/r`
+- `isNoRedirect`: place outside fragment (e.g., `?isNoRedirect=1`) or map to `debug=1` when upgrading to `/r`
 
 ### 5.10. Best Practices
 

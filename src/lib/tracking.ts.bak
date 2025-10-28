@@ -1,0 +1,218 @@
+import { appLogger } from '../utils/logger'
+import { TrackingParams } from '../types/env'
+
+type GA4EventParams = Record<string, string>
+
+interface GA4Event {
+  name: string
+  params: GA4EventParams
+}
+
+interface GA4Payload {
+  client_id: string
+  events: GA4Event[]
+}
+
+interface GA4Error {
+  success: boolean
+  error: string
+  errorName?: string
+}
+
+const GA4_EVENT_NAME = 'redirect_click'
+const FNV1A_64_OFFSET_BASIS = BigInt('0xcbf29ce484222325')
+const FNV1A_64_PRIME = BigInt('0x100000001b3')
+const GA4_COLLECT_URL = 'https://www.google-analytics.com/mp/collect'
+
+function sanitizeEventParams(params: TrackingParams): GA4EventParams {
+  const sanitized: GA4EventParams = {}
+  if (!params) {
+    return sanitized
+  }
+
+  for (const [key, value] of Object.entries(params)) {
+    if (typeof value === 'string') {
+      sanitized[key] = value
+    }
+  }
+
+  return sanitized
+}
+
+function fnv1a64(input: string): string {
+  let hash = FNV1A_64_OFFSET_BASIS
+
+  for (let i = 0; i < input.length; i += 1) {
+    hash ^= BigInt(input.charCodeAt(i))
+  }
+  hash = (hash * FNV1A_64_PRIME) & BigInt('0xffffffffffffffff')
+  return hash.toString(16).padStart(16, '0')
+}
+
+function generateClientId(): string {
+  const timestamp = Date.now()
+  const randomBytes = new Uint8Array(16)
+  crypto.getRandomValues(randomBytes)
+  const randomHex = Array.from(randomBytes, (byte) => byte.toString(16).padStart(2, '0')).join('')
+  const hash = fnv1a64(`${timestamp}:${randomHex}`)
+
+  return `${hash}.${timestamp}`
+}
+
+/**
+ * Extract tracking parameters from destination URL
+ * @param destinationUrl - The URL to extract tracking parameters from
+ * @returns TrackingParams object with extracted parameters (undefined for missing ones)
+ */
+export function extractTrackingParams(destinationUrl: string): TrackingParams {
+  try {
+    const url = new URL(destinationUrl)
+    const params = new URLSearchParams(url.search)
+    
+    const trackingParams: TrackingParams = {}
+    
+    // Extract UTM parameters
+    const utmSource = params.get('utm_source')
+    const utmMedium = params.get('utm_medium') 
+    const utmCampaign = params.get('utm_campaign')
+    const utmContent = params.get('utm_content')
+    const utmTerm = params.get('utm_term')
+    
+    // Extract platform-specific parameters
+    const xptdk = params.get('xptdk') // Shopee
+    const ref = params.get('ref') // Facebook
+    
+    // Add to tracking params if present (URL-decode values)
+    if (utmSource) trackingParams.utm_source = decodeURIComponent(utmSource)
+    if (utmMedium) trackingParams.utm_medium = decodeURIComponent(utmMedium)
+    if (utmCampaign) trackingParams.utm_campaign = decodeURIComponent(utmCampaign)
+    if (utmContent) trackingParams.utm_content = decodeURIComponent(utmContent)
+    if (utmTerm) trackingParams.utm_term = decodeURIComponent(utmTerm)
+    if (xptdk) trackingParams.xptdk = decodeURIComponent(xptdk)
+    if (ref) trackingParams.ref = decodeURIComponent(ref)
+    
+    return trackingParams
+  } catch (error) {
+    // Handle URL parsing errors gracefully
+    appLogger.error('Failed to parse destination URL for tracking extraction', {
+      url: destinationUrl,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+    return {}
+  }
+}
+
+/**
+ * Build GA4 Measurement Protocol payload from tracking parameters
+ * @param params - Tracking parameters extracted from destination URL
+ * @param measurementId - GA4 Measurement ID
+ * @returns GA4 Measurement Protocol v2 payload
+ */
+export function buildGA4Payload(params: TrackingParams, measurementId: string): GA4Payload {
+  if (!measurementId || measurementId.trim().length === 0) {
+    throw new Error('GA4 measurement ID is required to build payload')
+  }
+
+  return {
+    client_id: generateClientId(),
+    events: [
+      {
+        name: GA4_EVENT_NAME,
+        params: sanitizeEventParams(params),
+      },
+    ],
+  }
+}
+
+/**
+ * Send GA4 tracking event via HTTP POST
+ * @param payload - GA4 payload to send
+ * @param apiSecret - GA4 API secret for authentication
+ * @param measurementId - GA4 Measurement ID
+ * @returns Promise that resolves on success, rejects on failure
+ */
+export async function sendGA4Event(
+  payload: object, 
+  apiSecret: string, 
+  measurementId: string
+): Promise<GA4Error> {
+  try {
+    // Build URL with query parameters for measurement_id and api_secret
+    const collectUrl = new URL(GA4_COLLECT_URL)
+    collectUrl.searchParams.set('measurement_id', measurementId)
+    collectUrl.searchParams.set('api_secret', apiSecret)
+    
+    // Set request headers
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+      'User-Agent': `cloudflareRedirect/1.0.0`
+    }
+    
+    // Apply 2-second timeout using AbortSignal
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 2000) // 2 seconds
+    
+    try {
+      const response = await fetch(collectUrl.toString(), {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload),
+        signal: controller.signal
+      })
+      
+      // Clear timeout on successful response
+      clearTimeout(timeoutId)
+      
+      if (!response.ok) {
+        throw new Error(`GA4 request failed: ${response.status} ${response.statusText}`)
+      }
+      
+      // Epic 7.3 - Log successful request without affecting redirect flow
+      appLogger.info('GA4 tracking event sent', {
+        measurementId,
+        payloadType: payload.type || 'unknown',
+        status: response.status,
+        latencyMs: null // TODO: Add timing if needed
+      })
+      
+      return response.json()
+    } catch (error: unknown) {
+      // Clear timeout on error
+      clearTimeout(timeoutId)
+      
+      // Epic 7.3 - Log errors but don't throw to avoid breaking redirect flow
+      const errorObj = error as Error
+      
+      if (errorObj.name === 'AbortError') {
+        appLogger.warn('GA4 tracking request timed out', {
+          measurementId,
+          timeoutMs: 2000,
+          error: errorObj.message
+        })
+      } else {
+        appLogger.error('GA4 tracking request failed', {
+          measurementId,
+          error: errorObj.message,
+          errorName: errorObj.name
+        })
+      }
+      
+      // Return consistent type for all code paths
+      const errorResponse: GA4Error = { success: false, error: errorObj.message, errorName: errorObj.name }
+      return Promise.resolve(errorResponse)
+    }
+  } catch (error: unknown) {
+    // Log errors but don't throw to avoid breaking redirect flow
+    const errorObj = error as Error
+    
+    appLogger.error('GA4 tracking failed', {
+      measurementId,
+      error: errorObj.message,
+      errorName: errorObj.name
+    })
+    
+    // Return consistent type for all code paths
+    const errorResponse: GA4Error = { success: false, error: errorObj.message, errorName: errorObj.name }
+    return Promise.resolve(errorResponse)
+  }
+}
