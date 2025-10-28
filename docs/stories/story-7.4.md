@@ -23,7 +23,7 @@ so that we can configure providers per environment without code changes.
   - [x] Map known tokens to provider factories (no network; constructor only)
   - [x] Log warning for unknown tokens; ignore safely
   - [x] Return empty array when not set/empty/misconfigured
-- [x] Unit tests in cloudflareRedirect/test/lib/analytics/registry.test.ts
+- [x] Unit tests in test/unit/lib/analytics/registry.test.ts
   - [x] Empty env → []
   - [x] Multiple providers configured → all recognized returned
   - [x] Unknown token → warning logged; ignored; recognized still returned
@@ -88,10 +88,10 @@ With Stories 7.1-7.4 complete, the analytics infrastructure is ready for:
 
 ### File List
 
-- Added: cloudflareRedirect/src/lib/analytics/registry.ts (provider registry with factory pattern)
-- Modified: cloudflareRedirect/src/types/env.ts (added ANALYTICS_PROVIDERS and provider env vars)
-- Modified: cloudflareRedirect/src/utils/logger.ts (added warn method)
-- Added: cloudflareRedirect/test/lib/analytics/registry.test.ts (comprehensive registry tests)
+- Added: src/lib/analytics/registry.ts (provider registry with factory pattern)
+- Modified: src/types/env.ts (added ANALYTICS_PROVIDERS and provider env vars)
+- Modified: src/utils/logger.ts (added warn method)
+- Added: test/unit/lib/analytics/registry.test.ts (comprehensive registry tests)
 
 ### Change Log
 

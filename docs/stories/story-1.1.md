@@ -83,14 +83,14 @@ so that we have a working foundation with TypeScript, testing setup, and deploym
 
 2025-10-25 — Plan and setup
 - Set story to In Progress; update sprint-status to in-progress
-- Scaffold Cloudflare Workers + Hono project under `cloudflareRedirect/`
+- Scaffold Cloudflare Workers + Hono project under ``
 - Add minimal Hello endpoint at `/` returning 200 OK (code only; not executed)
 - Add TypeScript strict config; wrangler.toml with compatibility_date 2025-10-24 and `REDIRECT_KV` binding (dev placeholder id)
 - Add placeholder tests (Vitest) pending dependency install
 - Blocker: Network-restricted environment prevents `npm install` and running tests; requires local execution
 
 Next actions (local execution required)
-- Run `npm install` in `cloudflareRedirect/`
+- Run `npm install` in ``
 - Run `npm run dev` to verify local
 - Run `npm test` to validate scaffold
 - Configure real KV namespace ID in wrangler.toml
@@ -101,13 +101,13 @@ Next actions (local execution required)
 
 ### File List
 
-- cloudflareRedirect/package.json
-- cloudflareRedirect/wrangler.toml
-- cloudflareRedirect/tsconfig.json
-- cloudflareRedirect/README.md
-- cloudflareRedirect/src/index.ts
-- cloudflareRedirect/src/types/env.ts
-- cloudflareRedirect/test/bootstrap.test.ts
+- package.json
+- wrangler.toml
+- tsconfig.json
+- README.md
+- src/index.ts
+- src/types/env.ts
+- test/bootstrap.test.ts
 
 ## Senior Developer Review (AI)
 

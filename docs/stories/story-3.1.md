@@ -64,7 +64,7 @@ so that my existing bookmarks and links continue to work without manual updates.
 - Create `routes/bootstrap.ts` following existing pattern from `routes/redirect.ts`
 - Register route in main `src/index.ts` Hono app
 - Add `DEFAULT_REDIRECT_URL` environment variable to `src/types/env.ts`
-- Tests should go in `test/routes/bootstrap.test.ts` following existing pattern
+- Tests should go in `test/integration/routes/bootstrap.test.ts` following existing pattern
 
 ### Technical Requirements
 - Use Hono `c.html()` method for HTML response
@@ -99,7 +99,7 @@ so that my existing bookmarks and links continue to work without manual updates.
 
 ### File List
 
-- cloudflareRedirect/src/routes/bootstrap.ts (new)
-- cloudflareRedirect/src/index.ts (modified)
-- cloudflareRedirect/src/types/env.ts (modified)
-- cloudflareRedirect/test/bootstrap.test.ts (new)
+- src/routes/bootstrap.ts (new)
+- src/index.ts (modified)
+- src/types/env.ts (modified)
+- test/bootstrap.test.ts (new)

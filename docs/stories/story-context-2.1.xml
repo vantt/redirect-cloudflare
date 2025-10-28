@@ -39,14 +39,14 @@
     </docs>
     <code>
       <artifact>
-        <path>cloudflareRedirect/src/lib/tracking.ts</path>
+        <path>src/lib/tracking.ts</path>
         <kind>library</kind>
         <symbol>no-op tracking functions</symbol>
         <lines>1-80</lines>
         <reason>Placeholder APIs for later Epic 7 implementation</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/src/types/env.ts</path>
+        <path>src/types/env.ts</path>
         <kind>types</kind>
         <symbol>Env bindings</symbol>
         <lines>1-20</lines>
@@ -54,7 +54,7 @@
       </artifact>
     </code>
     <dependencies>
-      <dependency path="cloudflareRedirect/src/types/env.ts" reason="Expose ENABLE_TRACKING flag"/>
+      <dependency path="src/types/env.ts" reason="Expose ENABLE_TRACKING flag"/>
     </dependencies>
   </artifacts>
 
@@ -76,7 +76,7 @@
       <standard tool="Vitest v4.0+" purpose="Unit testing"/>
     </standards>
     <locations>
-      <location path="cloudflareRedirect/test/lib/tracking-placeholder.test.ts" description="Tests for no-op tracking stubs"/>
+      <location path="test/unit/lib/tracking-placeholder.test.ts" description="Tests for no-op tracking stubs"/>
     </locations>
     <ideas>
       <test-idea type="unit" description="extractTrackingParams returns {} for valid URL"/>

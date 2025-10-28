@@ -38,14 +38,14 @@
     </docs>
     <code>
       <artifact>
-        <path>cloudflareRedirect/src/lib/analytics/types.ts</path>
+        <path>src/lib/analytics/types.ts</path>
         <kind>library</kind>
         <symbol>AnalyticsEvent, AnalyticsAttributes</symbol>
         <lines>1-120</lines>
         <reason>Neutral event model definition</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/src/lib/analytics/provider.ts</path>
+        <path>src/lib/analytics/provider.ts</path>
         <kind>library</kind>
         <symbol>AnalyticsProvider</symbol>
         <lines>1-120</lines>
@@ -74,8 +74,8 @@
       <standard tool="Vitest v4.0+" purpose="Unit testing"/>
     </standards>
     <locations>
-      <location path="cloudflareRedirect/test/lib/analytics/types.test.ts" description="Type contracts for AnalyticsEvent and AnalyticsProvider"/>
-      <location path="cloudflareRedirect/test/lib/analytics/provider-adapter.example.test.ts" description="Example mapping neutral event to vendor payload (no network)"/>
+      <location path="test/unit/lib/analytics/types.test.ts" description="Type contracts for AnalyticsEvent and AnalyticsProvider"/>
+      <location path="test/unit/lib/analytics/provider-adapter.example.test.ts" description="Example mapping neutral event to vendor payload (no network)"/>
     </locations>
     <ideas>
       <test-idea type="unit" description="TypeScript enforces required fields on AnalyticsEvent"/>

@@ -38,21 +38,21 @@
     </docs>
     <code>
       <artifact>
-        <path>cloudflareRedirect/src/lib/analytics/router.ts</path>
+        <path>src/lib/analytics/router.ts</path>
         <kind>library</kind>
         <symbol>routeAnalyticsEvent</symbol>
         <lines>1-180</lines>
         <reason>Core router dispatching to providers concurrently</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/src/lib/analytics/provider.ts</path>
+        <path>src/lib/analytics/provider.ts</path>
         <kind>library</kind>
         <symbol>AnalyticsProvider interface</symbol>
         <lines>1-120</lines>
         <reason>Contract used by router</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/src/lib/analytics/types.ts</path>
+        <path>src/lib/analytics/types.ts</path>
         <kind>library</kind>
         <symbol>AnalyticsEvent</symbol>
         <lines>1-120</lines>
@@ -79,7 +79,7 @@
       <standard tool="Vitest v4.0+" purpose="Unit testing"/>
     </standards>
     <locations>
-      <location path="cloudflareRedirect/test/lib/analytics/router.test.ts" description="Router behavior: noop, single success, multi with failure"/>
+      <location path="test/unit/lib/analytics/router.test.ts" description="Router behavior: noop, single success, multi with failure"/>
     </locations>
     <ideas>
       <test-idea type="unit" description="No providers -> completes without errors"/>

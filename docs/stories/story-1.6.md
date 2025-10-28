@@ -80,11 +80,11 @@ so that all environment variables are properly validated at startup and easy to 
 - Multi-environment support (dev/staging/prod) via wrangler.toml [Source: docs/architecture.md#Environment Config]
 
 ### Project Structure Notes
-- New file: `cloudflareRedirect/src/lib/config.ts` - Centralized environment configuration module
-- Update file: `cloudflareRedirect/src/index.ts` - App entry point for startup validation
-- New file: `cloudflareRedirect/.env.example` - Environment variable template
-- Update file: `cloudflareRedirect/README.md` - Documentation for environment setup
-- Existing type definitions: `cloudflareRedirect/src/types/env.ts` - Already defines Env interface with all variables
+- New file: `src/lib/config.ts` - Centralized environment configuration module
+- Update file: `src/index.ts` - App entry point for startup validation
+- New file: `.env.example` - Environment variable template
+- Update file: `README.md` - Documentation for environment setup
+- Existing type definitions: `src/types/env.ts` - Already defines Env interface with all variables
 
 ### Dependencies
 - Story 1.1: Project initialization with Hono framework and TypeScript setup
@@ -123,8 +123,8 @@ From `src/types/env.ts`, the following environment variables are already defined
 - [Source: docs/architecture.md#Environment Config] - Type-safe wrangler bindings strategy
 - [Source: docs/epics.md#Story 1.6] - Complete acceptance criteria
 - [Source: docs/prd.md#Section 4.1] - Environment configuration management strategy
-- [Source: cloudflareRedirect/src/types/env.ts] - Existing Env interface definition
-- [Source: cloudflareRedirect/.env.example] - Already created by PM agent with all variables documented
+- [Source: src/types/env.ts] - Existing Env interface definition
+- [Source: .env.example] - Already created by PM agent with all variables documented
 
 ## Dev Agent Record
 
@@ -166,12 +166,12 @@ claude-sonnet-4-5-20250929
 
 ### File List
 
-- `cloudflareRedirect/src/lib/config.ts` - NEW: Centralized environment configuration module
-- `cloudflareRedirect/src/index.ts` - MODIFIED: Added startup validation middleware
-- `cloudflareRedirect/.env.example` - EXISTING: Environment variable template (created by PM)
-- `cloudflareRedirect/README.md` - MODIFIED: Added comprehensive environment configuration documentation
-- `cloudflareRedirect/test/lib/config.test.ts` - NEW: Unit tests for config module (17 tests)
-- `cloudflareRedirect/test/integration/startup-validation.test.ts` - NEW: Integration tests for startup validation
+- `src/lib/config.ts` - NEW: Centralized environment configuration module
+- `src/index.ts` - MODIFIED: Added startup validation middleware
+- `.env.example` - EXISTING: Environment variable template (created by PM)
+- `README.md` - MODIFIED: Added comprehensive environment configuration documentation
+- `test/unit/lib/config.test.ts` - NEW: Unit tests for config module (17 tests)
+- `test/integration/startup-validation.test.ts` - NEW: Integration tests for startup validation
 
 ## Senior Developer Review (AI)
 
@@ -193,7 +193,7 @@ However, there is one architectural concern: the validation middleware executes 
 
 #### ✅ **Strengths:**
 1. **Excellent code documentation** - Comprehensive JSDoc comments on all exported functions (config.ts:4-148)
-2. **Strong test coverage** - 17 unit tests covering all validation scenarios, edge cases, and type safety (test/lib/config.test.ts)
+2. **Strong test coverage** - 17 unit tests covering all validation scenarios, edge cases, and type safety (test/unit/lib/config.test.ts)
 3. **Proper error handling** - Descriptive error messages with appropriate status codes using RedirectError class
 4. **Type safety** - TypeScript strict mode compliance with well-defined interfaces (Config, Env)
 5. **Conditional validation** - GA4 credentials only required when provider is enabled (config.ts:62-78)

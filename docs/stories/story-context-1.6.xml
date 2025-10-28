@@ -55,7 +55,7 @@
         <snippet>src/lib/ directory contains shared modules for kv-store, validation, tracking, and errors. Entry point is src/index.ts with Hono app initialization.</snippet>
       </doc>
       <doc>
-        <path>cloudflareRedirect/.env.example</path>
+        <path>.env.example</path>
         <title>Environment Variable Template</title>
         <section>Complete variable documentation</section>
         <snippet>Already created by PM agent with comprehensive documentation for all env vars: ALLOWED_DOMAINS, ENABLE_TRACKING, DEFAULT_REDIRECT_URL, ANALYTICS_PROVIDERS, GA4_MEASUREMENT_ID, GA4_API_SECRET, ANALYTICS_TIMEOUT_MS. Includes section headers and usage notes.</snippet>
@@ -63,21 +63,21 @@
     </docs>
     <code>
       <artifact>
-        <path>cloudflareRedirect/src/index.ts</path>
+        <path>src/index.ts</path>
         <kind>entry-point</kind>
         <symbol>app</symbol>
         <lines>1-52</lines>
         <reason>Main application entry point where validateRequiredEnvVars() should be called on startup. Currently initializes Hono app, mounts routes, and sets up global error handler.</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/src/lib/errors.ts</path>
+        <path>src/lib/errors.ts</path>
         <kind>error-handling</kind>
         <symbol>RedirectError</symbol>
         <lines>1-15</lines>
         <reason>Custom error class that can be used for throwing descriptive validation errors. Supports statusCode and code properties for proper HTTP error responses.</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/src/types/env.ts</path>
+        <path>src/types/env.ts</path>
         <kind>type-definition</kind>
         <symbol>Env</symbol>
         <lines>1-12</lines>
@@ -122,7 +122,7 @@
           ANALYTICS_TIMEOUT_MS?: string
         }
       </signature>
-      <path>cloudflareRedirect/src/types/env.ts</path>
+      <path>src/types/env.ts</path>
     </interface>
     <interface>
       <name>RedirectError</name>
@@ -134,32 +134,32 @@
           constructor(message: string, statusCode?: number, code?: string)
         }
       </signature>
-      <path>cloudflareRedirect/src/lib/errors.ts</path>
+      <path>src/lib/errors.ts</path>
     </interface>
     <interface>
       <name>validateRequiredEnvVars</name>
       <kind>Function (to be created)</kind>
       <signature>export function validateRequiredEnvVars(env: Env): void</signature>
-      <path>cloudflareRedirect/src/lib/config.ts</path>
+      <path>src/lib/config.ts</path>
     </interface>
     <interface>
       <name>loadConfig</name>
       <kind>Function (to be created)</kind>
       <signature>export function loadConfig(env: Env): ConfigObject</signature>
-      <path>cloudflareRedirect/src/lib/config.ts</path>
+      <path>src/lib/config.ts</path>
     </interface>
     <interface>
       <name>getEnvValue</name>
       <kind>Generic Function (to be created)</kind>
       <signature>export function getEnvValue&lt;T&gt;(key: string, defaultValue?: T): T</signature>
-      <path>cloudflareRedirect/src/lib/config.ts</path>
+      <path>src/lib/config.ts</path>
     </interface>
   </interfaces>
 
   <tests>
-    <standards>Use Vitest v4.0+ for all testing with Miniflare for accurate Cloudflare Workers runtime emulation. Unit tests go in test/lib/, integration tests in test/integration/. Test files follow pattern *.test.ts. Use descriptive test names and organize with describe blocks. Mock external dependencies using Vitest mocking utilities.</standards>
+    <standards>Use Vitest v4.0+ for all testing with Miniflare for accurate Cloudflare Workers runtime emulation. Unit tests go in test/unit/lib/, integration tests in test/integration/. Test files follow pattern *.test.ts. Use descriptive test names and organize with describe blocks. Mock external dependencies using Vitest mocking utilities.</standards>
     <locations>
-      <location>test/lib/config.test.ts</location>
+      <location>test/unit/lib/config.test.ts</location>
       <location>test/integration/startup-validation.test.ts</location>
     </locations>
     <ideas>

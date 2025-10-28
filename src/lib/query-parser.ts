@@ -41,7 +41,7 @@ export function isDebugMode(value: string | undefined | null): boolean {
  * @param url - Full URL string with query parameters (e.g., '/r?to=https://example.com&debug=1')
  * @returns Object with destination URL and debug mode flag
  */
-export function parseDestinationFromQuery(url: string): { destination: string; debugMode: boolean, usedLegacyParam: boolean } {
+export function parseDestinationFromQuery(url: string): { destination: string; debugMode: boolean } {
   // Extract query string from URL
   const queryStartIndex = url.indexOf('?')
   if (queryStartIndex === -1) {
@@ -88,15 +88,15 @@ export function parseDestinationFromQuery(url: string): { destination: string; d
       : remainingQuery.substring(0, nextAmpIndex)
   } else {
     // Raw (non-encoded): 'to' is the LAST parameter, extract everything after 'to='
-    // BUT: strip outer query params like &debug= or &n= that appear AFTER the destination
+    // BUT: strip outer query params like &debug= that appear AFTER the destination
     // This handles cases like: /r?to=https://example.com&debug=1
     // We need to be careful to preserve destination query params like: /r?to=https://example.com?var1=abc&var2=def&debug=1
 
-    // Strategy: Look for &debug= or &n= patterns that appear at the END of the string
+    // Strategy: Look for &debug= patterns that appear at the END of the string
     // ONLY strip if there's NO '?' in the destination (meaning no query params in destination)
     // If there's a '?' in the destination, then &debug= is part of destination's query params
     const hasDestinationQuery = remainingQuery.includes('?')
-    const outerParamMatch = remainingQuery.match(/&(debug|n)=(0|1|true|false|yes|no|on|off|enabled|disabled)$/i)
+    const outerParamMatch = remainingQuery.match(/&debug=(0|1|true|false|yes|no|on|off|enabled|disabled)$/i)
 
     if (outerParamMatch && !hasDestinationQuery) {
       // Strip outer param from destination (only if destination has no query params)
@@ -123,73 +123,50 @@ export function parseDestinationFromQuery(url: string): { destination: string; d
   // Extract debug mode from various locations
   let debugMode = false
   let cleanDestination = destination
-  let usedLegacyParam = false
 
-  // Check for 'debug=' or legacy 'n=' in outer query (before 'to=' parameter)
+  // Check for 'debug=' in outer query (before 'to=' parameter)
   const outerQuery = queryString.substring(0, lastToMatch.index)
   const debugMatch = outerQuery.match(/(?:^|&)debug=([^&]*)/)
-  const legacyMatch = outerQuery.match(/(?:^|&)n=([^&]*)/)
 
   if (debugMatch) {
     const debugValue = debugMatch[1]
     debugMode = isDebugMode(debugValue)
-  } else if (legacyMatch) {
-    const debugValue = legacyMatch[1]
-    debugMode = isDebugMode(debugValue)
-    usedLegacyParam = true
   }
 
-  // Also check for 'debug=' or 'n=' AFTER 'to=' in the outer query
+  // Also check for 'debug=' AFTER 'to=' in the outer query
   if (!debugMode) {
     if (isEncoded) {
-      // Encoded case: check for debug/n after to parameter
+      // Encoded case: check for debug after to parameter
       const afterToQuery = queryString.substring(toStartIndex + destinationRaw.length)
       const debugMatchAfter = afterToQuery.match(/&debug=([^&]*)/)
-      const legacyMatchAfter = afterToQuery.match(/&n=([^&]*)/)
 
       if (debugMatchAfter) {
         const debugValue = debugMatchAfter[1]
         debugMode = isDebugMode(debugValue)
-        // destination already correct - debug was in outer query, not in destination
-      } else if (legacyMatchAfter) {
-        const debugValue = legacyMatchAfter[1]
-        debugMode = isDebugMode(debugValue)
-        usedLegacyParam = true
         // destination already correct - debug was in outer query, not in destination
       }
     } else {
-      // Non-encoded case: check if we stripped a debug/n param earlier
+      // Non-encoded case: check if we stripped a debug param earlier
       const afterToQuery = queryString.substring(toStartIndex)
       const debugMatchAfter = afterToQuery.match(/&debug=([^&]*)$/)
-      const legacyMatchAfter = afterToQuery.match(/&n=([^&]*)$/)
 
       if (debugMatchAfter) {
         const debugValue = debugMatchAfter[1]
         debugMode = isDebugMode(debugValue)
-        // destination already stripped in lines 72-75, no need to clean
-      } else if (legacyMatchAfter) {
-        const debugValue = legacyMatchAfter[1]
-        debugMode = isDebugMode(debugValue)
-        usedLegacyParam = true
-        // destination already stripped in lines 72-75, no need to clean
+        // destination already stripped earlier, no need to clean
       }
     }
   }
 
-  // Check for 'debug=' or 'n=' INSIDE the destination URL itself
+  // Check for 'debug=' INSIDE the destination URL itself
   if (!debugMode) {
     const debugInDestMatch = destination.match(/[?&]debug=([^&]*)/)
-    const legacyInDestMatch = destination.match(/[?&]n=([^&]*)/)
 
     if (debugInDestMatch) {
       const debugValue = debugInDestMatch[1]
       debugMode = isDebugMode(debugValue)
-    } else if (legacyInDestMatch) {
-      const debugValue = legacyInDestMatch[1]
-      debugMode = isDebugMode(debugValue)
-      usedLegacyParam = true
     }
   }
 
-  return { destination: cleanDestination, debugMode, usedLegacyParam }
+  return { destination: cleanDestination, debugMode }
 }

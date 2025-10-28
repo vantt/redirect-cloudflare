@@ -18,7 +18,7 @@ so that the system can integrate full tracking later without refactoring MVP cod
 
 ## Tasks / Subtasks
 
-- [x] Create `cloudflareRedirect/src/lib/tracking.ts` with no-op exports
+- [x] Create `src/lib/tracking.ts` with no-op exports
   - [x] `extractTrackingParams(destinationUrl: string): Record<string, string>` → returns `{}`
   - [x] `buildGA4Payload(params: Record<string,string>, measurementId: string): any` → returns `{ type: 'noop' }`
   - [x] `sendGA4Event(payload: any, apiSecret: string, measurementId: string): Promise<void>` → resolves immediately
@@ -50,6 +50,6 @@ so that the system can integrate full tracking later without refactoring MVP cod
 
 ### File List
 
-- cloudflareRedirect/src/lib/tracking.ts (new)
-- cloudflareRedirect/src/types/env.ts (modified)
-- cloudflareRedirect/test/lib/tracking.test.ts (new)
+- src/lib/tracking.ts (new)
+- src/types/env.ts (modified)
+- test/unit/lib/tracking.test.ts (new)

@@ -21,8 +21,8 @@ so that I can track campaign performance and user attribution in analytics.
 
 ## Tasks / Subtasks
 
-- [x] Define `TrackingParams` in `cloudflareRedirect/src/types/env.ts`
-- [x] Implement `extractTrackingParams(destinationUrl: string)` in `cloudflareRedirect/src/lib/tracking.ts`
+- [x] Define `TrackingParams` in `src/types/env.ts`
+- [x] Implement `extractTrackingParams(destinationUrl: string)` in `src/lib/tracking.ts`
 - [x] Parse UTM + platform params; URL-decode values safely
 - [x] Handle errors gracefully and return `{}` when parsing fails
 - [x] Unit tests: full UTM, partial UTM, platform params, malformed, none
@@ -69,9 +69,9 @@ so that I can track campaign performance and user attribution in analytics.
 
 ### File List
 
-- Modified: cloudflareRedirect/src/lib/tracking.ts (implemented extractTrackingParams)
-- Modified: cloudflareRedirect/test/lib/tracking.test.ts (updated tests)
-- Verified: cloudflareRedirect/src/types/env.ts (TrackingParams interface exists)
+- Modified: src/lib/tracking.ts (implemented extractTrackingParams)
+- Modified: test/unit/lib/tracking.test.ts (updated tests)
+- Verified: src/types/env.ts (TrackingParams interface exists)
 
 ### Change Log
 

@@ -269,7 +269,7 @@ Establish the foundational serverless redirect infrastructure on Cloudflare Work
 **Acceptance Criteria:**
 1. Create `src/lib/query-parser.ts` module exporting:
    - `isDebugMode(value: string | undefined | null): boolean` - Debug parameter validation
-   - `parseDestinationFromQuery(url: string): { destination: string; debugMode: boolean; usedLegacyParam: boolean }` - Query parsing logic
+   - `parseDestinationFromQuery(url: string): { destination: string; debugMode: boolean }` - Query parsing logic
 2. Create `src/lib/response-builder.ts` module exporting:
    - `createDebugResponse(destination: string): Response` - Debug mode response builder
    - `createRedirectResponse(destination: string, type: 'permanent' | 'temporary'): Response` - Redirect response builder

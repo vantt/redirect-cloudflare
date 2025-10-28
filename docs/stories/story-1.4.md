@@ -85,12 +85,12 @@ so that system returns consistent, meaningful error responses with appropriate H
 
 ### File List
 
-- `cloudflareRedirect/src/lib/errors.ts` - RedirectError class implementation
-- `cloudflareRedirect/src/index.ts` - Global error handler registration
-- `cloudflareRedirect/src/routes/redirect.ts` - Updated to use RedirectError
-- `cloudflareRedirect/test/lib/errors.test.ts` - Unit tests for RedirectError
-- `cloudflareRedirect/test/integration/error-handling.test.ts` - Integration tests for global error handler
-- `cloudflareRedirect/test/integration/redirect-endpoint.test.ts` - Updated for new error format
+- `src/lib/errors.ts` - RedirectError class implementation
+- `src/index.ts` - Global error handler registration
+- `src/routes/redirect.ts` - Updated to use RedirectError
+- `test/unit/lib/errors.test.ts` - Unit tests for RedirectError
+- `test/integration/error-handling.test.ts` - Integration tests for global error handler
+- `test/integration/redirect-endpoint.test.ts` - Updated for new error format
 
 ## Senior Developer Review (AI)
 

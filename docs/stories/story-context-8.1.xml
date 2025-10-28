@@ -1,0 +1,46 @@
+﻿<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>8</epicId>
+    <storyId>1</storyId>
+    <title>GA4 Measurement Protocol Payload Builder</title>
+    <status>Ready</status>
+    <generatedAt>'@ + $date + @'</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-8.1.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>construct valid GA4 Measurement Protocol payloads from tracking parameters</iWant>
+    <soThat>analytics events can be sent to Google Analytics 4 with correct data structure</soThat>
+    <tasks>- Implement buildGA4Payload(params, measurementId); include client_id and events array per GA4 spec; handle optional/custom params (xptdk, ref); omit undefined fields; unit tests for full/minimal/custom payloads.</tasks>
+  </story>
+
+  <acceptanceCriteria>1) export buildGA4Payload; 2) construct GA4 v2 payload structure; (Details per story file)</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+  - path: docs/prd.md; title: PRD; section: Functional Requirements; snippet: FR2 pre-redirect tracking and FR3 GA4 integration are mandatory before redirect.
+  - path: docs/architecture.md; title: Architecture; section: Hybrid Solution (/ and /r); snippet: Server-side /r endpoint performs tracking before returning 301/302; legacy / auto-upgrades to /r.
+  - path: docs/tech-spec-epic-8.md; title: Tech Spec Epic 8; section: Overview; snippet: GA4 Measurement Protocol integration with 2s timeout and structured logs; non-blocking redirect.
+</docs>
+    <code></code>
+    <dependencies>
+  - ecosystem: runtime; packages: Cloudflare Workers, Hono, TypeScript, Zod
+  - ecosystem: testing; packages: Vitest, Miniflare
+</dependencies>
+  </artifacts>
+
+  <constraints></constraints>
+  <interfaces></interfaces>
+  <tests>
+    <standards>Vitest + Miniflare; unit + integration; no PII in logs; enforce 2s timeout for GA4 send.</standards>
+    <locations>(to be created in repo; e.g., tests under test)</locations>
+    <ideas>
+  - AC1: exports buildGA4Payload -> assert function exists and types
+  - AC2: payload structure v2 -> validate client_id and events schema
+  - AC3: omit undefined -> minimal vs full vs custom params cases
+</ideas>
+  </tests>
+</story-context>
+

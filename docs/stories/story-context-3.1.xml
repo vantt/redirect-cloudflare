@@ -71,28 +71,28 @@
     </docs>
     <code>
       <artifact>
-        <path>cloudflareRedirect/src/index.ts</path>
+        <path>src/index.ts</path>
         <kind>entry-point</kind>
         <symbol>app.get('/', (c) => c.text('Hello World'))</symbol>
         <lines>7</lines>
         <reason>Current root endpoint needs to be replaced with bootstrap functionality</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/src/routes/redirect.ts</path>
+        <path>src/routes/redirect.ts</path>
         <kind>route</kind>
         <symbol>createRedirectResponse</symbol>
         <lines>23-31</lines>
         <reason>Reference pattern for redirect response creation and URL handling</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/src/lib/errors.ts</path>
+        <path>src/lib/errors.ts</path>
         <kind>utility</kind>
         <symbol>RedirectError</symbol>
         <lines>1-20</lines>
         <reason>Error handling pattern to follow for bootstrap endpoint</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/test/bootstrap.test.ts</path>
+        <path>test/bootstrap.test.ts</path>
         <kind>test</kind>
         <symbol>placeholder test</symbol>
         <lines>3-6</lines>
@@ -126,20 +126,20 @@
       <name>Hono HTML Response</name>
       <kind>framework-method</kind>
       <signature>c.html(htmlContent: string): Response</signature>
-      <path>cloudflareRedirect/src/index.ts</path>
+      <path>src/index.ts</path>
     </interface>
     <interface>
       <name>Environment Bindings</name>
       <kind>type-interface</kind>
       <signature>interface Env { DEFAULT_REDIRECT_URL?: string }</signature>
-      <path>cloudflareRedirect/src/types/env.ts</path>
+      <path>src/types/env.ts</path>
     </interface>
   </interfaces>
   <tests>
     <standards>Use Vitest with describe/it/expect pattern. Integration tests should test complete request/response cycles using Miniflare for Cloudflare Workers emulation. Tests should verify HTML content structure and JavaScript logic functionality.</standards>
     <locations>
-      <location>cloudflareRedirect/test/bootstrap.test.ts</location>
-      <location>cloudflareRedirect/test/integration/</location>
+      <location>test/bootstrap.test.ts</location>
+      <location>test/integration/</location>
     </locations>
     <ideas>
       <test ac="6">Test hash URL upgrade: Mock request to GET /#https://example.com and verify HTML response contains upgrade script</test>

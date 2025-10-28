@@ -22,7 +22,7 @@ so that adding/removing providers is simple and failures don't affect each other
   - [x] Iterate providers concurrently; isolate errors (try/catch per provider)
   - [x] Hook structured logging (attempt/success/failure/duration per provider)
 - [x] Add timeout policy integration (placeholder; detailed per 7.5) with safe default
-- [x] Unit tests in cloudflareRedirect/test/lib/analytics/router.test.ts
+- [x] Unit tests in test/unit/lib/analytics/router.test.ts
   - [x] No providers (noop)
   - [x] Single provider success
   - [x] Multiple providers with one failing (others still run)
@@ -80,8 +80,8 @@ Foundation ready for Epic 7.4 (integration into redirect flow) and Epic 7.5 (enh
 
 ### File List
 
-- Added: cloudflareRedirect/src/lib/analytics/router.ts (core router implementation)
-- Added: cloudflareRedirect/test/lib/analytics/router.test.ts (comprehensive router tests)
+- Added: src/lib/analytics/router.ts (core router implementation)
+- Added: test/unit/lib/analytics/router.test.ts (comprehensive router tests)
 
 ### Change Log
 

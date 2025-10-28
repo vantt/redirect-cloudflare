@@ -57,15 +57,17 @@ so that I can verify tracking parameters and payload structure before deployment
 - Implemented createDebugResponse function for JSON output
 - Added tracking parameter extraction for debug mode
 - Created comprehensive integration tests for debug scenarios
-- Verified Zod schema supports optional n parameter
+- ~~Verified Zod schema supports optional n parameter~~ **[DEPRECATED: n parameter removed 2025-10-28, replaced with debug= parameter]**
 
 ### Completion Notes
-Successfully implemented debug mode (`n=1`) for redirect endpoint. When debug mode is active, endpoint returns JSON response with destination, tracking_params, redirect_type, and note instead of performing redirect. Normal redirect flow preserved for `n=0` or omitted parameter. Integration tests cover all scenarios including JSON structure verification.
+Successfully implemented debug mode (~~`n=1`~~ **now `debug=1`**) for redirect endpoint. When debug mode is active, endpoint returns JSON response with destination, tracking_params, redirect_type, and note instead of performing redirect. Normal redirect flow preserved for ~~`n=0`~~ **`debug=0`** or omitted parameter. Integration tests cover all scenarios including JSON structure verification.
+
+**[UPDATE 2025-10-28]:** Legacy `n=` parameter has been removed and replaced with `debug=` parameter for consistency.
 
 ### File List
-- cloudflareRedirect/src/routes/redirect.ts (updated with debug mode logic)
-- cloudflareRedirect/src/lib/tracking.ts (imported extractTrackingParams)
-- cloudflareRedirect/test/routes/redirect-debug.test.ts (new file)
+- src/routes/redirect.ts (updated with debug mode logic)
+- src/lib/tracking.ts (imported extractTrackingParams)
+- test/integration/routes/redirect-debug.test.ts (new file)
 
 ### Change Log
 - 2025-10-25: Implemented debug mode with JSON response structure
@@ -97,20 +99,20 @@ Story implements debug mode functionality for redirect endpoint with comprehensi
 
 ### Acceptance Criteria Coverage
 
-✅ AC #1: `/r` endpoint checks for `n` query parameter ('0' | '1') - **IMPLEMENTED**
-✅ AC #2: `n=1` returns JSON with destination, tracking_params, redirect_type, note - **IMPLEMENTED**
-✅ AC #3: `n=0` or omitted: normal redirect behavior (default) - **IMPLEMENTED**
-✅ AC #4: Zod schema includes optional `n` parameter - **IMPLEMENTED** (from Story 6.1)
+✅ AC #1: `/r` endpoint checks for ~~`n`~~ **`debug`** query parameter ('0' | '1') - **IMPLEMENTED** [Updated to `debug=` 2025-10-28]
+✅ AC #2: ~~`n=1`~~ **`debug=1`** returns JSON with destination, tracking_params, redirect_type, note - **IMPLEMENTED**
+✅ AC #3: ~~`n=0`~~ **`debug=0`** or omitted: normal redirect behavior (default) - **IMPLEMENTED**
+✅ AC #4: Zod schema includes optional ~~`n`~~ **`debug`** parameter - **IMPLEMENTED** (from Story 6.1) [Updated 2025-10-28]
 ✅ AC #5: Debug mode extracts tracking params but does NOT send to GA4 - **IMPLEMENTED**
-✅ AC #6: Integration test: `/r?to=...&n=1` returns 200 JSON (no redirect) - **IMPLEMENTED**
-✅ AC #7: Integration test: `/r?to=...&n=0` returns 302 redirect (normal) - **IMPLEMENTED**
+✅ AC #6: Integration test: `/r?to=...&`~~`n=1`~~ **`debug=1`** returns 200 JSON (no redirect) - **IMPLEMENTED**
+✅ AC #7: Integration test: `/r?to=...&`~~`n=0`~~ **`debug=0`** returns 302 redirect (normal) - **IMPLEMENTED**
 ✅ AC #8: Integration test: `/r?to=...` returns 302 redirect (default) - **IMPLEMENTED**
 ✅ AC #9: Debug response includes all tracking params found in destination URL - **IMPLEMENTED**
 
 ### Test Coverage and Gaps
 
 Test coverage is excellent:
-- All debug mode scenarios tested (n=1, n=0, missing n, invalid n)
+- All debug mode scenarios tested (~~n=1, n=0, missing n, invalid n~~ **now `debug=1`, `debug=0`, missing debug, invalid debug**)
 - JSON response structure verified including field types and presence
 - Redirect behavior preserved for normal modes
 - Parameter validation tested (missing to, invalid n values)

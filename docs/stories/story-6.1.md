@@ -29,7 +29,7 @@ so that malformed or malicious inputs are rejected early with clear error messag
 ## Tasks / Subtasks
 
 - [x] Add dependencies to `package.json` (documented for local install)
-- [x] Create `cloudflareRedirect/src/lib/validation.ts` with `redirectSchema`
+- [x] Create `src/lib/validation.ts` with `redirectSchema`
 - [x] Update `/r` handler to apply `zValidator('query', redirectSchema)`
 - [x] Use `c.req.valid('query')` in handler for typed access
 - [x] Unit tests for schema cases (valid/invalid/missing/optional)
@@ -53,21 +53,23 @@ so that malformed or malicious inputs are rejected early with clear error messag
 
 ### Debug Log
 - Added zod@^4.1.0 and @hono/zod-validator@^0.7.0 dependencies
-- Created validation.ts with redirectSchema supporting optional n parameter
+- Created validation.ts with redirectSchema supporting optional ~~n~~ **debug** parameter **[Updated 2025-10-28: n→debug]**
 - Updated redirect handler to use zValidator middleware and typed access
 - Fixed Hono logger middleware issue by implementing custom logger
 - Created unit and integration tests for validation scenarios
 
 ### Completion Notes
-Successfully implemented Zod schema validation with @hono/zod-validator middleware. The redirect endpoint now validates 'to' as required URL and 'n' as optional enum ('0'|'1'). Invalid inputs return 400 with proper error messages. TypeScript inference works correctly with validated data.
+Successfully implemented Zod schema validation with @hono/zod-validator middleware. The redirect endpoint now validates 'to' as required URL and ~~'n'~~ **'debug'** as optional enum ('0'|'1'). Invalid inputs return 400 with proper error messages. TypeScript inference works correctly with validated data.
+
+**[UPDATE 2025-10-28]:** Legacy `n` parameter replaced with `debug` parameter.
 
 ### File List
-- cloudflareRedirect/package.json (updated dependencies)
-- cloudflareRedirect/src/lib/validation.ts (new file)
-- cloudflareRedirect/src/routes/redirect.ts (updated with zValidator)
-- cloudflareRedirect/src/index.ts (fixed logger middleware)
-- cloudflareRedirect/test/lib/validation.test.ts (new file)
-- cloudflareRedirect/test/routes/redirect-validation.test.ts (new file)
+- package.json (updated dependencies)
+- src/lib/validation.ts (new file)
+- src/routes/redirect.ts (updated with zValidator)
+- src/index.ts (fixed logger middleware)
+- test/unit/lib/validation.test.ts (new file)
+- test/integration/routes/redirect-validation.test.ts (new file)
 
 ### Change Log
 - 2025-10-25: Implemented Zod schema validation for /r endpoint
@@ -98,7 +100,7 @@ Story successfully implements Zod schema validation with @hono/zod-validator mid
 ### Acceptance Criteria Coverage
 
 ✅ AC #1: Dependencies installed (zod@^4.1.0, @hono/zod-validator@^0.7.0) - **IMPLEMENTED**
-✅ AC #2: Validation schema with to: url(), n: enum(['0','1']).optional() - **IMPLEMENTED**
+✅ AC #2: Validation schema with to: url(), ~~n~~ **debug**: enum(['0','1']).optional() - **IMPLEMENTED** [Updated 2025-10-28]
 ✅ AC #3: zValidator middleware applied to /r endpoint - **IMPLEMENTED**
 ✅ AC #4: 400 responses with validation errors - **IMPLEMENTED**
 ✅ AC #5: Typed access via c.req.valid('query') - **IMPLEMENTED**
@@ -125,7 +127,7 @@ Test coverage is excellent:
 ### Security Notes
 
 ✅ Input validation prevents malformed URLs
-✅ Enum validation restricts n parameter to expected values
+✅ Enum validation restricts ~~n~~ **debug** parameter to expected values [Updated 2025-10-28]
 ✅ Early rejection of malicious inputs with 400 status
 ✅ No sensitive data exposure in error messages
 

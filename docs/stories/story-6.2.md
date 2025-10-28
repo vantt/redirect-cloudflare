@@ -52,9 +52,9 @@ so that unsafe schemes and protocol-relative destinations are rejected.
 Successfully implemented protocol validation and open redirect prevention. The redirect endpoint now only accepts http:// and https:// URLs, rejecting dangerous schemes like javascript:, data:, file:, ftp:, and protocol-relative URLs. All invalid URLs return 400 with "Only HTTP/HTTPS URLs allowed" message. Integration with existing validation and error handling is seamless.
 
 ### File List
-- cloudflareRedirect/src/lib/validation.ts (updated with http/https only validation)
-- cloudflareRedirect/test/lib/validation.test.ts (updated with security tests)
-- cloudflareRedirect/test/routes/redirect-security.test.ts (new file)
+- src/lib/validation.ts (updated with http/https only validation)
+- test/unit/lib/validation.test.ts (updated with security tests)
+- test/integration/routes/redirect-security.test.ts (new file)
 
 ### Change Log
 - 2025-10-25: Implemented HTTP/HTTPS only protocol validation

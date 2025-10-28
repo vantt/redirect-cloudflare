@@ -56,9 +56,9 @@ The implementation follows Epic 7 architecture patterns and integrates seamlessl
 
 ## File List
 
-- test/lib/analytics/providers/provider-mocks.ts
-- test/lib/analytics/providers/provider-mocks.test.ts
-- test/lib/analytics/router.e2e.test.ts
+- test/unit/lib/analytics/providers/provider-mocks.ts
+- test/unit/lib/analytics/providers/provider-mocks.test.ts
+- test/unit/lib/analytics/router.e2e.test.ts
 - docs/stories/developer-guide-analytics-providers.md
 
 ## Change Log
@@ -82,10 +82,10 @@ The implementation of Story 7.7 is excellent. All acceptance criteria are met wi
 
 #### ✅ **Positive Findings**
 - **Complete AC Coverage**: All acceptance criteria are fully met.
-- **High-Quality Mocks**: The provider mocks in `test/lib/analytics/providers/provider-mocks.ts` are well-structured, configurable, and correctly implement the `AnalyticsProvider` interface.
-- **Comprehensive E2E Tests**: The E2E tests in `test/lib/analytics/router.e2e.test.ts` cover all specified scenarios, including success, failure, timeout, and mixed-provider situations.
+- **High-Quality Mocks**: The provider mocks in `test/unit/lib/analytics/providers/provider-mocks.ts` are well-structured, configurable, and correctly implement the `AnalyticsProvider` interface.
+- **Comprehensive E2E Tests**: The E2E tests in `test/unit/lib/analytics/router.e2e.test.ts` cover all specified scenarios, including success, failure, timeout, and mixed-provider situations.
 - **Excellent Documentation**: The `docs/stories/developer-guide-analytics-providers.md` is clear, comprehensive, and provides valuable guidance for future developers.
-- **Strong Test Coverage**: The unit tests for the mocks in `test/lib/analytics/providers/provider-mocks.test.ts` are thorough.
+- **Strong Test Coverage**: The unit tests for the mocks in `test/unit/lib/analytics/providers/provider-mocks.test.ts` are thorough.
 
 #### ⚠️ **Minor Observations**
 - **Missing Story Context**: No Story Context file was found. While not blocking for this story, it's a deviation from the process.

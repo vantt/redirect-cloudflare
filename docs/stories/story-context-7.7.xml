@@ -31,21 +31,21 @@
       <doc path="docs/tech-spec-epic-7.md" title="Tech Spec Epic 7" section="Testing Strategy" snippet="Mocks, harness, multi-provider scenarios"/>
       <doc path="docs/prd.md" title="PRD" section="NFR5" snippet="Reliability before redirect; do not block user flow"/></docs>
     <code>      <artifact>
-        <path>cloudflareRedirect/src/lib/analytics/provider.ts</path>
+        <path>src/lib/analytics/provider.ts</path>
         <kind>library</kind>
         <symbol>AnalyticsProvider interface</symbol>
         <lines>1-200</lines>
         <reason>Define mock contract for providers</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/src/lib/analytics/router.ts</path>
+        <path>src/lib/analytics/router.ts</path>
         <kind>library</kind>
         <symbol>routeAnalyticsEvent</symbol>
         <lines>1-240</lines>
         <reason>E2E harness targets router fan-out behavior</reason>
       </artifact></code>
-    <dependencies>      <dependency path="cloudflareRedirect/package.json" reason="Test tooling (Vitest/Miniflare)"/>
-      <dependency path="cloudflareRedirect/wrangler.toml" reason="Bindings and env for tests"/></dependencies>
+    <dependencies>      <dependency path="package.json" reason="Test tooling (Vitest/Miniflare)"/>
+      <dependency path="wrangler.toml" reason="Bindings and env for tests"/></dependencies>
   </artifacts>
 
   <constraints>    <constraint type="non-blocking" description="Tests must not block redirect flow"/>
@@ -53,7 +53,7 @@
   <interfaces>    <interface name="AnalyticsProvider" location="src/lib/analytics/provider.ts" signature="send(event: AnalyticsEvent): Promise&lt;void&gt;"/></interfaces>
   <tests>
     <standards>      <standard tool="Vitest v4.0+" purpose="Unit/E2E with Miniflare"/></standards>
-    <locations>      <location path="cloudflareRedirect/test/lib/analytics/router.e2e.test.ts" description="Multi-provider scenarios"/></locations>
+    <locations>      <location path="test/unit/lib/analytics/router.e2e.test.ts" description="Multi-provider scenarios"/></locations>
     <ideas>      <test-idea type="e2e" description="No providers => router completes without errors"/>
       <test-idea type="e2e" description="Single/multi providers: success/fail/timeout"/>
       <test-idea type="unit" description="Provider mocks shape and error handling"/></ideas>

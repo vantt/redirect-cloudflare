@@ -24,7 +24,7 @@ so that analytics never delays or blocks the redirect response.
 - [ ] Structured logging (Story 5.2):
   - [ ] Log attempt/success/failure/timeout with duration per provider
   - [ ] Avoid PII; use provider key and event name only
-- [ ] Unit tests in cloudflareRedirect/test/lib/analytics/router.timeout.test.ts
+- [ ] Unit tests in test/unit/lib/analytics/router.timeout.test.ts
   - [ ] Timeout path triggers within expected window
   - [ ] Hung provider does not block others
   - [ ] Router completes under budget with mixed outcomes

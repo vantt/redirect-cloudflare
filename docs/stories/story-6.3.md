@@ -60,11 +60,11 @@ so that I can enforce governance and prevent redirects to unauthorized destinati
 Successfully implemented optional domain allowlist configuration for enterprise governance. The system supports permissive mode (undefined ALLOWED_DOMAINS allows all domains) and restricted mode (comma-separated list allows exact domains and their subdomains). Domain validation is performed before redirect and throws 403 RedirectError for forbidden destinations. Integration with existing validation is seamless.
 
 ### File List
-- cloudflareRedirect/src/types/env.ts (updated with ALLOWED_DOMAINS binding)
-- cloudflareRedirect/src/lib/validation.ts (added validateDestinationDomain function)
-- cloudflareRedirect/src/routes/redirect.ts (integrated domain validation before redirect)
-- cloudflareRedirect/test/lib/validation-allowlist.test.ts (new file)
-- cloudflareRedirect/test/routes/redirect-allowlist.test.ts (new file)
+- src/types/env.ts (updated with ALLOWED_DOMAINS binding)
+- src/lib/validation.ts (added validateDestinationDomain function)
+- src/routes/redirect.ts (integrated domain validation before redirect)
+- test/unit/lib/validation-allowlist.test.ts (new file)
+- test/integration/routes/redirect-allowlist.test.ts (new file)
 
 ### Change Log
 - 2025-10-25: Implemented domain allowlist with environment variable support

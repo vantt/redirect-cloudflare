@@ -43,21 +43,21 @@
     </docs>
     <code>
       <artifact>
-        <path>cloudflareRedirect/src/lib/validation.ts</path>
+        <path>src/lib/validation.ts</path>
         <kind>library</kind>
         <symbol>redirectSchema</symbol>
         <lines>1-80</lines>
         <reason>Zod schema for /r query validation</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/src/routes/redirect.ts</path>
+        <path>src/routes/redirect.ts</path>
         <kind>endpoint</kind>
         <symbol>zValidator('query', redirectSchema)</symbol>
         <lines>1-120</lines>
         <reason>Apply middleware and use c.req.valid('query')</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/src/index.ts</path>
+        <path>src/index.ts</path>
         <kind>entry-point</kind>
         <symbol>Route registration</symbol>
         <lines>1-60</lines>
@@ -87,8 +87,8 @@
       <standard tool="Miniflare" purpose="Workers runtime emulation"/>
     </standards>
     <locations>
-      <location path="cloudflareRedirect/test/lib/validation-schema.test.ts" description="Unit: schema validation cases"/>
-      <location path="cloudflareRedirect/test/routes/redirect-validation.test.ts" description="Integration: 400 responses for invalid/missing"/>
+      <location path="test/unit/lib/validation-schema.test.ts" description="Unit: schema validation cases"/>
+      <location path="test/integration/routes/redirect-validation.test.ts" description="Integration: 400 responses for invalid/missing"/>
     </locations>
     <ideas>
       <test-idea type="unit" description="Valid URL + optional n passes"/>

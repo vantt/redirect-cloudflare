@@ -123,14 +123,6 @@ describe('Redirect Debug Mode', () => {
     expect(response.headers.get('Content-Type')).toBe('application/json')
   })
 
-  it('should support legacy n parameter with warning log (AC#1)', async () => {
-    // n parameter still works but should log a warning
-    const response = await app.request('/r?to=https://example.com&debug=1', {}, testEnv)
-
-    expect(response.status).toBe(200)
-    expect(response.headers.get('Content-Type')).toBe('application/json')
-    // Note: Warning log would be checked in integration tests with log capture
-  })
 
   it('should have proper JSON structure formatting', async () => {
     const response = await app.request('/r?to=https%3A%2F%2Fexample.com&debug=1', {}, testEnv)

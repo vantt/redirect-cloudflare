@@ -38,28 +38,28 @@
     </docs>
     <code>
       <artifact>
-        <path>cloudflareRedirect/src/lib/analytics/router.ts</path>
+        <path>src/lib/analytics/router.ts</path>
         <kind>library</kind>
         <symbol>routeAnalyticsEvent logging hooks</symbol>
         <lines>1-220</lines>
         <reason>Inject structured logs for provider dispatch lifecycle</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/src/utils/logger.ts</path>
+        <path>src/utils/logger.ts</path>
         <kind>library</kind>
         <symbol>appLogger</symbol>
         <lines>1-160</lines>
         <reason>Structured logging utility (Story 5.2)</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/src/routes/redirect.ts</path>
+        <path>src/routes/redirect.ts</path>
         <kind>route</kind>
         <symbol>GET /r handler</symbol>
         <lines>1-200</lines>
         <reason>Integrates analytics routing before issuing 301/302 redirect</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/src/lib/tracking.ts</path>
+        <path>src/lib/tracking.ts</path>
         <kind>library</kind>
         <symbol>trackRedirect / extractTrackingParams</symbol>
         <lines>1-220</lines>
@@ -86,7 +86,7 @@
       <standard tool="Vitest v4.0+" purpose="Unit testing"/>
     </standards>
     <locations>
-      <location path="cloudflareRedirect/test/lib/analytics/router.observe.test.ts" description="Verify log entries schema and no PII"/>
+      <location path="test/unit/lib/analytics/router.observe.test.ts" description="Verify log entries schema and no PII"/>
     </locations>
     <ideas>
       <test-idea type="unit" description="Logs attempt before provider call and result after"/>

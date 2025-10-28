@@ -84,22 +84,22 @@ export default app
 
 **Testing Standards:**
 - Use Vitest + Miniflare for integration tests
-- Test file location: `test/routes/redirect.test.ts`
+- Test file location: `test/integration/routes/redirect.test.ts`
 - Cover success paths (valid redirect) and error paths (missing parameter)
 - Verify HTTP status codes and response headers
 
 ### Project Structure Notes
 
 **Files to Create:**
-- `cloudflareRedirect/src/routes/redirect.ts` - /r endpoint route handler
-- `cloudflareRedirect/test/routes/redirect.test.ts` - Integration tests
+- `src/routes/redirect.ts` - /r endpoint route handler
+- `test/integration/routes/redirect.test.ts` - Integration tests
 
 **Files to Modify:**
-- `cloudflareRedirect/src/index.ts` - Register redirect route
+- `src/index.ts` - Register redirect route
 
 **Directory Structure:**
 ```
-cloudflareRedirect/
+
 ├── src/
 │   ├── index.ts                 # Main entry - register routes here
 │   ├── routes/
@@ -154,10 +154,10 @@ cloudflareRedirect/
 
 ### File List
 
-- `cloudflareRedirect/src/routes/redirect.ts` - Main redirect endpoint implementation
-- `cloudflareRedirect/src/index.ts` - Updated to register redirect route
-- `cloudflareRedirect/test/integration/redirect-endpoint.test.ts` - Integration tests
-- `cloudflareRedirect/test/redirect.test.ts` - Additional redirect tests
+- `src/routes/redirect.ts` - Main redirect endpoint implementation
+- `src/index.ts` - Updated to register redirect route
+- `test/integration/redirect-endpoint.test.ts` - Integration tests
+- `test/redirect.test.ts` - Additional redirect tests
 
 
 ## Merged Addendum

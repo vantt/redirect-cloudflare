@@ -22,13 +22,12 @@ const httpHttpsUrl = z.string().refine((url) => {
   message: 'Only HTTP/HTTPS URLs allowed'
 })
 
-// Query parameter schema (AC#1: added 'debug', kept 'n' for backwards compatibility)
+// Query parameter schema
 // Accepts truthy values: 1, true, yes, on, enabled
 // Accepts falsy values: 0, false, no, off, disabled
 export const redirectSchema = z.object({
   to: httpHttpsUrl,
-  debug: z.enum(['0', '1', 'true', 'false', 'yes', 'no', 'on', 'off', 'enabled', 'disabled']).optional(), // Primary debug parameter
-  n: z.enum(['0', '1', 'true', 'false', 'yes', 'no', 'on', 'off', 'enabled', 'disabled']).optional() // Legacy parameter for backwards compatibility
+  debug: z.enum(['0', '1', 'true', 'false', 'yes', 'no', 'on', 'off', 'enabled', 'disabled']).optional()
 })
 
 export type RedirectQuery = z.infer<typeof redirectSchema>

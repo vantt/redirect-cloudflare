@@ -80,17 +80,17 @@ export async function putRedirect(
 
 **Testing Standards:**
 - Use Vitest v4.0 + Miniflare for accurate KV namespace simulation
-- Co-locate tests: `test/lib/kv-store.test.ts`
+- Co-locate tests: `test/unit/lib/kv-store.test.ts`
 - Cover success paths, edge cases (not found, malformed JSON), and type safety
 
 ### Project Structure Notes
 
 **Files to Create:**
-- `cloudflareRedirect/src/lib/kv-store.ts` - KV CRUD operations
-- `cloudflareRedirect/test/lib/kv-store.test.ts` - Unit and integration tests
+- `src/lib/kv-store.ts` - KV CRUD operations
+- `test/unit/lib/kv-store.test.ts` - Unit and integration tests
 
 **Files to Modify:**
-- `cloudflareRedirect/src/types/env.ts` - Add `RedirectData` interface (already exists from Story 1.1)
+- `src/types/env.ts` - Add `RedirectData` interface (already exists from Story 1.1)
 
 **KV Binding:**
 - `REDIRECT_KV` namespace already configured in wrangler.toml (Story 1.1)
@@ -150,12 +150,12 @@ N/A - No blocking issues encountered
 ### File List
 
 **Created:**
-- cloudflareRedirect/src/lib/kv-store.ts - KV CRUD operations module
-- cloudflareRedirect/test/lib/kv-store.test.ts - Comprehensive test suite (9 tests)
-- cloudflareRedirect/vitest.config.ts - Vitest configuration for testing
+- src/lib/kv-store.ts - KV CRUD operations module
+- test/unit/lib/kv-store.test.ts - Comprehensive test suite (9 tests)
+- vitest.config.ts - Vitest configuration for testing
 
 **Modified:**
-- cloudflareRedirect/src/types/env.ts - Added RedirectData interface
+- src/types/env.ts - Added RedirectData interface
 
 ---
 

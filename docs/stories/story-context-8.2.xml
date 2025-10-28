@@ -1,0 +1,61 @@
+﻿<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>8</epicId>
+    <storyId>2</storyId>
+    <title>GA4\ Measurement\ Protocol\ HTTP\ Integration</title>
+    <status>drafted</status>
+    <generatedAt>2025-10-26</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-8.2.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>system</asA>
+    <iWant>to send GA4 Measurement Protocol events via HTTP POST before redirect</iWant>
+    <soThat>analytics data is recorded reliably without blocking redirect</soThat>
+    <tasks>- [ ] Implement sendGA4Event(payload, apiSecret, measurementId) (AC:1-3)
+      - [ ] Build URL with measurement_id/api_secret; set headers; JSON body
+      - [ ] Apply AbortSignal.timeout(2000); catch and log errors
+      - [ ] Integration test with Miniflare (AC:4)
+      - [ ] Verify fetch URL and payload sent
+      - [ ] Unit test for timeout configuration (AC:5)
+      - [ ] Wire env bindings GA4_MEASUREMENT_ID/GA4_API_SECRET (AC:6)</tasks>
+  </story>
+
+  <acceptanceCriteria>    1. `lib/tracking.ts` exports async `sendGA4Event(payload, apiSecret, measurementId)` function
+    2. Function sends POST request to `https://www.google-analytics.com/mp/collect` with query params: `measurement_id` and `api_secret`
+    3. Request headers include `Content-Type: application/json`
+    4. Request body is JSON stringified GA4 payload
+    5. Function includes 2-second timeout using `AbortSignal.timeout(2000)`
+    6. Function catches timeout and fetch errors, logs them without throwing
+    7. Integration test with Miniflare verifies fetch call is made with correct URL and payload
+    8. Unit test verifies timeout is properly configured
+    9. Environment variables `GA4_MEASUREMENT_ID` and `GA4_API_SECRET` used from `c.env`</acceptanceCriteria>
+
+  <artifacts>
+    <docs>      <doc path="docs/epics.md" title="Epics" section="Story 8.2" snippet="GA4 HTTP Integration acceptance criteria"/>
+      <doc path="docs/tech-spec-epic-8.md" title="Tech Spec Epic 8" section="HTTP Integration" snippet="Endpoint, headers, timeout policy"/>
+      <doc path="docs/architecture.md" title="Architecture" section="Tracking" snippet="trackRedirect and GA4 call sequence"/>
+      <doc path="docs/prd.md" title="PRD" section="FR3" snippet="Analytics Integration requirement"/>
+      <doc path="docs/sprint-status.yaml" title="Sprint Status" section="development_status" snippet="Tracks 8-2 story status"/></docs>
+    <code>      <artifact>
+        <path>src/lib/tracking.ts</path>
+        <kind>library</kind>
+        <symbol>sendGA4Event</symbol>
+        <lines>1-240</lines>
+        <reason>HTTP integration to GA4 endpoint with timeout</reason>
+      </artifact></code>
+    <dependencies>      <dependency path="wrangler.toml" reason="Env bindings GA4_MEASUREMENT_ID, GA4_API_SECRET"/>
+      <dependency path="package.json" reason="Testing libs (Vitest/Miniflare)"/></dependencies>
+  </artifacts>
+
+  <constraints>    <constraint type="timeout" description="Apply 2s timeout and non-blocking error handling"/></constraints>
+  <interfaces>    <interface name="sendGA4Event" location="src/lib/tracking.ts" signature="(payload, apiSecret, measurementId) => Promise&lt;void&gt;"/></interfaces>
+  <tests>
+    <standards>      <standard tool="Vitest v4.0+" purpose="Unit/Integration"/></standards>
+    <locations>      <location path="test/unit/lib/tracking.http.test.ts" description="HTTP POST to GA4 with timeout"/></locations>
+    <ideas>      <test-idea type="unit" description="Timeout path triggers AbortSignal.timeout(2000)"/>
+      <test-idea type="integration" description="Fetch called with correct URL and headers"/></ideas>
+  </tests>
+</story-context>
+

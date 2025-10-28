@@ -40,14 +40,14 @@
     </docs>
     <code>
       <artifact>
-        <path>cloudflareRedirect/src/lib/validation.ts</path>
+        <path>src/lib/validation.ts</path>
         <kind>library</kind>
         <symbol>redirectSchema refine: http/https only</symbol>
         <lines>1-120</lines>
         <reason>Central place to enforce protocol validation</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/src/routes/redirect.ts</path>
+        <path>src/routes/redirect.ts</path>
         <kind>endpoint</kind>
         <symbol>Guard before redirect on invalid URL</symbol>
         <lines>1-200</lines>
@@ -76,8 +76,8 @@
       <standard tool="Miniflare" purpose="Workers runtime emulation"/>
     </standards>
     <locations>
-      <location path="cloudflareRedirect/test/lib/validation.test.ts" description="Scheme validation: http/https accept; others reject"/>
-      <location path="cloudflareRedirect/test/routes/redirect-security.test.ts" description="/r rejects invalid schemes with 400"/>
+      <location path="test/unit/lib/validation.test.ts" description="Scheme validation: http/https accept; others reject"/>
+      <location path="test/integration/routes/redirect-security.test.ts" description="/r rejects invalid schemes with 400"/>
     </locations>
     <ideas>
       <test-idea type="unit" description="redirectSchema accepts http/https and rejects javascript:/data:/file:/ftp:"/>

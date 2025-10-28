@@ -38,21 +38,21 @@
     </docs>
     <code>
       <artifact>
-        <path>cloudflareRedirect/src/lib/analytics/router.ts</path>
+        <path>src/lib/analytics/router.ts</path>
         <kind>library</kind>
         <symbol>routeAnalyticsEvent with timeout policy</symbol>
         <lines>1-220</lines>
         <reason>Integrates timeout and isolation into dispatch loop</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/src/lib/analytics/provider.ts</path>
+        <path>src/lib/analytics/provider.ts</path>
         <kind>library</kind>
         <symbol>AnalyticsProvider</symbol>
         <lines>1-120</lines>
         <reason>Contract invoked by router</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/src/lib/analytics/types.ts</path>
+        <path>src/lib/analytics/types.ts</path>
         <kind>library</kind>
         <symbol>AnalyticsEvent</symbol>
         <lines>1-120</lines>
@@ -80,7 +80,7 @@
       <standard tool="Vitest v4.0+" purpose="Unit testing"/>
     </standards>
     <locations>
-      <location path="cloudflareRedirect/test/lib/analytics/router.timeout.test.ts" description="Timeout and non-blocking behavior under mixed outcomes"/>
+      <location path="test/unit/lib/analytics/router.timeout.test.ts" description="Timeout and non-blocking behavior under mixed outcomes"/>
     </locations>
     <ideas>
       <test-idea type="unit" description="Timeout triggers within expected window; router returns promptly"/>

@@ -36,21 +36,21 @@
     </docs>
     <code>
       <artifact>
-        <path>cloudflareRedirect/src/index.ts</path>
+        <path>src/index.ts</path>
         <kind>entry-point</kind>
         <symbol>app.use('*', logger())</symbol>
         <lines>1-80</lines>
         <reason>Global request logging</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/src/utils/logger.ts</path>
+        <path>src/utils/logger.ts</path>
         <kind>utility</kind>
         <symbol>appLogger.info/error</symbol>
         <lines>1-120</lines>
         <reason>Structured JSON logs</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/src/routes/redirect.ts</path>
+        <path>src/routes/redirect.ts</path>
         <kind>endpoint</kind>
         <symbol>log redirect processed / tracking events</symbol>
         <lines>1-200</lines>
@@ -76,8 +76,8 @@
       <standard tool="Vitest v4.0+" purpose="Unit and integration testing"/>
     </standards>
     <locations>
-      <location path="cloudflareRedirect/test/utils/logger.test.ts" description="Unit: logger output structure"/>
-      <location path="cloudflareRedirect/test/integration/logger-middleware.test.ts" description="Integration: Hono logger middleware"/>
+      <location path="test/utils/logger.test.ts" description="Unit: logger output structure"/>
+      <location path="test/integration/logger-middleware.test.ts" description="Integration: Hono logger middleware"/>
     </locations>
     <ideas>
       <test-idea type="unit" description="info/error output JSON fields present"/>

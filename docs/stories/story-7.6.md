@@ -24,7 +24,7 @@ so that we can monitor success/failure rates and timing without PII.
   - [ ] Log success/failure/timeout with duration after call
 - [ ] Ensure consistency with Story 5.2 structured logger utilities
 - [ ] Optional: introduce simple in-memory counters interface (behind a flag) for future metrics sink
-- [ ] Unit tests in cloudflareRedirect/test/lib/analytics/router.observe.test.ts
+- [ ] Unit tests in test/unit/lib/analytics/router.observe.test.ts
   - [ ] Verifies log entries shape for success/failure/timeout
   - [ ] Asserts absence of PII (no attribute values in logs)
 
@@ -62,8 +62,8 @@ so that we can monitor success/failure rates and timing without PII.
 
 ### File List
 
-- Enhanced: cloudflareRedirect/src/lib/analytics/router.ts (structured logging hooks)
-- Added: cloudflareRedirect/test/lib/analytics/router.observe.test.ts (comprehensive observability tests)
+- Enhanced: src/lib/analytics/router.ts (structured logging hooks)
+- Added: test/unit/lib/analytics/router.observe.test.ts (comprehensive observability tests)
 
 ### Change Log
 

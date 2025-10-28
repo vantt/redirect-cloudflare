@@ -42,21 +42,21 @@
     </docs>
     <code>
       <artifact>
-        <path>cloudflareRedirect/src/types/env.ts</path>
+        <path>src/types/env.ts</path>
         <kind>types</kind>
         <symbol>ALLOWED_DOMAINS binding</symbol>
         <lines>1-120</lines>
         <reason>Expose optional allowlist via env bindings</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/src/lib/validation.ts</path>
+        <path>src/lib/validation.ts</path>
         <kind>library</kind>
         <symbol>validateDestinationDomain(url, allowedDomains)</symbol>
         <lines>1-160</lines>
         <reason>Centralized allowlist check and parsing</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/src/routes/redirect.ts</path>
+        <path>src/routes/redirect.ts</path>
         <kind>endpoint</kind>
         <symbol>Invoke allowlist validation; throw 403 RedirectError</symbol>
         <lines>1-200</lines>
@@ -85,8 +85,8 @@
       <standard tool="Miniflare" purpose="Workers runtime emulation"/>
     </standards>
     <locations>
-      <location path="cloudflareRedirect/test/lib/validation-allowlist.test.ts" description="validateDestinationDomain unit tests"/>
-      <location path="cloudflareRedirect/test/routes/redirect-allowlist.test.ts" description="/r 403 on forbidden domains"/>
+      <location path="test/unit/lib/validation-allowlist.test.ts" description="validateDestinationDomain unit tests"/>
+      <location path="test/integration/routes/redirect-allowlist.test.ts" description="/r 403 on forbidden domains"/>
     </locations>
     <ideas>
       <test-idea type="unit" description="Exact domain and subdomain accepted; unrelated domain rejected"/>

@@ -46,14 +46,14 @@
     </docs>
     <code>
       <artifact>
-        <path>cloudflareRedirect/src/routes/redirect.ts</path>
+        <path>src/routes/redirect.ts</path>
         <kind>endpoint</kind>
         <symbol>Debug mode branch (n=1) JSON response</symbol>
         <lines>1-180</lines>
         <reason>Implements conditional behavior for debug mode</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/src/lib/validation.ts</path>
+        <path>src/lib/validation.ts</path>
         <kind>library</kind>
         <symbol>redirectSchema includes optional n</symbol>
         <lines>1-80</lines>
@@ -81,7 +81,7 @@
       <standard tool="Miniflare" purpose="Workers runtime emulation"/>
     </standards>
     <locations>
-      <location path="cloudflareRedirect/test/routes/redirect-debug.test.ts" description="n=1 returns JSON; n=0/default redirect"/>
+      <location path="test/integration/routes/redirect-debug.test.ts" description="n=1 returns JSON; n=0/default redirect"/>
     </locations>
     <ideas>
       <test-idea type="integration" description="/r?to=...&n=1 returns 200 JSON with required fields"/>

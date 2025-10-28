@@ -69,10 +69,10 @@ so that business events are decoupled from vendor payloads and easy to extend.
 
 ### File List
 
-- Added: cloudflareRedirect/src/lib/analytics/types.ts (neutral event model)
-- Added: cloudflareRedirect/src/lib/analytics/provider.ts (provider interface and examples)
-- Added: cloudflareRedirect/test/lib/analytics/types.test.ts (type contracts tests)
-- Added: cloudflareRedirect/test/lib/analytics/provider-adapter.example.test.ts (adapter examples tests)
+- Added: src/lib/analytics/types.ts (neutral event model)
+- Added: src/lib/analytics/provider.ts (provider interface and examples)
+- Added: test/unit/lib/analytics/types.test.ts (type contracts tests)
+- Added: test/unit/lib/analytics/provider-adapter.example.test.ts (adapter examples tests)
 
 ### Change Log
 

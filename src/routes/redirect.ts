@@ -13,17 +13,8 @@ const app = new Hono<{ Bindings: Env }>()
 app.get('/', async (c) => {
   try {
     // Use smart parser to extract destination and debug mode
-    // Handles both URL-encoded and non-encoded destination URLs (AC#2-3)
-    const { destination, debugMode, usedLegacyParam } = parseDestinationFromQuery(c.req.url)
-
-    // Log legacy parameter usage for monitoring (AC#1)
-    if (usedLegacyParam) {
-      appLogger.warn('Legacy debug parameter used', {
-        parameter: 'n=',
-        url: c.req.url,
-        recommendation: 'Use debug= parameter instead'
-      })
-    }
+    // Handles both URL-encoded and non-encoded destination URLs
+    const { destination, debugMode } = parseDestinationFromQuery(c.req.url)
 
     if (debugMode) {
       // Debug mode: return response with tracking info

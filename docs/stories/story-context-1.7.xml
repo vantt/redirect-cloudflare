@@ -28,7 +28,7 @@
     <criterion id="2">Create test/helpers/config.ts wrapping fixtures, exposing createMockEnv() and re-exporting common presets with usage documentation.</criterion>
     <criterion id="3">Add .env.test documenting recommended test environment variables, using non-production GA4 samples and clarifying that the file is informational.</criterion>
     <criterion id="4">Update vitest.config.ts comments and setup to explain fixture usage and ensure setupFiles integrates shared bootstrap.</criterion>
-    <criterion id="5">Refactor test/lib/config.test.ts (and related specs) to rely on new helpers, eliminating inline Env mocks while preserving assertions.</criterion>
+    <criterion id="5">Refactor test/unit/lib/config.test.ts (and related specs) to rely on new helpers, eliminating inline Env mocks while preserving assertions.</criterion>
     <criterion id="6">Update README.md with a "Testing Environment" subsection linking to fixtures and Story 1.6 configuration guidance.</criterion>
     <criterion id="7">Add test/fixtures/env.test.ts demonstrating fixture usage, including GA4-enabled scenarios and override patterns.</criterion>
     <criterion id="8">Run npm test (or equivalent) to confirm the suite passes after fixture migration, addressing any regressions surfaced.</criterion>
@@ -61,7 +61,7 @@
         <snippet>**NFR5: Reliability:** The tracking event must be successfully dispatched before the redirect is sent to the client to ensure no data is lost. Consistent test fixtures help validate this reliability contract across scenarios.</snippet>
       </doc>
       <doc>
-        <path>cloudflareRedirect/README.md</path>
+        <path>README.md</path>
         <title>Project README</title>
         <section>Testing</section>
         <snippet>The testing section documents how to run `npm test` with Vitest and explains configuration of environment variables for local runs, aligning with the new fixture helpers.</snippet>
@@ -69,28 +69,28 @@
     </docs>
     <code>
       <artifact>
-        <path>cloudflareRedirect/src/types/env.ts</path>
+        <path>src/types/env.ts</path>
         <kind>type-definition</kind>
         <symbol>Env</symbol>
         <lines>1-20</lines>
         <reason>Authoritative shape for Workers environment variables; fixtures must comply with this interface to keep tests type-safe.</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/test/setup.ts</path>
+        <path>test/setup.ts</path>
         <kind>test-bootstrap</kind>
         <symbol>setupTestEnvironment</symbol>
         <lines>1-40</lines>
         <reason>Global Vitest setup executed before suites; fixture utilities must integrate without duplicating bootstrap logic.</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/vitest.config.ts</path>
+        <path>vitest.config.ts</path>
         <kind>config</kind>
         <symbol>defineConfig</symbol>
         <lines>1-18</lines>
         <reason>Centralized Vitest configuration where documentation for new fixtures and setupFiles updates will live.</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/test/lib/config.test.ts</path>
+        <path>test/unit/lib/config.test.ts</path>
         <kind>unit-test</kind>
         <symbol>describe('config module')</symbol>
         <lines>1-120</lines>
@@ -118,32 +118,32 @@
       <name>createTestEnv</name>
       <kind>Function (new)</kind>
       <signature>export function createTestEnv(overrides?: Partial&lt;Env&gt;): Env</signature>
-      <path>cloudflareRedirect/test/fixtures/env.ts</path>
+      <path>test/fixtures/env.ts</path>
     </interface>
     <interface>
       <name>createMockEnv</name>
       <kind>Function (new)</kind>
       <signature>export function createMockEnv(overrides?: Partial&lt;Env&gt;): Env</signature>
-      <path>cloudflareRedirect/test/helpers/config.ts</path>
+      <path>test/helpers/config.ts</path>
     </interface>
     <interface>
       <name>defaultTestEnv</name>
       <kind>Constant (new)</kind>
       <signature>export const defaultTestEnv: Partial&lt;Env&gt;</signature>
-      <path>cloudflareRedirect/test/fixtures/env.ts</path>
+      <path>test/fixtures/env.ts</path>
     </interface>
     <interface>
       <name>testEnvWithGA4</name>
       <kind>Constant (new)</kind>
       <signature>export const testEnvWithGA4: Env</signature>
-      <path>cloudflareRedirect/test/fixtures/env.ts</path>
+      <path>test/fixtures/env.ts</path>
     </interface>
   </interfaces>
 
   <tests>
     <standards>Adhere to Vitest v4.0 + Miniflare guidance for Cloudflare Workers: colocate unit specs under test/lib, integration under test/integration, and rely on shared setup.ts for global hooks.</standards>
     <locations>
-      <location>test/lib/config.test.ts</location>
+      <location>test/unit/lib/config.test.ts</location>
       <location>test/fixtures/env.test.ts</location>
       <location>test/integration/startup-validation.test.ts</location>
     </locations>

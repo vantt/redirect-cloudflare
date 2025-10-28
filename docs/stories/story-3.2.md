@@ -24,7 +24,7 @@ so that we can confidently deploy without breaking existing user links.
 
 ## Tasks / Subtasks
 
-- [x] Add legacy bootstrap tests under `cloudflareRedirect/test/routes/bootstrap-legacy.test.ts`
+- [x] Add legacy bootstrap tests under `test/integration/routes/bootstrap-legacy.test.ts`
 - [x] Cover upgrade mapping to `/r?to=...` and preserve `utm_*`
 - [x] Cover `isNoRedirect=1` → `n=1` behavior
 - [x] Cover root `/` fallback to `DEFAULT_REDIRECT_URL`
@@ -87,8 +87,8 @@ so that we can confidently deploy without breaking existing user links.
 
 ### File List
 
-- `cloudflareRedirect/test/routes/bootstrap-legacy.test.ts` - Integration tests for legacy URL upgrade
-- `cloudflareRedirect/test/e2e/legacy-upgrade.e2e.test.ts` - End-to-end tests for complete flow
+- `test/integration/routes/bootstrap-legacy.test.ts` - Integration tests for legacy URL upgrade
+- `test/e2e/legacy-upgrade.e2e.test.ts` - End-to-end tests for complete flow
 
 ### Change Log
 

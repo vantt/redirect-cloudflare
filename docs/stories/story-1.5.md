@@ -89,9 +89,9 @@ so that I can optimize SEO for permanent links while maintaining flexibility for
 
 ### File List
 
-- `cloudflareRedirect/src/routes/redirect.ts` - Updated with KV lookup and type mapping
-- `cloudflareRedirect/test/integration/redirect-types.test.ts` - Integration tests for 301/302 redirects
-- `cloudflareRedirect/test/unit/redirect-logic.test.ts` - Unit tests for redirect response creation
+- `src/routes/redirect.ts` - Updated with KV lookup and type mapping
+- `test/integration/redirect-types.test.ts` - Integration tests for 301/302 redirects
+- `test/unit/redirect-logic.test.ts` - Unit tests for redirect response creation
 
 ## Senior Developer Review (AI)
 

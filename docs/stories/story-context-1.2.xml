@@ -69,14 +69,14 @@
     </docs>
     <code>
       <artifact>
-        <path>cloudflareRedirect/src/types/env.ts</path>
+        <path>src/types/env.ts</path>
         <kind>types</kind>
         <symbol>Env interface</symbol>
         <lines>1-4</lines>
         <reason>Existing environment bindings interface - Story 1.2 will add RedirectData interface to this file</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/src/index.ts</path>
+        <path>src/index.ts</path>
         <kind>entry point</kind>
         <symbol>Hono app initialization and routes</symbol>
         <lines>4-16</lines>
@@ -106,7 +106,7 @@
     - Function naming: camelCase (getRedirect, putRedirect)
     - Interface naming: PascalCase (RedirectData)
     - Error handling: Return null for not found/malformed, log errors without throwing
-    - Testing: Co-locate tests in test/lib/ directory with .test.ts suffix
+    - Testing: Co-locate tests in test/unit/lib/ directory with .test.ts suffix
     - Performance budget: KV operations must stay within sub-5ms target (~2-3ms for reads)
   </constraints>
 
@@ -121,7 +121,7 @@
           created: string // ISO 8601
         }
       </signature>
-      <path>cloudflareRedirect/src/types/env.ts</path>
+      <path>src/types/env.ts</path>
     </interface>
     <interface>
       <name>getRedirect</name>
@@ -132,7 +132,7 @@
           kv: KVNamespace
         ): Promise&lt;RedirectData | null&gt;
       </signature>
-      <path>cloudflareRedirect/src/lib/kv-store.ts</path>
+      <path>src/lib/kv-store.ts</path>
     </interface>
     <interface>
       <name>putRedirect</name>
@@ -144,7 +144,7 @@
           kv: KVNamespace
         ): Promise&lt;void&gt;
       </signature>
-      <path>cloudflareRedirect/src/lib/kv-store.ts</path>
+      <path>src/lib/kv-store.ts</path>
     </interface>
     <interface>
       <name>KVNamespace</name>
@@ -161,14 +161,14 @@
 
   <tests>
     <standards>
-      Use Vitest v4.0 + Miniflare for all testing. Co-locate tests in test/lib/ directory with .test.ts suffix.
+      Use Vitest v4.0 + Miniflare for all testing. Co-locate tests in test/unit/lib/ directory with .test.ts suffix.
       Unit tests should use Miniflare's KV simulation for accurate behavior testing.
       Integration tests should verify get/put roundtrip with actual KV namespace.
       Follow Arrange-Act-Assert pattern. Use describe/it blocks for test organization.
       Mock external dependencies but use real Miniflare KV simulation for KV operations.
     </standards>
     <locations>
-      - cloudflareRedirect/test/lib/kv-store.test.ts - Unit and integration tests for KV operations
+      - test/unit/lib/kv-store.test.ts - Unit and integration tests for KV operations
     </locations>
     <ideas>
       <test ac="1">Test RedirectData interface type enforcement prevents invalid data structures at compile time</test>
