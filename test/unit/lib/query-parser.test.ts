@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { parseDestinationFromQuery } from '../../../src/routes/redirect';
+import { describe, it, expect, vi } from 'vitest';
+import { parseDestinationFromQuery, isDebugMode } from '../../../src/lib/query-parser';
 
 describe('parseDestinationFromQuery', () => {
 
@@ -99,4 +99,121 @@ describe('parseDestinationFromQuery', () => {
         });
     });
 
+});
+
+describe('isDebugMode', () => {
+    describe('truthy values', () => {
+        it('should return true for "1"', () => {
+            expect(isDebugMode('1')).toBe(true);
+        });
+
+        it('should return true for "true"', () => {
+            expect(isDebugMode('true')).toBe(true);
+        });
+
+        it('should return true for "yes"', () => {
+            expect(isDebugMode('yes')).toBe(true);
+        });
+
+        it('should return true for "on"', () => {
+            expect(isDebugMode('on')).toBe(true);
+        });
+
+        it('should return true for "enabled"', () => {
+            expect(isDebugMode('enabled')).toBe(true);
+        });
+
+        it('should return true for case-insensitive values', () => {
+            expect(isDebugMode('TRUE')).toBe(true);
+            expect(isDebugMode('Yes')).toBe(true);
+            expect(isDebugMode('ON')).toBe(true);
+            expect(isDebugMode('ENABLED')).toBe(true);
+        });
+
+        it('should return true for values with whitespace', () => {
+            expect(isDebugMode(' 1 ')).toBe(true);
+            expect(isDebugMode(' true ')).toBe(true);
+        });
+    });
+
+    describe('falsy values', () => {
+        it('should return false for "0"', () => {
+            expect(isDebugMode('0')).toBe(false);
+        });
+
+        it('should return false for "false"', () => {
+            expect(isDebugMode('false')).toBe(false);
+        });
+
+        it('should return false for "no"', () => {
+            expect(isDebugMode('no')).toBe(false);
+        });
+
+        it('should return false for "off"', () => {
+            expect(isDebugMode('off')).toBe(false);
+        });
+
+        it('should return false for "disabled"', () => {
+            expect(isDebugMode('disabled')).toBe(false);
+        });
+
+        it('should return false for case-insensitive values', () => {
+            expect(isDebugMode('FALSE')).toBe(false);
+            expect(isDebugMode('No')).toBe(false);
+            expect(isDebugMode('OFF')).toBe(false);
+            expect(isDebugMode('DISABLED')).toBe(false);
+        });
+
+        it('should return false for values with whitespace', () => {
+            expect(isDebugMode(' 0 ')).toBe(false);
+            expect(isDebugMode(' false ')).toBe(false);
+        });
+    });
+
+    describe('edge cases', () => {
+        it('should return false for undefined', () => {
+            expect(isDebugMode(undefined)).toBe(false);
+        });
+
+        it('should return false for null', () => {
+            expect(isDebugMode(null)).toBe(false);
+        });
+
+        it('should return false for empty string', () => {
+            expect(isDebugMode('')).toBe(false);
+        });
+
+        it('should return false for whitespace only', () => {
+            expect(isDebugMode('   ')).toBe(false);
+        });
+
+        it('should return false for invalid values and log warning', () => {
+            const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+            expect(isDebugMode('invalid')).toBe(false);
+
+            // Logger outputs structured JSON, so parse the first argument
+            expect(consoleSpy).toHaveBeenCalled();
+            const logOutput = JSON.parse(consoleSpy.mock.calls[0][0]);
+
+            expect(logOutput.message).toBe('Invalid debug parameter value');
+            expect(logOutput).toMatchObject({
+                level: 'warn',
+                value: 'invalid',
+                expected: 'one of: 1, true, yes, on, enabled, 0, false, no, off, disabled',
+                defaulting_to: false
+            });
+            expect(logOutput.timestamp).toBeDefined();
+
+            consoleSpy.mockRestore();
+        });
+
+        it('should return false for "maybe"', () => {
+            expect(isDebugMode('maybe')).toBe(false);
+        });
+
+        it('should return false for "2"', () => {
+            expect(isDebugMode('2')).toBe(false);
+        });
+    });
 });

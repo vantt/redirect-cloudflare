@@ -92,7 +92,14 @@ export function extractTrackingParams(destinationUrl: string): TrackingParams {
   }
 }
 
-export function buildGA4Payload(params: TrackingParams, measurementId: string): GA4Payload {
+export function buildGA4Payload(params: {
+  shortUrl: string;
+  fullDestination: string;
+  redirectType: 'permanent' | 'temporary';
+  trackingParams: TrackingParams;
+  userAgent?: string;
+  ip?: string;
+}, measurementId?: string): GA4Payload {
   if (!measurementId || measurementId.trim().length === 0) {
     throw new Error('GA4 measurement ID is required to build payload')
   }

@@ -46,7 +46,7 @@ Establish the foundational serverless redirect infrastructure on Cloudflare Work
 
 **Covers PRD Requirements:** FR1 (Server-side redirects), FR6 (Graceful handling), FR7 (URL encoding), NFR1-4 (Performance, Cost, Availability, Security foundation)
 
-**Story Count:** 7 stories
+**Story Count:** 10 stories
 
 ---
 
@@ -257,6 +257,36 @@ Establish the foundational serverless redirect infrastructure on Cloudflare Work
 5. Document rollout guidance and validation steps (e.g., observability expectations, log entries) demonstrating the new parameter name in debug responses.
 
 **Prerequisites:** Story 1.8 (Raw `to` Query Support)
+
+---
+
+### Story 1.10: Refactor Redirect Handler - Extract Helper Functions
+
+**As a** developer,
+**I want** helper functions extracted from redirect.ts into dedicated lib modules,
+**So that** the code is more maintainable, testable, and follows Single Responsibility Principle.
+
+**Acceptance Criteria:**
+1. Create `src/lib/query-parser.ts` module exporting:
+   - `isDebugMode(value: string | undefined | null): boolean` - Debug parameter validation
+   - `parseDestinationFromQuery(url: string): { destination: string; debugMode: boolean; usedLegacyParam: boolean }` - Query parsing logic
+2. Create `src/lib/response-builder.ts` module exporting:
+   - `createDebugResponse(destination: string): Response` - Debug mode response builder
+   - `createRedirectResponse(destination: string, type: 'permanent' | 'temporary'): Response` - Redirect response builder
+3. Update `src/routes/redirect.ts` to import and use extracted functions
+4. Refactored redirect.ts should contain ONLY routing logic (< 150 lines)
+5. Move existing unit tests for helper functions to appropriate test files:
+   - `test/unit/lib/query-parser.test.ts` for parsing logic
+   - `test/unit/lib/response-builder.test.ts` for response builders
+6. All integration tests continue to pass without modification (behavior unchanged)
+7. TypeScript compilation succeeds with no errors
+8. Code coverage maintained at ≥90% for affected modules
+
+**Prerequisites:** Story 1.9 (Debug Parameter Rename and Parsing Enhancements)
+
+**Story Type:** Refactoring (Technical Debt Reduction)
+
+**Estimated Effort:** 2-4 hours
 
 ---
 

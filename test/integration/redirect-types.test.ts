@@ -36,26 +36,6 @@ describe('Redirect Type Support (301 vs 302)', () => {
     consoleWarnSpy.mockClear()
   })
 
-  it('should create 301 redirect for permanent type', async () => {
-    const { createRedirectResponse } = await import('../../../src/routes/redirect')
-    
-    const response = createRedirectResponse('https://permanent.com', 'permanent')
-    
-    expect(response.status).toBe(301)
-    expect(response.headers.get('Location')).toBe('https://permanent.com')
-    expect(response.headers.get('Cache-Control')).toBe('public, max-age=31536000')
-  })
-
-  it('should create 302 redirect for temporary type', async () => {
-    const { createRedirectResponse } = await import('../../../src/routes/redirect')
-    
-    const response = createRedirectResponse('https://temporary.com', 'temporary')
-    
-    expect(response.status).toBe(302)
-    expect(response.headers.get('Location')).toBe('https://temporary.com')
-    expect(response.headers.get('Cache-Control')).toBe('no-cache')
-  })
-
   it('should handle malformed KV data gracefully', async () => {
     // Test getRedirect with malformed data
     const mockKVWithMalformed = {
