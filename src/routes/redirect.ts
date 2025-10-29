@@ -26,7 +26,7 @@ app.get('/', async (c) => {
         source: resolved.source,
         shortcode: resolved.shortcode
       }
-      return createDebugResponse(destination, debugInfo)
+      return createDebugResponse(debugInfo)
     }
 
     // Step 4: Validate - Validate final URL after resolution

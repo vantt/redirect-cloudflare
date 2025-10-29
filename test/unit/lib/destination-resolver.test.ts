@@ -155,6 +155,15 @@ describe('destination-resolver', () => {
       }
     })
 
+    it('should default to temporary redirect if type is missing in KV', async () => {
+      const mockRedirectData: Partial<RedirectData> = { url: 'https://example.com/page' };
+      vi.mocked(getRedirect).mockResolvedValue(mockRedirectData as RedirectData);
+
+      const result = await resolveDestination('abc12', mockKVStore);
+
+      expect(result.type).toBe('temporary');
+    });
+
     it('should handle KV store errors gracefully', async () => {
       vi.mocked(getRedirect).mockRejectedValue(new Error('KV connection failed'))
 
@@ -209,6 +218,15 @@ describe('destination-resolver', () => {
       expect(validateResolvedUrl('https://any-domain.com')).toBe('https://any-domain.com')
       expect(validateResolvedUrl('https://evil.com')).toBe('https://evil.com')
     })
+
+    it('should validate complex URLs with query params and fragments', () => {
+      const complexUrl = 'https://example.com/path?query=value&another=1#fragment';
+      expect(validateResolvedUrl(complexUrl)).toBe(complexUrl);
+    });
+
+    it('should throw validation error for data URL based on redirectSchema', () => {
+      expect(() => validateResolvedUrl('data:text/plain,hello')).toThrow(RedirectError);
+    });
 
     it('should handle empty allowlist configuration', () => {
       expect(validateResolvedUrl('https://example.com', '')).toBe('https://example.com')

@@ -1,6 +1,6 @@
 # Story 1.11: Destination Resolution and Validation Refactoring
 
-Status: InProgress
+Status: Done
 
 ## Story
 
@@ -39,65 +39,65 @@ This story refactors the flow to have clear steps: Parse → Detect → Resolve 
 
 ## Tasks / Subtasks
 
-- [ ] [AI-Review][Low] In `src/routes/redirect.ts`, pass `resolved.url` to `createDebugResponse` instead of `destination`.
-- [ ] [AI-Review][Low] In `src/lib/response-builder.ts`, remove the legacy path from `createDebugResponse`.
-- [ ] [AI-Review][Medium] In `test/integration/routes/redirect-basic.test.ts`, add tests for shortcode redirects, debug mode, and the new error codes.
-- [ ] [AI-reivew][Low] In `test/unit/lib/destination-resolver.test.ts`, add more comprehensive tests for the `resolveDestination` and `validateResolvedUrl` functions.
+- [x] [AI-Review][Low] In `src/routes/redirect.ts`, pass `resolved.url` to `createDebugResponse` instead of `destination`.
+- [x] [AI-Review][Low] In `src/lib/response-builder.ts`, remove the legacy path from `createDebugResponse`.
+- [x] [AI-Review][Medium] In `test/integration/routes/redirect-basic.test.ts`, add tests for shortcode redirects, debug mode, and the new error codes.
+- [x] [AI-reivew][Low] In `test/unit/lib/destination-resolver.test.ts`, add more comprehensive tests for the `resolveDestination` and `validateResolvedUrl` functions.
 
-- [ ] Create `src/lib/destination-resolver.ts`
-  - [ ] Define `ResolvedDestination` interface
-  - [ ] Implement `isShortcode(value: string): boolean`
-    - [ ] Regex: `/^[a-zA-Z0-9]{3,20}$/` (flexible alphanumeric, 3-20 chars)
-    - [ ] Return true for valid shortcodes only
-  - [ ] Implement `isFullUrl(value: string): boolean`
-    - [ ] Regex: `/^https?:\/\/.+/` (starts with http:// or https://)
-    - [ ] Return true for valid URLs only
-  - [ ] Implement `resolveDestination(destination, kvStore): Promise<ResolvedDestination>`
-    - [ ] Case 1: `isShortcode()` → Load from KV, return `{ url, type, source: 'kv', shortcode }`
-    - [ ] Case 2: `isFullUrl()` → Return `{ url, type: 'temporary', source: 'direct' }`
-    - [ ] Case 3: Invalid format → Throw `INVALID_DESTINATION_FORMAT`
-    - [ ] If shortcode not found in KV → Throw `SHORTCODE_NOT_FOUND`
-  - [ ] Implement `validateResolvedUrl(url, allowedDomains?): string`
-    - [ ] Use existing `redirectSchema.parse({ to: url })`
-    - [ ] Use existing `validateDestinationDomain(url, allowedDomains)`
-    - [ ] Return validated URL or throw errors
-- [ ] Update `src/routes/redirect.ts`
-  - [ ] Step 1: Parse (keep existing) - `parseDestinationFromQuery(c.req.url)`
-  - [ ] Step 2: Resolve (new) - `resolveDestination(destination, c.env.REDIRECT_KV)`
-  - [ ] Step 3: Debug (update) - Show resolved info if debug mode
-  - [ ] Step 4: Validate (move) - `validateResolvedUrl(resolved.url, c.env.ALLOWED_DOMAINS)`
-  - [ ] Step 5: Track (existing) - `trackRedirect({...})`
-  - [ ] Step 6: Redirect (existing) - `createRedirectResponse(validatedUrl, resolved.type)`
-  - [ ] Update error handling for new error codes
-- [ ] Update `src/lib/response-builder.ts`
-  - [ ] Update `createDebugResponse` to accept `DebugInfo` interface
-  - [ ] Show: original, resolved, type, source, shortcode (if source=kv)
-- [ ] Unit tests: `test/unit/lib/destination-resolver.test.ts`
-  - [ ] Test `isShortcode`:
-    - [ ] Valid: 'abc12', 'ABC', '123xyz789' → true
-    - [ ] Too short: 'ab' (< 3 chars) → false
-    - [ ] Too long: 'a'.repeat(21) (> 20 chars) → false
-    - [ ] Non-alphanumeric: 'abc-123', 'abc_123' → false
-    - [ ] URLs: 'https://example.com' → false
-  - [ ] Test `isFullUrl`:
-    - [ ] Valid: 'http://example.com', 'https://example.com' → true
-    - [ ] Shortcodes: 'abc12' → false
-    - [ ] Protocol-relative: '//example.com' → false
-  - [ ] Test `resolveDestination`:
-    - [ ] Shortcode exists in KV → returns { url, type, source: 'kv', shortcode }
-    - [ ] Shortcode not in KV → throws SHORTCODE_NOT_FOUND
-    - [ ] Full URL → returns { url, type: 'temporary', source: 'direct' }
-    - [ ] Invalid format → throws INVALID_DESTINATION_FORMAT
-  - [ ] Test `validateResolvedUrl`:
-    - [ ] Valid http/https URL → returns URL
-    - [ ] Invalid schema (ftp://) → throws validation error
-    - [ ] Domain not in allowlist → throws DOMAIN_NOT_ALLOWED
-- [ ] Integration tests: Update `test/integration/routes/redirect-basic.test.ts`
-  - [ ] Redirect via shortcode from KV → 302 with destination from KV
-  - [ ] Redirect via direct full URL → 302 with same URL
-  - [ ] Non-existent shortcode → 404 with SHORTCODE_NOT_FOUND
-  - [ ] Invalid destination format → 400 with INVALID_DESTINATION_FORMAT
-  - [ ] Debug mode shows resolved info (shortcode and direct URL cases)
+- [x] Create `src/lib/destination-resolver.ts`
+  - [x] Define `ResolvedDestination` interface
+  - [x] Implement `isShortcode(value: string): boolean`
+    - [x] Regex: `/^[a-zA-Z0-9]{3,20}$/` (flexible alphanumeric, 3-20 chars)
+    - [x] Return true for valid shortcodes only
+  - [x] Implement `isFullUrl(value: string): boolean`
+    - [x] Regex: `/^https?:\/\/.+/` (starts with http:// or https://)
+    - [x] Return true for valid URLs only
+  - [x] Implement `resolveDestination(destination, kvStore): Promise<ResolvedDestination>`
+    - [x] Case 1: `isShortcode()` → Load from KV, return `{ url, type, source: 'kv', shortcode }`
+    - [x] Case 2: `isFullUrl()` → Return `{ url, type: 'temporary', source: 'direct' }`
+    - [x] Case 3: Invalid format → Throw `INVALID_DESTINATION_FORMAT`
+    - [x] If shortcode not in KV → Throw `SHORTCODE_NOT_FOUND`
+  - [x] Implement `validateResolvedUrl(url, allowedDomains?): string`
+    - [x] Use existing `redirectSchema.parse({ to: url })`
+    - [x] Use existing `validateDestinationDomain(url, allowedDomains)`
+    - [x] Return validated URL or throw errors
+- [x] Update `src/routes/redirect.ts`
+  - [x] Step 1: Parse (keep existing) - `parseDestinationFromQuery(c.req.url)`
+  - [x] Step 2: Resolve (new) - `resolveDestination(destination, c.env.REDIRECT_KV)`
+  - [x] Step 3: Debug (update) - Show resolved info if debug mode
+  - [x] Step 4: Validate (move) - `validateResolvedUrl(resolved.url, c.env.ALLOWED_DOMAINS)`
+  - [x] Step 5: Track (existing) - `trackRedirect({...})`
+  - [x] Step 6: Redirect (existing) - `createRedirectResponse(validatedUrl, resolved.type)`
+  - [x] Update error handling for new error codes
+- [x] Update `src/lib/response-builder.ts`
+  - [x] Update `createDebugResponse` to accept `DebugInfo` interface
+  - [x] Show: original, resolved, type, source, shortcode (if source=kv)
+- [x] Unit tests: `test/unit/lib/destination-resolver.test.ts`
+  - [x] Test `isShortcode`:
+    - [x] Valid: 'abc12', 'ABC', '123xyz789' → true
+    - [x] Too short: 'ab' (< 3 chars) → false
+    - [x] Too long: 'a'.repeat(21) (> 20 chars) → false
+    - [x] Non-alphanumeric: 'abc-123', 'abc_123' → false
+    - [x] URLs: 'https://example.com' → false
+  - [x] Test `isFullUrl`:
+    - [x] Valid: 'http://example.com', 'https://example.com' → true
+    - [x] Shortcodes: 'abc12' → false
+    - [x] Protocol-relative: '//example.com' → false
+  - [x] Test `resolveDestination`:
+    - [x] Shortcode exists in KV → returns { url, type, source: 'kv', shortcode }
+    - [x] Shortcode not in KV → throws SHORTCODE_NOT_FOUND
+    - [x] Full URL → returns { url, type: 'temporary', source: 'direct' }
+    - [x] Invalid format → throws INVALID_DESTINATION_FORMAT
+  - [x] Test `validateResolvedUrl`:
+    - [x] Valid http/https URL → returns URL
+    - [x] Invalid schema (ftp://) → throws validation error
+    - [x] Domain not in allowlist → throws DOMAIN_NOT_ALLOWED
+- [x] Integration tests: Update `test/integration/routes/redirect-basic.test.ts`
+  - [x] Redirect via shortcode from KV → 302 with destination from KV
+  - [x] Redirect via direct full URL → 302 with same URL
+  - [x] Non-existent shortcode → 404 with SHORTCODE_NOT_FOUND
+  - [x] Invalid destination format → 400 with INVALID_DESTINATION_FORMAT
+  - [x] Debug mode shows resolved info (shortcode and direct URL cases)
 - [ ] Keep unchanged (explicit non-changes):
   - [ ] `src/lib/query-parser.ts` - NO CHANGES (respect existing implementation)
   - [ ] `test/unit/lib/query-parser.test.ts` - NO CHANGES
@@ -337,7 +337,7 @@ The implementation follows the best practices for Hono, Cloudflare Workers, and 
 
 ### Action Items
 
-- [ ] [AI-Review][Low] In `src/routes/redirect.ts`, pass `resolved.url` to `createDebugResponse` instead of `destination`.
-- [ ] [AI-Review][Low] In `src/lib/response-builder.ts`, remove the legacy path from `createDebugResponse`.
-- [ ] [AI-Review][Medium] In `test/integration/routes/redirect-basic.test.ts`, add tests for shortcode redirects, debug mode, and the new error codes.
-- [ ] [AI-Review][Low] In `test/unit/lib/destination-resolver.test.ts`, add more comprehensive tests for the `resolveDestination` and `validateResolvedUrl` functions.
+- [x] [AI-Review][Low] In `src/routes/redirect.ts`, pass `resolved.url` to `createDebugResponse` instead of `destination`.
+- [x] [AI-Review][Low] In `src/lib/response-builder.ts`, remove the legacy path from `createDebugResponse`.
+- [x] [AI-Review][Medium] In `test/integration/routes/redirect-basic.test.ts`, add tests for shortcode redirects, debug mode, and the new error codes.
+- [x] [AI-Review][Low] In `test/unit/lib/destination-resolver.test.ts`, add more comprehensive tests for the `resolveDestination` and `validateResolvedUrl` functions.

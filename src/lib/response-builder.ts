@@ -9,56 +9,28 @@ import type { DebugInfo } from './destination-resolver'
  * @param debugInfo - Enhanced debug information from destination resolver
  * @returns Response object with JSON debug information
  */
-export const createDebugResponse = (destination: string, debugInfo?: DebugInfo): Response => {
-  // If enhanced debug info is available, use it
-  if (debugInfo) {
-    const trackingParams = extractTrackingParams(debugInfo.resolved)
+export const createDebugResponse = (debugInfo: DebugInfo): Response => {
+  const trackingParams = extractTrackingParams(debugInfo.resolved)
 
-    const debugPayload = {
-      mode: "debug",
-      destination: {
-        original: debugInfo.original,
-        resolved: debugInfo.resolved,
-        type: debugInfo.type,
-        source: debugInfo.source,
-        shortcode: debugInfo.shortcode
-      },
-      tracking_params: trackingParams,
-      message: "Debug mode - no redirect performed"
-    }
-
-    appLogger.info('Debug mode response', {
+  const debugPayload = {
+    mode: "debug",
+    destination: {
       original: debugInfo.original,
       resolved: debugInfo.resolved,
       type: debugInfo.type,
       source: debugInfo.source,
-      shortcode: debugInfo.shortcode,
-      tracking_params_count: Object.keys(trackingParams).length,
-      has_tracking: Object.keys(trackingParams).length > 0
-    })
-
-    return new Response(JSON.stringify(debugPayload, null, 2), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache'
-      }
-    })
-  }
-
-  // Legacy debug response (backward compatibility)
-  const trackingParams = extractTrackingParams(destination)
-
-  const debugPayload = {
-    mode: "debug",
-    destination,
+      shortcode: debugInfo.shortcode
+    },
     tracking_params: trackingParams,
-    redirect_type: "302",
-    note: "Debug mode - redirect suppressed"
+    message: "Debug mode - no redirect performed"
   }
 
   appLogger.info('Debug mode response', {
-    destination,
+    original: debugInfo.original,
+    resolved: debugInfo.resolved,
+    type: debugInfo.type,
+    source: debugInfo.source,
+    shortcode: debugInfo.shortcode,
     tracking_params_count: Object.keys(trackingParams).length,
     has_tracking: Object.keys(trackingParams).length > 0
   })
