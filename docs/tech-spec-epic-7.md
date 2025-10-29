@@ -155,18 +155,18 @@ Ràng buộc môi trường (Wrangler):
 - Log có cấu trúc ở các điểm: build sự kiện, dispatch bắt đầu/kết thúc theo provider, lỗi/timeout; trường khuyến nghị: `event`, `provider`, `status`, `latency_ms`, `timeout_ms`, `epic`, `story`, `request_id` (nếu có).
 - Mẫu log phù hợp với Cloudflare dashboard (JSON một dòng).
 - Thêm hook đếm cơ bản (counter) theo provider và trạng thái để tiện quan sát.
-- Hướng dẫn dev: cách bật "debug mode" để hiển thị payload khi `n=1` (tham chiếu Epic 5) — chỉ dùng môi trường dev.
+- Hướng dẫn dev: cách bật "debug mode" để hiển thị payload khi ~~`n=1`~~ **`debug=1`** (tham chiếu Epic 5) — chỉ dùng môi trường dev. **[Update 2025-10-28: Legacy `n=` parameter removed in Story 1.10]**
 
 
 ## Dependencies and Integrations
 
 - Runtime & Platform
-  - Cloudflare Workers (compatibility_date: 2025-10-24) — wrangler.toml: cloudflareRedirect/wrangler.toml:1
+  - Cloudflare Workers (compatibility_date: 2025-10-24) — wrangler.toml: wrangler.toml:1
   - KV Namespaces: REDIRECT_KV, ANALYTICS_KV — wrangler.toml bindings
 
 - Language & Framework
-  - TypeScript ^5.9.0 — cloudflareRedirect/package.json: typescript
-  - Hono ^4.4.0 — cloudflareRedirect/package.json: hono
+  - TypeScript ^5.9.0 — package.json: typescript
+  - Hono ^4.4.0 — package.json: hono
   - Zod ^4.1.0 + @hono/zod-validator ^0.7.0
 
 - Tooling & Tests

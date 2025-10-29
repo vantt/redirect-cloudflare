@@ -109,7 +109,7 @@ export function buildGA4Payload(params: {
     events: [
       {
         name: GA4_EVENT_NAME,
-        params: sanitizeEventParams(params),
+        params: sanitizeEventParams(params.trackingParams),
       },
     ],
   }

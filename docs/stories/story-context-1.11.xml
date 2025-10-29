@@ -1,0 +1,309 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/1.11" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>11</storyId>
+    <title>Destination Resolution and Validation Refactoring</title>
+    <status>ready</status>
+    <generatedAt>2025-10-29</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-1.11.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>clear separation between parsing, resolving, and validating destination parameters</iWant>
+    <soThat>redirect logic is maintainable, shortcode/URL detection is explicit, and KV loading is conditional</soThat>
+    <tasks>
+      - Create destination-resolver.ts module with helper functions
+      - Implement isShortcode, isFullUrl, resolveDestination, validateResolvedUrl
+      - Refactor redirect.ts to use 6-step flow (Parse → Resolve → Debug → Validate → Track → Redirect)
+      - Update debug response to show resolved destination details
+      - Add new error codes: SHORTCODE_NOT_FOUND, INVALID_DESTINATION_FORMAT
+      - Keep parseDestinationFromQuery unchanged (respect existing implementation)
+      - Unit tests for destination-resolver functions
+      - Integration tests for shortcode and direct URL flows
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. destination-resolver.ts module created with all helper functions
+    2. isShortcode(value) detects alphanumeric codes (flexible 3-20 chars)
+    3. isFullUrl(value) detects http:// or https:// URLs
+    4. resolveDestination(destination, kvStore) resolves shortcode→URL or uses direct URL
+    5. validateResolvedUrl(url, allowedDomains) validates final URL after resolution
+    6. ResolvedDestination interface: { url, type, source, shortcode? }
+    7. Source is 'kv' for shortcode lookups, 'direct' for full URLs
+    8. Default redirect type is 'temporary' for direct URLs
+    9. KV loading is conditional - ONLY when isShortcode() returns true
+    10. redirect.ts refactored to 6-step flow
+    11. Debug response shows: original, resolved, type, source, shortcode
+    12. SHORTCODE_NOT_FOUND (404) error code added
+    13. INVALID_DESTINATION_FORMAT (400) error code added
+    14. parseDestinationFromQuery kept unchanged
+    15. Unit tests for all destination-resolver functions
+    16. Integration tests for shortcode and direct URL redirect flows
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/stories/story-1.9.md" title="Story 1.9" section="Query Parser" snippet="Smart query parameter extraction for destination URLs"/>
+      <doc path="docs/stories/story-1.10.md" title="Story 1.10" section="Debug Parameter" snippet="Debug mode improvements"/>
+    </docs>
+    <code>
+      <artifact>
+        <path>src/lib/destination-resolver.ts</path>
+        <kind>library</kind>
+        <symbol>resolveDestination(destination, kvStore)</symbol>
+        <lines>new file</lines>
+        <reason>Main destination resolution logic - detects type and resolves to full URL</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/destination-resolver.ts</path>
+        <kind>library</kind>
+        <symbol>isShortcode(value)</symbol>
+        <lines>new file</lines>
+        <reason>Helper to detect shortcode format (alphanumeric 3-20 chars)</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/destination-resolver.ts</path>
+        <kind>library</kind>
+        <symbol>isFullUrl(value)</symbol>
+        <lines>new file</lines>
+        <reason>Helper to detect full URL format (http:// or https://)</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/destination-resolver.ts</path>
+        <kind>library</kind>
+        <symbol>validateResolvedUrl(url, allowedDomains)</symbol>
+        <lines>new file</lines>
+        <reason>Validates final URL after resolution using existing validation functions</reason>
+      </artifact>
+      <artifact>
+        <path>src/routes/redirect.ts</path>
+        <kind>route</kind>
+        <symbol>app.get('/')</symbol>
+        <lines>13-114</lines>
+        <reason>Refactor to use new 6-step flow with destination resolver</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/response-builder.ts</path>
+        <kind>library</kind>
+        <symbol>createDebugResponse</symbol>
+        <lines>existing</lines>
+        <reason>Update to show resolved destination details</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/query-parser.ts</path>
+        <kind>library</kind>
+        <symbol>parseDestinationFromQuery</symbol>
+        <lines>44-172</lines>
+        <reason>NO CHANGES - keep existing implementation (respect current code)</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/validation.ts</path>
+        <kind>library</kind>
+        <symbol>redirectSchema, validateDestinationDomain</symbol>
+        <lines>existing</lines>
+        <reason>Reuse existing validation functions</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/kv-store.ts</path>
+        <kind>library</kind>
+        <symbol>getRedirect</symbol>
+        <lines>existing</lines>
+        <reason>Reuse existing KV lookup function</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <dependency path="src/lib/query-parser.ts" reason="parseDestinationFromQuery for Step 1 (unchanged)"/>
+      <dependency path="src/lib/kv-store.ts" reason="getRedirect for shortcode lookups"/>
+      <dependency path="src/lib/validation.ts" reason="redirectSchema and validateDestinationDomain"/>
+      <dependency path="src/lib/errors.ts" reason="RedirectError for error handling"/>
+      <dependency path="src/types/env.ts" reason="RedirectData, Env types"/>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="backward-compatibility" description="No breaking changes - same public API behavior"/>
+    <constraint type="respect-existing-code" description="parseDestinationFromQuery MUST remain unchanged (well-tested, robust)"/>
+    <constraint type="conditional-loading" description="KV load ONLY when isShortcode() returns true"/>
+    <constraint type="validation-timing" description="Validation MUST happen AFTER resolution (not before)"/>
+    <constraint type="error-specificity" description="Use specific error codes: SHORTCODE_NOT_FOUND vs INVALID_DESTINATION_FORMAT"/>
+  </constraints>
+
+  <interfaces>
+    <interface name="ResolvedDestination" location="lib/destination-resolver.ts" signature="{ url: string; type: 'permanent' | 'temporary'; source: 'kv' | 'direct'; shortcode?: string }"/>
+    <interface name="isShortcode" location="lib/destination-resolver.ts" signature="(value: string) => boolean"/>
+    <interface name="isFullUrl" location="lib/destination-resolver.ts" signature="(value: string) => boolean"/>
+    <interface name="resolveDestination" location="lib/destination-resolver.ts" signature="(destination: string, kvStore: KVNamespace) => Promise&lt;ResolvedDestination&gt;"/>
+    <interface name="validateResolvedUrl" location="lib/destination-resolver.ts" signature="(url: string, allowedDomains?: string) => string"/>
+    <interface name="DebugInfo" location="lib/response-builder.ts" signature="{ original: string; resolved: string; type: 'permanent' | 'temporary'; source: 'kv' | 'direct'; shortcode?: string }"/>
+  </interfaces>
+
+  <tests>
+    <standards>
+      <standard tool="Vitest v4.0+" purpose="Unit testing destination resolver functions"/>
+      <standard tool="Miniflare v3.20250718+" purpose="Workers runtime emulation for integration tests"/>
+    </standards>
+    <locations>
+      <location path="test/unit/lib/destination-resolver.test.ts" description="Unit tests for all destination-resolver functions"/>
+      <location path="test/integration/routes/redirect-basic.test.ts" description="Integration tests for shortcode and direct URL flows"/>
+    </locations>
+    <ideas>
+      <test-idea type="unit" description="isShortcode: valid alphanumeric (3-20 chars) → true"/>
+      <test-idea type="unit" description="isShortcode: too short (&lt;3 chars) → false"/>
+      <test-idea type="unit" description="isShortcode: too long (&gt;20 chars) → false"/>
+      <test-idea type="unit" description="isShortcode: non-alphanumeric (dash, underscore) → false"/>
+      <test-idea type="unit" description="isFullUrl: valid http/https URLs → true"/>
+      <test-idea type="unit" description="isFullUrl: shortcodes → false"/>
+      <test-idea type="unit" description="isFullUrl: protocol-relative URLs → false"/>
+      <test-idea type="unit" description="resolveDestination: shortcode exists in KV → returns kv source with url"/>
+      <test-idea type="unit" description="resolveDestination: shortcode not in KV → throws SHORTCODE_NOT_FOUND"/>
+      <test-idea type="unit" description="resolveDestination: full URL → returns direct source with url"/>
+      <test-idea type="unit" description="resolveDestination: invalid format → throws INVALID_DESTINATION_FORMAT"/>
+      <test-idea type="unit" description="validateResolvedUrl: valid URL → returns URL"/>
+      <test-idea type="unit" description="validateResolvedUrl: invalid schema → throws validation error"/>
+      <test-idea type="unit" description="validateResolvedUrl: domain not in allowlist → throws DOMAIN_NOT_ALLOWED"/>
+      <test-idea type="integration" description="Redirect via shortcode from KV → 302 with destination from KV"/>
+      <test-idea type="integration" description="Redirect via direct full URL → 302 with same URL"/>
+      <test-idea type="integration" description="Non-existent shortcode → 404 with SHORTCODE_NOT_FOUND"/>
+      <test-idea type="integration" description="Invalid destination format → 400 with INVALID_DESTINATION_FORMAT"/>
+      <test-idea type="integration" description="Debug mode shows resolved info for shortcode"/>
+      <test-idea type="integration" description="Debug mode shows resolved info for direct URL"/>
+    </ideas>
+  </tests>
+
+  <designPatterns>
+    <pattern name="Strategy Pattern" usage="Different resolution strategies based on destination type (shortcode vs URL)"/>
+    <pattern name="Conditional Loading Pattern" usage="Load from KV only when needed (shortcode case)"/>
+    <pattern name="Pipeline Pattern" usage="6-step flow: Parse → Resolve → Debug → Validate → Track → Redirect"/>
+  </designPatterns>
+
+  <refactoring>
+    <change type="extraction" description="Extract destination resolution logic to dedicated module"/>
+    <change type="reordering" description="Move validation to happen AFTER resolution (correct timing)"/>
+    <change type="conditional" description="Make KV loading conditional based on destination type"/>
+    <change type="clarification" description="Add explicit shortcode vs URL detection"/>
+  </refactoring>
+
+  <flowComparison>
+    <before>
+      <step n="1">Parse: parseDestinationFromQuery(url)</step>
+      <step n="2">Validate: redirectSchema.parse({ to: destination }) // ← Wrong: validates shortcode!</step>
+      <step n="3">Load KV: getRedirect(validated.to, kvStore) // ← Always loads, even for URLs</step>
+      <step n="4">Track &amp; Redirect</step>
+    </before>
+    <after>
+      <step n="1">Parse: parseDestinationFromQuery(url) // ← Unchanged</step>
+      <step n="2">Resolve: resolveDestination(destination, kvStore) // ← Detect type, conditional KV load</step>
+      <step n="3">Debug: Show resolved info if debug mode</step>
+      <step n="4">Validate: validateResolvedUrl(resolved.url, allowedDomains) // ← Correct: validates URL!</step>
+      <step n="5">Track: trackRedirect(...)</step>
+      <step n="6">Redirect: createRedirectResponse(...)</step>
+    </after>
+  </flowComparison>
+
+  <errorCodes>
+    <existing>
+      <error code="MISSING_PARAM" status="400" description="Missing 'to' parameter"/>
+      <error code="INVALID_ENCODING" status="400" description="Invalid URL encoding"/>
+      <error code="DOMAIN_NOT_ALLOWED" status="403" description="Domain not in allowlist"/>
+      <error code="NOT_FOUND" status="404" description="Generic not found (keep for backward compat)"/>
+      <error code="INTERNAL_ERROR" status="500" description="System error"/>
+    </existing>
+    <new>
+      <error code="INVALID_DESTINATION_FORMAT" status="400" description="Not shortcode or valid URL"/>
+      <error code="SHORTCODE_NOT_FOUND" status="404" description="Specific: shortcode not in KV"/>
+    </new>
+  </errorCodes>
+
+  <example>
+    <scenario name="Shortcode Resolution Flow">
+      <input>
+        Request: /r?to=abc12
+        KV Store: { "abc12": { "url": "https://example.com/page", "type": "temporary" } }
+      </input>
+      <execution>
+        Step 1 - Parse: destination = "abc12"
+        Step 2 - Resolve: isShortcode("abc12") = true → Load from KV
+        Step 3 - Resolved: { url: "https://example.com/page", type: "temporary", source: "kv", shortcode: "abc12" }
+        Step 4 - Validate: validateResolvedUrl("https://example.com/page") → OK
+        Step 5 - Track: Track redirect event
+        Step 6 - Redirect: 302 to https://example.com/page
+      </execution>
+      <output>
+        Status: 302
+        Location: https://example.com/page
+        Cache-Control: no-cache
+      </output>
+    </scenario>
+    <scenario name="Direct URL Flow">
+      <input>
+        Request: /r?to=https://example.com
+      </input>
+      <execution>
+        Step 1 - Parse: destination = "https://example.com"
+        Step 2 - Resolve: isFullUrl("https://example.com") = true → Use directly (NO KV load)
+        Step 3 - Resolved: { url: "https://example.com", type: "temporary", source: "direct" }
+        Step 4 - Validate: validateResolvedUrl("https://example.com") → OK
+        Step 5 - Track: Track redirect event
+        Step 6 - Redirect: 302 to https://example.com
+      </execution>
+      <output>
+        Status: 302
+        Location: https://example.com
+        Cache-Control: no-cache
+      </output>
+    </scenario>
+    <scenario name="Debug Mode - Shortcode">
+      <input>
+        Request: /r?to=abc12&amp;debug=1
+        KV Store: { "abc12": { "url": "https://example.com", "type": "permanent" } }
+      </input>
+      <output>
+        Status: 200
+        Content-Type: application/json
+        Body: {
+          "mode": "debug",
+          "destination": {
+            "original": "abc12",
+            "resolved": "https://example.com",
+            "type": "permanent",
+            "source": "kv",
+            "shortcode": "abc12"
+          },
+          "message": "Debug mode - no redirect performed"
+        }
+      </output>
+    </scenario>
+    <scenario name="Shortcode Not Found">
+      <input>
+        Request: /r?to=xyz99
+        KV Store: {} (empty)
+      </input>
+      <output>
+        Status: 404
+        Content-Type: application/json
+        Body: {
+          "error": "Shortcode not found: xyz99",
+          "code": "SHORTCODE_NOT_FOUND",
+          "status": 404
+        }
+      </output>
+    </scenario>
+    <scenario name="Invalid Destination Format">
+      <input>
+        Request: /r?to=invalid-url-format
+      </input>
+      <output>
+        Status: 400
+        Content-Type: application/json
+        Body: {
+          "error": "Invalid destination format: must be shortcode (alphanumeric) or full URL (http:// or https://)",
+          "code": "INVALID_DESTINATION_FORMAT",
+          "status": 400
+        }
+      </output>
+    </scenario>
+  </example>
+</story-context>

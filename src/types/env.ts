@@ -1,3 +1,7 @@
+
+
+import type { KVNamespace } from '@cloudflare/workers-types'
+
 export interface Env {
   REDIRECT_KV: KVNamespace
   ANALYTICS_KV: KVNamespace
@@ -14,7 +18,7 @@ export interface Env {
 export interface RedirectData {
   url: string
   type: 'permanent' | 'temporary'
-  created: string // ISO 8601
+  created?: string // ISO 8601 (optional)
 }
 
 export interface AnalyticsEvent {
