@@ -1,4 +1,4 @@
-import { extractTrackingParams } from './tracking'
+import { extractTrackingParams } from './parameter-extractor'
 import { appLogger } from '../utils/logger'
 import type { DebugInfo } from './destination-resolver'
 

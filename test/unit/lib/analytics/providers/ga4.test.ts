@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { buildGA4Payload } from '../../../src/lib/tracking';
-import { TrackingParams } from '../../../src/types/env';
+import { buildGA4Payload } from '../../../../../src/lib/analytics/providers/ga4';
+import { TrackingParams } from '../../../../../src/types/env';
 
 describe('buildGA4Payload', () => {
   const measurementId = 'G-XXXXXXXXXX';
@@ -16,7 +16,7 @@ describe('buildGA4Payload', () => {
       ref: 'facebook',
     };
 
-    const payload = buildGA4Payload(params, measurementId) as any;
+    const payload = buildGA4Payload({ trackingParams: params } as any, measurementId) as any;
 
     expect(payload.client_id).toBeDefined();
     expect(payload.events).toHaveLength(1);
@@ -29,7 +29,7 @@ describe('buildGA4Payload', () => {
       utm_source: 'facebook',
     };
 
-    const payload = buildGA4Payload(params, measurementId) as any;
+    const payload = buildGA4Payload({ trackingParams: params } as any, measurementId) as any;
 
     expect(payload.client_id).toBeDefined();
     expect(payload.events).toHaveLength(1);
@@ -43,7 +43,7 @@ describe('buildGA4Payload', () => {
       ref: 'fb-post',
     };
 
-    const payload = buildGA4Payload(params, measurementId) as any;
+    const payload = buildGA4Payload({ trackingParams: params } as any, measurementId) as any;
 
     expect(payload.client_id).toBeDefined();
     expect(payload.events).toHaveLength(1);
@@ -57,12 +57,12 @@ describe('buildGA4Payload', () => {
       utm_medium: undefined,
     };
 
-    const payload = buildGA4Payload(params, measurementId) as any;
+    const payload = buildGA4Payload({ trackingParams: params } as any, measurementId) as any;
 
     expect(payload.events[0].params).toEqual({ utm_source: 'google' });
   });
 
   it('should throw if measurementId is missing', () => {
-    expect(() => buildGA4Payload({}, '')).toThrowError('GA4 measurement ID is required to build payload');
+    expect(() => buildGA4Payload({} as any, '')).toThrowError('GA4 measurement ID is required to build payload');
   });
 });

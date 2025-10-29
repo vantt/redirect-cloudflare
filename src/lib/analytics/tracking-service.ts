@@ -1,6 +1,6 @@
 import type { Env, TrackingParams, AnalyticsEvent } from '../../types/env';
 import { appLogger } from '../../utils/logger';
-import { extractTrackingParams } from '../tracking';
+import { extractTrackingParams } from '../parameter-extractor';
 
 export interface RedirectTrackingContext {
   shortUrl: string;

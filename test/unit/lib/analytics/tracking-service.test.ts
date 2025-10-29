@@ -2,28 +2,34 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { trackRedirect } from '../../../../src/lib/analytics/tracking-service';
 import * as router from '../../../../src/lib/analytics/router';
 import * as registry from '../../../../src/lib/analytics/registry';
-import { defaultTestEnv } from '../../../fixtures/env';
+import { createTestEnv } from '../../../fixtures/env';
+import { AnalyticsProvider } from '../../../../src/lib/analytics/provider';
+
+class MockProvider implements AnalyticsProvider {
+  async send(): Promise<void> {
+    // do nothing
+  }
+}
 
 describe('TrackingService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(registry, 'loadProviders').mockReturnValue([new MockProvider()]);
+    vi.spyOn(router, 'routeAnalyticsEvent').mockImplementation(async () => {});
   });
 
   it('should extract params from destination only', async () => {
-    const routeAnalyticsEventSpy = vi.spyOn(router, 'routeAnalyticsEvent');
-    const loadProvidersSpy = vi.spyOn(registry, 'loadProviders').mockReturnValue([{} as any]);
-
     await trackRedirect(
       {
         shortUrl: 'abc',
         destinationUrl: 'https://example.com?utm_source=google',
         redirectType: 'temporary',
       },
-      defaultTestEnv
+      createTestEnv()
     );
 
-    expect(loadProvidersSpy).toHaveBeenCalled();
-    expect(routeAnalyticsEventSpy).toHaveBeenCalledWith(
+    expect(registry.loadProviders).toHaveBeenCalled();
+    expect(router.routeAnalyticsEvent).toHaveBeenCalledWith(
       expect.objectContaining({
         params: expect.objectContaining({ utm_source: 'google' }),
       }),
@@ -32,7 +38,6 @@ describe('TrackingService', () => {
   });
 
   it('should extract params from original request only', async () => {
-    const routeAnalyticsEventSpy = vi.spyOn(router, 'routeAnalyticsEvent');
     await trackRedirect(
       {
         shortUrl: 'abc',
@@ -40,10 +45,10 @@ describe('TrackingService', () => {
         redirectType: 'temporary',
         originalRequestUrl: 'https://my.app/r?to=abc&utm_source=facebook',
       },
-      defaultTestEnv
+      createTestEnv()
     );
 
-    expect(routeAnalyticsEventSpy).toHaveBeenCalledWith(
+    expect(router.routeAnalyticsEvent).toHaveBeenCalledWith(
       expect.objectContaining({
         params: expect.objectContaining({ utm_source: 'facebook' }),
       }),
@@ -52,7 +57,6 @@ describe('TrackingService', () => {
   });
 
   it('should merge params with original winning', async () => {
-    const routeAnalyticsEventSpy = vi.spyOn(router, 'routeAnalyticsEvent');
     await trackRedirect(
       {
         shortUrl: 'abc',
@@ -60,10 +64,10 @@ describe('TrackingService', () => {
         redirectType: 'temporary',
         originalRequestUrl: 'https://my.app/r?to=abc&utm_source=facebook',
       },
-      defaultTestEnv
+      createTestEnv()
     );
 
-    expect(routeAnalyticsEventSpy).toHaveBeenCalledWith(
+    expect(router.routeAnalyticsEvent).toHaveBeenCalledWith(
       expect.objectContaining({
         params: expect.objectContaining({ utm_source: 'facebook', utm_medium: 'cpc' }),
       }),

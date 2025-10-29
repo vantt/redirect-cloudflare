@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import app from '../../src/index'
-import { sendGA4Event } from '../../src/lib/tracking'
+import { sendGA4Event } from '../../src/lib/analytics/providers/ga4'
 import { createMockEnv } from '../helpers/config'
 
 // Mock fetch for testing

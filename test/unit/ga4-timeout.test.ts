@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { sendGA4Event } from '../../src/lib/tracking'
+import { sendGA4Event } from '../../src/lib/analytics/providers/ga4'
 
 // Mock fetch for timeout testing
 global.fetch = vi.fn()
