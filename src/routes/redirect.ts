@@ -1,11 +1,11 @@
 import { Hono } from 'hono'
 import { RedirectError } from '../lib/errors'
 import { appLogger } from '../utils/logger'
-import { extractTrackingParams, buildGA4Payload, sendGA4Event } from '../lib/tracking'
 import { parseDestinationFromQuery } from '../lib/query-parser'
 import { createDebugResponse, createRedirectResponse } from '../lib/response-builder'
 import { resolveDestination, validateResolvedUrl, type DebugInfo } from '../lib/destination-resolver'
-import type { Env, TrackingParams } from '../types/env'
+import { trackRedirect } from '../lib/analytics/tracking-service'
+import type { Env } from '../types/env'
 
 const app = new Hono<{ Bindings: Env }>()
 
@@ -32,32 +32,17 @@ app.get('/', async (c) => {
     // Step 4: Validate - Validate final URL after resolution
     const validatedUrl = validateResolvedUrl(resolved.url, c.env.ALLOWED_DOMAINS)
 
-    // Step 5: Track - Extract tracking and send analytics
-    const trackingParams = extractTrackingParams(validatedUrl)
-
-    if (trackingParams && Object.keys(trackingParams).length > 0 && c.env.GA4_MEASUREMENT_ID && c.env.GA4_API_SECRET) {
-      try {
-        const ga4Payload = buildGA4Payload({
-          shortUrl: resolved.shortcode || destination, // Use shortcode if available, else original
-          fullDestination: validatedUrl,
-          redirectType: resolved.type,
-          trackingParams: trackingParams,
-          userAgent: c.req.header('User-Agent'),
-          ip: c.req.header('CF-Connecting-IP') || c.req.header('X-Forwarded-For') || 'unknown'
-        }, c.env.GA4_MEASUREMENT_ID)
-
-        // Fire-and-forget GA4 event (non-blocking)
-        sendGA4Event(ga4Payload, c.env.GA4_API_SECRET, c.env.GA4_MEASUREMENT_ID).catch(error => {
-          appLogger.warn('GA4 event failed', { error: error instanceof Error ? error.message : 'Unknown error' })
-        })
-      } catch (trackingError) {
-        // Tracking failure should not block redirect
-        appLogger.warn('Tracking preparation failed', {
-          error: trackingError instanceof Error ? trackingError.message : 'Unknown error',
-          destination: destination
-        })
-      }
-    }
+    // Step 5: Track - Abstracted tracking call
+    trackRedirect({
+      shortUrl: resolved.shortcode || destination,
+      destinationUrl: validatedUrl,
+      redirectType: resolved.type,
+      userAgent: c.req.header('User-Agent'),
+      ip: c.req.header('CF-Connecting-IP') || c.req.header('X-Forwarded-For') || 'unknown',
+      originalRequestUrl: c.req.url
+    }, c.env).catch(error => {
+      appLogger.warn('Tracking service call failed', { error: error instanceof Error ? error.message : 'Unknown error' })
+    })
 
     // Step 6: Redirect - Return redirect response
     return createRedirectResponse(validatedUrl, resolved.type)

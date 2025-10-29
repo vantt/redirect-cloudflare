@@ -41,14 +41,14 @@
     </docs>
     <code>
       <artifact>
-        <path>cloudflareRedirect/src/lib/tracking.ts</path>
+        <path>src/lib/tracking.ts</path>
         <kind>library</kind>
         <symbol>extractTrackingParams(destinationUrl)</symbol>
         <lines>1-160</lines>
         <reason>Implements parameter extraction logic</reason>
       </artifact>
       <artifact>
-        <path>cloudflareRedirect/src/types/env.ts</path>
+        <path>src/types/env.ts</path>
         <kind>types</kind>
         <symbol>TrackingParams interface</symbol>
         <lines>1-120</lines>
@@ -77,7 +77,7 @@
       <standard tool="Miniflare" purpose="Workers runtime emulation (if needed)"/>
     </standards>
     <locations>
-      <location path="cloudflareRedirect/test/lib/tracking-extract.test.ts" description="Extraction scenarios: full, partial, platform, malformed, none"/>
+      <location path="test/unit/lib/tracking-extract.test.ts" description="Extraction scenarios: full, partial, platform, malformed, none"/>
     </locations>
     <ideas>
       <test-idea type="unit" description="Parses full UTM set with correct URL-decoding"/>

@@ -92,6 +92,9 @@ export function extractTrackingParams(destinationUrl: string): TrackingParams {
   }
 }
 
+/**
+ * @deprecated This function will be moved to a dedicated GA4 provider in Epic 8.
+ */
 export function buildGA4Payload(params: {
   shortUrl: string;
   fullDestination: string;
@@ -115,6 +118,9 @@ export function buildGA4Payload(params: {
   }
 }
 
+/**
+ * @deprecated This function will be moved to a dedicated GA4 provider in Epic 8.
+ */
 export async function sendGA4Event(
   payload: object, 
   apiSecret: string, 

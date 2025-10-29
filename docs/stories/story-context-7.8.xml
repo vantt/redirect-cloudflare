@@ -1,0 +1,245 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/7.8" v="1.0">
+  <metadata>
+    <epicId>7</epicId>
+    <storyId>8</storyId>
+    <title>Tracking Service Abstraction and Redirect Integration</title>
+    <status>ready</status>
+    <generatedAt>2025-10-29</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-7.8.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>a unified tracking service that abstracts all analytics logic away from redirect.ts</iWant>
+    <soThat>redirect route remains clean, tracking is provider-agnostic, and parameter extraction supports fallback from original request URL</soThat>
+    <tasks>
+      - Create TrackingService module in src/lib/analytics/tracking-service.ts
+      - Implement trackRedirect(context, env) as single entry point
+      - Implement parameter extraction with priority (destination > original)
+      - Build neutral AnalyticsEvent from extracted params + redirect metadata
+      - Refactor src/routes/redirect.ts to use trackRedirect()
+      - Remove GA4-specific code from redirect.ts
+      - Fire-and-forget pattern: tracking errors never block redirect
+      - Unit tests for parameter extraction fallback and merge logic
+      - Integration test: redirect succeeds even when tracking throws
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. TrackingService module created at src/lib/analytics/tracking-service.ts
+    2. trackRedirect() accepts RedirectTrackingContext (shortUrl, destinationUrl, redirectType, userAgent, ip, originalRequestUrl)
+    3. Parameter extraction merge strategy: extract destination first (check priority), then original second; ORIGINAL params overwrite destination params on conflicts
+    4. Extract from BOTH destination and original URLs, merge with original-wins strategy (user controls by choosing which params to pass)
+    5. Build neutral AnalyticsEvent with extracted params + redirect metadata + timestamp
+    6. Integrate via routeAnalyticsEvent() and loadProviders() (provider-agnostic)
+    7. Refactor redirect.ts: remove buildGA4Payload/sendGA4Event calls, use trackRedirect()
+    8. Fire-and-forget: errors never block redirect response
+    9. Structured logging for param extraction (dest count, orig count, merged count, conflicts logged)
+    10. Unit tests for merge logic (dest only, orig only, merge no conflicts, merge with original-wins, empty)
+    11. Integration test: redirect succeeds when tracking service throws
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/tech-spec-epic-7.md" title="Epic 7 Tech Spec" section="Analytics Abstraction" snippet="Multi-service analytics with neutral event model, provider isolation, timeout protection"/>
+      <doc path="docs/stories/story-7.1.md" title="Story 7.1" section="Parameter Extraction" snippet="Foundation for extractTrackingParams used by tracking service"/>
+      <doc path="docs/stories/story-7.2.md" title="Story 7.2" section="Neutral Event Model" snippet="AnalyticsEvent and AnalyticsProvider interfaces"/>
+      <doc path="docs/stories/story-7.3.md" title="Story 7.3" section="Router" snippet="routeAnalyticsEvent for multi-provider dispatch"/>
+      <doc path="docs/architecture.md" title="Architecture" section="Analytics Abstraction" snippet="Provider-agnostic tracking with error isolation"/>
+    </docs>
+    <code>
+      <artifact>
+        <path>src/lib/analytics/tracking-service.ts</path>
+        <kind>library</kind>
+        <symbol>trackRedirect(context, env)</symbol>
+        <lines>new file</lines>
+        <reason>Main tracking service abstraction - single entry point for redirect tracking</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/analytics/tracking-service.ts</path>
+        <kind>library</kind>
+        <symbol>extractTrackingParamsWithFallback(destUrl, origUrl?)</symbol>
+        <lines>new file</lines>
+        <reason>Priority-based parameter extraction with fallback logic</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/analytics/tracking-service.ts</path>
+        <kind>library</kind>
+        <symbol>buildRedirectEvent(context, params)</symbol>
+        <lines>new file</lines>
+        <reason>Builds neutral AnalyticsEvent from tracking params and redirect context</reason>
+      </artifact>
+      <artifact>
+        <path>src/routes/redirect.ts</path>
+        <kind>route</kind>
+        <symbol>app.get('/')</symbol>
+        <lines>13-114</lines>
+        <reason>Refactor to use trackRedirect() instead of GA4-specific calls</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/tracking.ts</path>
+        <kind>library</kind>
+        <symbol>extractTrackingParams(url)</symbol>
+        <lines>62-93</lines>
+        <reason>Used by tracking-service for parameter extraction</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/analytics/router.ts</path>
+        <kind>library</kind>
+        <symbol>routeAnalyticsEvent()</symbol>
+        <lines>existing</lines>
+        <reason>Used by tracking-service for provider dispatch</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/analytics/registry.ts</path>
+        <kind>library</kind>
+        <symbol>loadProviders(env)</symbol>
+        <lines>existing</lines>
+        <reason>Used by tracking-service to load configured providers</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <dependency path="src/lib/analytics/types.ts" reason="AnalyticsEvent, AnalyticsAttributes types"/>
+      <dependency path="src/lib/analytics/provider.ts" reason="AnalyticsProvider interface"/>
+      <dependency path="src/lib/analytics/router.ts" reason="routeAnalyticsEvent for multi-provider dispatch"/>
+      <dependency path="src/lib/analytics/registry.ts" reason="loadProviders for env-based provider loading"/>
+      <dependency path="src/lib/tracking.ts" reason="extractTrackingParams for URL parameter extraction"/>
+      <dependency path="src/types/env.ts" reason="Env, TrackingParams types"/>
+      <dependency path="src/utils/logger.ts" reason="appLogger for structured logging"/>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="separation-of-concerns" description="Tracking logic must be completely abstracted from redirect.ts"/>
+    <constraint type="provider-agnostic" description="No GA4/Mixpanel/vendor-specific awareness in tracking service"/>
+    <constraint type="error-isolation" description="Tracking errors MUST NOT block redirect flow (fire-and-forget)"/>
+    <constraint type="parameter-merge-strategy" description="Extract destination first (check priority), extract original second; ORIGINAL params overwrite destination params on conflicts (original wins merge)"/>
+    <constraint type="user-control" description="Users control override behavior by choosing which params to pass in original URL"/>
+    <constraint type="backward-compat" description="Keep extractTrackingParams in lib/tracking.ts; deprecate buildGA4Payload/sendGA4Event"/>
+  </constraints>
+
+  <interfaces>
+    <interface name="RedirectTrackingContext" location="lib/analytics/tracking-service.ts" signature="{ shortUrl: string; destinationUrl: string; redirectType: 'permanent' | 'temporary'; userAgent?: string; ip?: string; originalRequestUrl?: string }"/>
+    <interface name="trackRedirect" location="lib/analytics/tracking-service.ts" signature="(context: RedirectTrackingContext, env: Env) => Promise<void>"/>
+    <interface name="extractTrackingParamsWithFallback" location="lib/analytics/tracking-service.ts" signature="(destinationUrl: string, originalRequestUrl?: string) => AnalyticsAttributes"/>
+    <interface name="buildRedirectEvent" location="lib/analytics/tracking-service.ts" signature="(context: RedirectTrackingContext, trackingParams: AnalyticsAttributes) => AnalyticsEvent"/>
+  </interfaces>
+
+  <tests>
+    <standards>
+      <standard tool="Vitest v4.0+" purpose="Unit testing tracking service functions"/>
+      <standard tool="Miniflare v3.20250718+" purpose="Workers runtime emulation for integration tests"/>
+    </standards>
+    <locations>
+      <location path="test/unit/lib/analytics/tracking-service.test.ts" description="Unit tests for tracking service functions"/>
+      <location path="test/integration/routes/redirect-tracking.test.ts" description="Integration tests for redirect + tracking flow"/>
+    </locations>
+    <ideas>
+      <test-idea type="unit" description="extractTrackingParamsWithFallback: destination only → returns destination params"/>
+      <test-idea type="unit" description="extractTrackingParamsWithFallback: original only → returns original params"/>
+      <test-idea type="unit" description="extractTrackingParamsWithFallback: both, no conflicts → returns merged (all params)"/>
+      <test-idea type="unit" description="extractTrackingParamsWithFallback: conflicts → ORIGINAL WINS (overwrites destination)"/>
+      <test-idea type="unit" description="extractTrackingParamsWithFallback: neither has params → returns {}"/>
+      <test-idea type="unit" description="buildRedirectEvent: includes tracking params + metadata + timestamp"/>
+      <test-idea type="unit" description="trackRedirect: calls extraction, build, loadProviders, routeEvent"/>
+      <test-idea type="unit" description="trackRedirect: errors do not throw (fire-and-forget)"/>
+      <test-idea type="integration" description="Redirect succeeds when tracking succeeds"/>
+      <test-idea type="integration" description="Redirect succeeds when tracking throws error"/>
+      <test-idea type="integration" description="Redirect succeeds when no providers configured"/>
+      <test-idea type="integration" description="Event contains params from destination URL (when original not passed)"/>
+      <test-idea type="integration" description="Event contains params from original URL (when destination has none)"/>
+      <test-idea type="integration" description="Event uses ORIGINAL params when both URLs have same key (original overwrites)"/>
+    </ideas>
+  </tests>
+
+  <designPatterns>
+    <pattern name="Facade Pattern" usage="trackRedirect() provides unified interface to complex tracking subsystem"/>
+    <pattern name="Original-Wins Merge Pattern" usage="Extract destination first (check priority), extract original second; original params overwrite destination params during merge (user controls override)"/>
+    <pattern name="Fire-and-Forget Pattern" usage="Tracking errors logged but never thrown to caller"/>
+    <pattern name="Dependency Injection Pattern" usage="Env passed to trackRedirect, providers loaded dynamically"/>
+  </designPatterns>
+
+  <refactoring>
+    <change type="extraction" description="Extract all tracking logic from redirect.ts to tracking-service.ts"/>
+    <change type="simplification" description="Replace 25-line tracking block in redirect.ts with single trackRedirect() call"/>
+    <change type="deprecation" description="Mark buildGA4Payload/sendGA4Event as deprecated (Epic 8 will move to GA4 provider)"/>
+    <change type="decoupling" description="Remove GA4-specific dependencies from redirect.ts"/>
+  </refactoring>
+
+  <observability>
+    <log event="param_extraction" level="debug" fields="destinationParamCount, originalParamCount, mergedParamCount, destinationWins"/>
+    <log event="tracking_start" level="info" fields="shortUrl, destinationUrl, redirectType"/>
+    <log event="tracking_success" level="info" fields="providerCount, eventName"/>
+    <log event="tracking_error" level="error" fields="shortUrl, error"/>
+  </observability>
+
+  <example>
+    <scenario name="Parameter Merge: Original Wins on Conflicts">
+      <input>
+        destinationUrl: https://shop.com?utm_source=facebook&amp;utm_campaign=sale2024
+        originalRequestUrl: /r?to=abc&amp;utm_campaign=flash-sale-2025
+      </input>
+      <extraction>
+        Step 1 - Extract destination (check first): { utm_source: 'facebook', utm_campaign: 'sale2024' }
+        Step 2 - Extract original (check second): { utm_campaign: 'flash-sale-2025' }
+        Step 3 - Merge (original wins): { ...destinationParams, ...originalParams }
+      </extraction>
+      <output>
+        {
+          utm_source: 'facebook',         // ← From destination (original didn't pass this)
+          utm_campaign: 'flash-sale-2025' // ← ORIGINAL OVERWRITES destination
+        }
+      </output>
+      <rationale>User passed utm_campaign in original URL, signaling intent to override destination's campaign value</rationale>
+    </scenario>
+    <scenario name="Reuse Destination Tracking">
+      <input>
+        destinationUrl: https://shop.com?utm_source=facebook&amp;utm_campaign=sale2024
+        originalRequestUrl: /r?to=abc
+      </input>
+      <output>
+        {
+          utm_source: 'facebook',
+          utm_campaign: 'sale2024'
+        }
+      </output>
+      <rationale>User didn't pass any tracking params in original, so system reuses destination's tracking</rationale>
+    </scenario>
+    <scenario name="Override Completely">
+      <input>
+        destinationUrl: https://shop.com?utm_source=facebook&amp;utm_campaign=sale2024
+        originalRequestUrl: /r?to=abc&amp;utm_source=email&amp;utm_campaign=newsletter&amp;utm_medium=email
+      </input>
+      <output>
+        {
+          utm_source: 'email',       // ← Overwritten
+          utm_campaign: 'newsletter', // ← Overwritten
+          utm_medium: 'email'        // ← New param
+        }
+      </output>
+      <rationale>User passed full tracking params in original, overriding all destination params</rationale>
+    </scenario>
+    <scenario name="Refactored redirect.ts Call">
+      <before>
+        // OLD: 25 lines of GA4-specific code
+        const trackingParams = extractTrackingParams(redirectData.url)
+        if (trackingParams && ...) {
+          const ga4Payload = buildGA4Payload({...})
+          sendGA4Event(ga4Payload, ...).catch(...)
+        }
+      </before>
+      <after>
+        // NEW: Single clean call
+        trackRedirect({
+          shortUrl: validated.to,
+          destinationUrl: redirectData.url,
+          redirectType: redirectData.type,
+          userAgent: c.req.header('User-Agent'),
+          ip: c.req.header('CF-Connecting-IP'),
+          originalRequestUrl: c.req.url
+        }, c.env).catch(error => appLogger.warn('Tracking failed', { error }))
+      </after>
+    </scenario>
+  </example>
+</story-context>
