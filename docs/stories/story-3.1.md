@@ -2,6 +2,16 @@
 
 Status: Done
 
+> **⚠️ HISTORICAL CONTEXT UPDATE (2025-10-28):**
+>
+> This story was implemented when the API used the legacy `n=` parameter for debug mode.
+>
+> **BREAKING CHANGE:** The `n=` parameter has been **REMOVED** in Story 1.10.
+> - ❌ **Line 18, 40:** References to ~~`n`~~ parameter should now use **`debug`** parameter
+> - ✅ **Correct mapping:** `isNoRedirect=1` → `debug=1` (not `n=1`)
+>
+> The bootstrap HTML implementation should be updated to construct `/r?to=...&debug=...` URLs.
+
 ## Story
 
 As a user with a legacy `/#destination` URL,

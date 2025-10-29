@@ -22,7 +22,6 @@ app.get('/', (c) => {
  * Generate bootstrap HTML with inline JavaScript for URL upgrade
  */
 function generateBootstrapHTML(): string {
-
   return `<!DOCTYPE html>
 <html lang="en">
 <head>

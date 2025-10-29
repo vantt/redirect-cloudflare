@@ -105,7 +105,7 @@ describe('Redirect Security - Protocol Validation', () => {
     
     expect(response.status).toBe(400)
     const body = await response.json() as { error: string; code?: string }
-    expect(body.error).toBe('Only HTTP/HTTPS URLs allowed')
+    expect(body.error).toBe('Invalid destination URL')
   })
 
   it('should maintain consistent error response format', async () => {

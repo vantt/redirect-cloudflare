@@ -1,0 +1,150 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>10</storyId>
+    <title>Refactor Redirect Handler - Extract Helper Functions</title>
+    <status>Ready for Dev</status>
+    <generatedAt>2025-10-28T17:34:34</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-1.10.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>helper functions extracted from redirect.ts into dedicated lib modules</iWant>
+    <soThat>the code is more maintainable, testable, and follows Single Responsibility Principle</soThat>
+    <tasks><![CDATA[
+Phase 1: Extract query-parser.ts
+- Create src/lib/query-parser.ts with module boilerplate
+- Move isDebugMode() from redirect.ts lines 20-39
+- Move parseDestinationFromQuery() from redirect.ts lines 50-201
+- Add JSDoc for exported functions
+- Update redirect.ts imports to use new module
+
+Phase 2: Extract response-builder.ts
+- Create src/lib/response-builder.ts with module boilerplate
+- Move createDebugResponse() from redirect.ts lines 203-226
+- Move createRedirectResponse() from redirect.ts lines 228-238
+- Add JSDoc for exported functions
+- Update redirect.ts imports to use new module
+
+Phase 3: Reorganize and enhance tests
+- Move test/unit/routes/parse-destination.test.ts to test/unit/lib/query-parser.test.ts
+- Update query-parser.test.ts imports
+- Add 15 new isDebugMode() unit tests (truthy/falsy/edge cases)
+- Move test/unit/routes/redirect-logic.test.ts to test/unit/lib/response-builder.test.ts
+- Update response-builder.test.ts imports
+- Add 8 new createDebugResponse() unit tests (HTTP properties, JSON payload, tracking params)
+- Remove duplicate tests from test/integration/redirect-types.test.ts lines 39-57
+- Delete empty test/unit/routes/ directory
+- Run npm test and ensure pass
+
+Phase 4: Verification
+- Run npm run build
+- Run npm test
+- Run npm test -- --coverage
+- Ensure redirect.ts line count < 150
+- Verify new files exist with correct exports
+- Run integration suite to confirm behavior unchanged
+
+Phase 5: Documentation updates
+- Confirm docs/epics.md includes Story 1.10
+- Confirm docs/architecture.md reflects new lib modules
+- Confirm docs/sprint-status.yaml tracks Story 1.10
+- Confirm implementation notes document exists
+]]></tasks>
+  </story>
+
+  <acceptanceCriteria><![CDATA[
+Code Organization
+1. Create src/lib/query-parser.ts module exporting:
+   - isDebugMode(value: string | undefined | null): boolean - Debug parameter validation with truthy/falsy logic
+   - parseDestinationFromQuery(url: string): { destination: string; debugMode: boolean; usedLegacyParam: boolean } - Query parsing logic for destination and debug extraction
+2. Create src/lib/response-builder.ts module exporting:
+   - createDebugResponse(destination: string): Response - Debug mode response builder with tracking params
+   - createRedirectResponse(destination: string, type: 'permanent' | 'temporary'): Response - Redirect response builder with proper headers
+3. Update src/routes/redirect.ts to import and use extracted functions:
+   import { isDebugMode, parseDestinationFromQuery } from '../lib/query-parser'
+   import { createDebugResponse, createRedirectResponse } from '../lib/response-builder'
+4. Refactored redirect.ts should contain ONLY routing logic (target: < 150 lines, currently 354 lines)
+
+Test Migration and Enhancement
+5. Move test/unit/routes/parse-destination.test.ts to test/unit/lib/query-parser.test.ts with import path updates
+6. Move test/unit/routes/redirect-logic.test.ts to test/unit/lib/response-builder.test.ts with import path updates
+7. Add 15 new unit tests for isDebugMode() function covering:
+   - Truthy values: '1', 'true', 'yes', 'on', 'enabled' (case-insensitive)
+   - Falsy values: '0', 'false', 'no', 'off', 'disabled' (case-insensitive)
+   - Edge cases: undefined, null, empty string, whitespace, invalid values
+8. Add 8 new unit tests for createDebugResponse() function covering:
+   - HTTP response properties (status, headers, content-type)
+   - JSON body structure (destination, redirect_type, note, tracking_params)
+   - Tracking parameter extraction from destination URL
+9. Remove duplicate tests from test/integration/redirect-types.test.ts (lines 39-57)
+10. Delete empty test/unit/routes/ directory after file migration
+
+Quality Assurance
+11. All integration tests continue to pass without modification (behavior unchanged)
+12. TypeScript compilation succeeds with no errors (npm run build)
+13. Full test suite passes with 100% pass rate (npm test)
+14. Code coverage maintained at >=90% for affected modules (npm test -- --coverage)
+
+Documentation
+15. Implementation notes available at docs/stories/story-1.10-implementation-notes.md
+16. Architecture documentation updated to reflect new lib modules (handled by proposal)
+17. Epic documentation updated with Story 1.10 (handled by proposal)
+]]></acceptanceCriteria>
+
+  <artifacts>
+    <docs><![CDATA[
+- path: docs/prd.md | title: Jamstack URL Shortener Service Product Requirements Document (PRD) | section: 2.1 Functional Requirements | snippet: "**FR5: Debugging Mode:** The system must support a query parameter (`isNoRedirect=1`) to prevent redirection, allowing for tracking verification. **FR7: URL Encoding:** The system must correctly handle URL-encoded characters within the destination URL."
+- path: docs/architecture.md | title: Decision Architecture | section: Executive Summary | snippet: "The **cloudflareRedirect** service is a high-performance, serverless URL redirect solution built on Cloudflare Workers with the Hono framework. The architecture prioritizes edge-level performance (sub-5ms processing), pre-redirect analytics tracking, and backward compatibility with legacy client-side redirects."
+- path: docs/sprint-change-proposal-story-1.10.md | title: Sprint Change Proposal: Story 1.10 - Refactor Redirect Handler | section: Section 1: Issue Summary | snippet: "The `src/routes/redirect.ts` file has grown to **354 lines** with significant code organization issues that violate Single Responsibility Principle and reduce maintainability: - **4 major helper functions** (150+ lines combined) are mixed with routing logic - Helper functions (`isDebugMode`, `parseDestinationFromQuery`, `createDebugResponse`, `createRedirectResponse`) are not independently testable."
+- path: docs/epics.md | title: Epic 1 - Core Redirect Engine | section: Story 1.10 | snippet: "**As a** developer, **I want** helper functions extracted from redirect.ts into dedicated lib modules, **So that** the code is more maintainable, testable, and follows Single Responsibility Principle."
+- path: docs/test-suite-structure.md | title: Test Suite Structure Documentation | section: New Test Structure | snippet: "test/unit/lib/ holds library module tests, while test/integration/routes/ exercises HTTP flows; Vitest + Miniflare enforce the testing pyramid with unit, integration, and e2e layers."
+]]></docs>
+    <code><![CDATA[
+- path: src/routes/redirect.ts | kind: route | symbol: parseDestinationFromQuery | lines: 50-200 | reason: Core query parsing logic targeted for migration into lib/query-parser.ts
+- path: src/routes/redirect.ts | kind: route | symbol: createDebugResponse | lines: 203-226 | reason: Debug payload builder that will move into lib/response-builder.ts while preserving GA4 logging
+- path: src/routes/redirect.ts | kind: route | symbol: createRedirectResponse | lines: 228-238 | reason: Redirect response helper to relocate into lib/response-builder.ts ensuring header semantics stay intact
+- path: test/unit/routes/parse-destination.test.ts | kind: unit-test | symbol: parseDestinationFromQuery suite | lines: 1-82 | reason: Existing coverage that must accompany the helper into its new module and expand to 15 additional cases
+- path: test/unit/routes/redirect-logic.test.ts | kind: unit-test | symbol: Redirect Response Creation suite | lines: 1-39 | reason: Response builder assertions to migrate alongside the helper with eight new debug response scenarios
+- path: test/integration/redirect-types.test.ts | kind: integration-test | symbol: Redirect Type Support | lines: 39-57 | reason: Duplicated redirect response assertions slated for removal after unit test relocation
+]]></code>
+    <dependencies><![CDATA[
+- ecosystem: npm | packages: hono@^4.4.0; @hono/zod-validator@^0.7.0; zod@^4.1.0
+- ecosystem: npm-dev | packages: typescript@^5.9.0; vitest@^4.0.3; miniflare@^3.20250718.2; wrangler@^4.45.0; @cloudflare/workers-types@^4.20241004.0
+]]></dependencies>
+  </artifacts>
+
+  <constraints><![CDATA[
+- Redirect handler must be reduced below 150 lines post-refactor while keeping routing orchestration intact.
+- Extracted helpers must maintain GA4 tracking hooks and debug logging parity with current implementation.
+- Legacy `n=` debug parameter handling and warning logs must remain functional after module extraction.
+- Build, unit, integration, and coverage gates stay mandatory with >=90% coverage for updated modules.
+]]></constraints>
+  <interfaces><![CDATA[
+- isDebugMode(value: string | undefined | null): boolean
+- parseDestinationFromQuery(url: string): { destination: string; debugMode: boolean; usedLegacyParam: boolean }
+- createDebugResponse(destination: string): Response
+- createRedirectResponse(destination: string, type: 'permanent' | 'temporary'): Response
+]]></interfaces>
+  <tests>
+    <standards><![CDATA[
+- Follow Vitest + Miniflare workflow documented in docs/test-suite-structure.md (updated 2025-10-28)
+- Maintain >=90% coverage for query-parser.ts and response-builder.ts while keeping redirect.ts regression suite intact
+- Ensure GA4 tracking mocks remain awaited so redirect flow continues to meet PRD pre-redirect tracking requirement
+]]></standards>
+    <locations><![CDATA[
+- test/unit/lib/query-parser.test.ts
+- test/unit/lib/response-builder.test.ts
+- test/integration/redirect-types.test.ts
+- test/integration/redirect-basic.test.ts
+]]></locations>
+    <ideas><![CDATA[
+- AC7: Truthy, falsy, and edge-case matrices for isDebugMode() in test/unit/lib/query-parser.test.ts
+- AC8: Debug response JSON structure and header verification in test/unit/lib/response-builder.test.ts
+- AC9: Ensure integration suite no longer duplicates response builder assertions in test/integration/redirect-types.test.ts
+- AC11: Regression test run of redirect endpoints to confirm behavior unchanged post-refactor
+]]></ideas>
+  </tests>
+</story-context>

@@ -5,26 +5,26 @@ describe('Redirect Schema Protocol Validation', () => {
   it('should validate valid http URLs', () => {
     const result = redirectSchema.safeParse({
       to: 'http://example.com',
-      n: '1'
+      debug: '1'
     })
     
     expect(result.success).toBe(true)
     if (result.success) {
       expect(result.data.to).toBe('http://example.com')
-      expect(result.data.n).toBe('1')
+      expect(result.data.debug).toBe('1')
     }
   })
 
   it('should validate valid https URLs', () => {
     const result = redirectSchema.safeParse({
       to: 'https://example.com/path?query=value',
-      n: '0'
+      debug: '0'
     })
     
     expect(result.success).toBe(true)
     if (result.success) {
       expect(result.data.to).toBe('https://example.com/path?query=value')
-      expect(result.data.n).toBe('0')
+      expect(result.data.debug).toBe('0')
     }
   })
 
