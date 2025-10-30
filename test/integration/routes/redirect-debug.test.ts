@@ -16,15 +16,19 @@ describe('Redirect Debug Mode', () => {
     expect(response.headers.get('Content-Type')).toBe('application/json')
     
     const body = await response.json() as {
-      destination: string;
+      destination: {
+        original: string;
+        resolved: string;
+        source: string;
+        type: string;
+      };
       tracking_params: Record<string, string>;
       redirect_type: string;
       note: string;
     }
     
-    expect(body.destination).toBe('https://example.com')
-    expect(body.redirect_type).toBe('302')
-    expect(body.note).toBe('Debug mode - redirect suppressed')
+    expect(body.destination.resolved).toBe('https://example.com')
+    expect(body.destination.type).toBe('temporary')
     expect(typeof body.tracking_params).toBe('object')
   })
 
@@ -50,19 +54,22 @@ describe('Redirect Debug Mode', () => {
     expect(response.status).toBe(200)
     
     const body = await response.json() as {
-      destination: string;
+      destination: {
+        original: string;
+        resolved: string;
+        source: string;
+        type: string;
+      };
       tracking_params: Record<string, string>;
       redirect_type: string;
       note: string;
     }
     
-    expect(body.destination).toBe('https://example.com?utm_source=fb&utm_medium=cpc')
+    expect(body.destination.resolved).toBe('https://example.com?utm_source=fb&utm_medium=cpc')
     expect(body.tracking_params).toHaveProperty('utm_source')
     expect(body.tracking_params).toHaveProperty('utm_medium')
     expect(body.tracking_params.utm_source).toBe('fb')
     expect(body.tracking_params.utm_medium).toBe('cpc')
-    expect(body.tracking_params).toHaveProperty('utm_source')
-    expect(body.tracking_params).toHaveProperty('utm_medium')
   })
 
   it('should return JSON with empty tracking params when none present', async () => {
@@ -71,13 +78,18 @@ describe('Redirect Debug Mode', () => {
     expect(response.status).toBe(200)
     
     const body = await response.json() as {
-      destination: string;
+      destination: {
+        original: string;
+        resolved: string;
+        source: string;
+        type: string;
+      };
       tracking_params: Record<string, string>;
       redirect_type: string;
       note: string;
     }
     
-    expect(body.destination).toBe('https://example.com')
+    expect(body.destination.resolved).toBe('https://example.com')
     expect(Object.keys(body.tracking_params)).toHaveLength(0)
   })
 
@@ -105,15 +117,19 @@ describe('Redirect Debug Mode', () => {
     expect(response.headers.get('Content-Type')).toBe('application/json')
 
     const body = await response.json() as {
-      destination: string;
+      destination: {
+        original: string;
+        resolved: string;
+        source: string;
+        type: string;
+      };
       tracking_params: Record<string, string>;
       redirect_type: string;
       note: string;
     }
 
-    expect(body.destination).toBe('https://example.com')
-    expect(body.redirect_type).toBe('302')
-    expect(body.note).toBe('Debug mode - redirect suppressed')
+    expect(body.destination.resolved).toBe('https://example.com')
+    expect(body.destination.type).toBe('temporary')
   })
 
   it('should accept debug=true as well as debug=1', async () => {
@@ -131,10 +147,13 @@ describe('Redirect Debug Mode', () => {
 
     // Verify it's valid JSON with expected structure
     expect(body).toMatchObject({
-      destination: expect.any(String),
+      destination: expect.objectContaining({
+        original: expect.any(String),
+        resolved: expect.any(String),
+        source: expect.any(String),
+        type: expect.stringMatching(/^(temporary|permanent)$/),
+      }),
       tracking_params: expect.any(Object),
-      redirect_type: expect.stringMatching(/^(301|302)$/),
-      note: expect.stringContaining('Debug mode')
     })
   })
 

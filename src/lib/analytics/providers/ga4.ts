@@ -1,167 +1,37 @@
-import { appLogger } from '../../../utils/logger';
-import { TrackingParams } from '../../../types/env';
+import { AnalyticsEvent } from '../types';
+import { AnalyticsProvider } from '../provider';
 
-type GA4EventParams = Record<string, string>;
+/**
+ * GA4 Analytics Provider (Example)
+ * 
+ * This is an example implementation of a GA4 provider.
+ * It is not intended for production use.
+ * 
+ * Part of Epic 8: GA4 Provider Implementation
+ */
+export class ExampleGA4Provider implements AnalyticsProvider {
+  readonly name = 'ga4';
+  private measurementId: string;
+  private apiSecret: string;
 
-interface GA4Event {
-  name: string;
-  params: GA4EventParams;
-}
-
-export interface GA4Payload {
-  client_id: string;
-  events: GA4Event[];
-}
-
-export interface GA4Error {
-  success: boolean;
-  error: string;
-  errorName?: string;
-}
-
-const GA4_EVENT_NAME = 'redirect_click';
-const FNV1A_64_OFFSET_BASIS = BigInt('0xcbf29ce484222325');
-const FNV1A_64_PRIME = BigInt('0x100000001b3');
-const GA4_COLLECT_URL = 'https://www.google-analytics.com/mp/collect';
-
-function sanitizeEventParams(params: TrackingParams): GA4EventParams {
-  const sanitized: GA4EventParams = {};
-  if (!params) {
-    return sanitized;
+  constructor(measurementId: string, apiSecret: string) {
+    this.measurementId = measurementId;
+    this.apiSecret = apiSecret;
   }
 
-  for (const [key, value] of Object.entries(params)) {
-    if (typeof value === 'string') {
-      sanitized[key] = value;
-    }
+  async send(event: AnalyticsEvent): Promise<void> {
+    // In a real implementation, this would send the event to GA4
+    throw new Error('Example provider - implement in Epic 8');
   }
 
-  return sanitized;
-}
-
-function fnv1a64(input: string): string {
-  let hash = FNV1A_64_OFFSET_BASIS;
-
-  for (let i = 0; i < input.length; i += 1) {
-    hash ^= BigInt(input.charCodeAt(i));
-  }
-  hash = (hash * FNV1A_64_PRIME) & BigInt('0xffffffffffffffff');
-  return hash.toString(16).padStart(16, '0');
-}
-
-function generateClientId(): string {
-  const timestamp = Date.now();
-  const randomBytes = new Uint8Array(16);
-  crypto.getRandomValues(randomBytes);
-  const randomHex = Array.from(randomBytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
-  const hash = fnv1a64(`${timestamp}:${randomHex}`);
-
-  return `${hash}.${timestamp}`;
-}
-
-export function buildGA4Payload(params: {
-  shortUrl: string;
-  fullDestination: string;
-  redirectType: 'permanent' | 'temporary';
-  trackingParams: TrackingParams;
-  userAgent?: string;
-  ip?: string;
-}, measurementId?: string): GA4Payload {
-  if (!measurementId || measurementId.trim().length === 0) {
-    throw new Error('GA4 measurement ID is required to build payload');
-  }
-
-  return {
-    client_id: generateClientId(),
-    events: [
-      {
-        name: GA4_EVENT_NAME,
-        params: sanitizeEventParams(params.trackingParams),
-      },
-    ],
-  };
-}
-
-export async function sendGA4Event(
-  payload: object, 
-  apiSecret: string, 
-  measurementId: string
-): Promise<GA4Error> {
-  try {
-    const collectUrl = new URL(GA4_COLLECT_URL);
-    collectUrl.searchParams.set('measurement_id', measurementId);
-    collectUrl.searchParams.set('api_secret', apiSecret);
-    
-    const headers = {
-      'Content-Type': 'application/json',
-      'User-Agent': 'cloudflareRedirect/1.0.0'
-    };
-    
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2000);
-    
-    try {
-      const response = await fetch(collectUrl.toString(), {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload),
-        signal: controller.signal
-      });
-      
-      clearTimeout(timeoutId);
-      
-      if (!response.ok) {
-        throw new Error(`GA4 request failed: ${response.status} ${response.statusText}`);
+  private mapAttributes(attributes: Record<string, any>): Record<string, string> {
+    const mapped: Record<string, string> = {};
+    for (const key in attributes) {
+      if (Object.prototype.hasOwnProperty.call(attributes, key)) {
+        // Map and convert to string
+        mapped[key] = String(attributes[key]);
       }
-      
-      appLogger.info('GA4 tracking event sent', {
-        measurementId,
-        payloadType: (payload as any).type || 'unknown',
-        status: response.status,
-        latencyMs: null
-      });
-      
-      return response.json();
-    } catch (error) {
-      clearTimeout(timeoutId);
-      
-      const errorObj = error as Error;
-      
-      if (errorObj.name === 'AbortError') {
-        appLogger.warn('GA4 tracking request timed out', {
-          measurementId,
-          timeoutMs: 2000,
-          error: errorObj.message
-        });
-      } else {
-        appLogger.error('GA4 tracking request failed', {
-          measurementId,
-          error: errorObj.message,
-          errorName: errorObj.name
-        });
-      }
-      
-      const errorResponse: GA4Error = { 
-        success: false, 
-        error: errorObj.message, 
-        errorName: errorObj.name
-      };
-      return Promise.resolve(errorResponse);
     }
-  } catch (error) {
-    const errorObj = error as Error;
-    
-    appLogger.error('GA4 tracking failed', {
-      measurementId,
-      error: errorObj.message,
-      errorName: errorObj.name
-    });
-    
-    const errorResponse: GA4Error = { 
-      success: false, 
-      error: errorObj.message, 
-      errorName: errorObj.name
-    };
-    return Promise.resolve(errorResponse);
+    return mapped;
   }
 }

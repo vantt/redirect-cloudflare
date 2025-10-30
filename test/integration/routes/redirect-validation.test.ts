@@ -15,34 +15,27 @@ describe('Redirect Endpoint Validation', () => {
     expect(response.status).toBe(400)
     const body = await response.json() as any
     
-    // Check if response has expected format or alternative format
-    if (body.success !== undefined && body.error !== undefined) {
-      // Alternative format: {success: boolean, error: {code, message, path, expected}}
-      expect(body.success).toBe(false)
-      expect(body.error.code).toBeDefined()
-      expect(body.error.message).toBeDefined()
-    } else {
-      // Expected format: {error: string, code: string}
-      expect(body.error).toBeDefined()
-      expect(body.code).toBeDefined()
-    }
+    expect(body.error).toBe('Missing required parameter: to')
+    expect(body.code).toBe('MISSING_PARAM')
   })
 
-  it('should return 403 for empty to parameter', async () => {
+  it('should return 400 for empty to parameter', async () => {
     const response = await app.request('/r?to=', {}, testEnv)
-    expect(response.status).toBe(403)
+    expect(response.status).toBe(400)
 
     const body = await response.json() as { error: string; code: string }
-    expect(body.code).toEqual('DOMAIN_NOT_ALLOWED');
+    expect(body.error).toEqual('Missing required parameter: to');
+    expect(body.code).toEqual('MISSING_PARAM');
   })
 
 
-  it('should return 403 for invalid URL', async () => {
+  it('should return 400 for invalid URL', async () => {
     const response = await app.request('/r?to=invalid-url', {}, testEnv)
-    expect(response.status).toBe(403)
+    expect(response.status).toBe(400)
 
     const body = await response.json() as { error: string; code: string }
-    expect(body.code).toEqual('DOMAIN_NOT_ALLOWED');
+    expect(body.error).toEqual('Invalid destination format: must be shortcode (alphanumeric) or full URL (http:// or https://)');
+    expect(body.code).toEqual('INVALID_DESTINATION_FORMAT');
   })
 
   
@@ -52,15 +45,13 @@ describe('Redirect Endpoint Validation', () => {
     
     expect(response.status).toBe(200)
     const body = await response.json() as {
-      destination: string;
+      destination: any;
       tracking_params: Record<string, string>;
       redirect_type: string;
       note: string;
     }
 
-    expect(body.destination).toBe('https://example.com')
-    expect(body.redirect_type).toBe('302')
-    expect(body.note).toBe('Debug mode - redirect suppressed')
+    expect(body.destination.resolved).toBe('https://example.com')
   })
 
   it('should accept valid URL without debug parameter', async () => {

@@ -133,7 +133,7 @@ export function validateResolvedUrl(
     }
     
     // Handle Zod validation errors
-    if (error instanceof Error) {
+    if (error instanceof Error && error.name === 'ZodError') {
       throw new RedirectError(
         `Invalid URL: ${error.message}`,
         400,

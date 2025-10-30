@@ -43,9 +43,11 @@ development_status:
   1-4-custom-error-classes-and-global-error-handler: done
   1-5-redirect-type-support-301-vs-302: done
   1-6-environment-configuration-management: done
-  1-7-test-environment-configuration: ready-for-dev
-  1-8-raw-to-query-support: ready-for-dev
-  1-9-debug-parameter-rename-and-parsing-enhancements: review
+  1-7-test-environment-configuration: done
+  1-8-raw-to-query-support: done
+  1-9-debug-parameter-rename-and-parsing-enhancements: done
+  1-10-refactor-redirect-handler-extract-helper-functions: done  
+  1-11-destination-resolution-and-validation-refactoring: review
   epic-1-retrospective: completed
 
   epic-2: contexted
@@ -68,7 +70,7 @@ development_status:
   6-3-optional-domain-allowlist-configuration: done
   epic-6-retrospective: completed
 
-  epic-7: contexted
+  epic-7: done
   7-1-tracking-parameter-extraction-from-destination-urls: done
   7-2-analytics-provider-interface-and-neutral-event-model: done
   7-3-analytics-router-multi-service-fan-out: done
@@ -76,10 +78,11 @@ development_status:
   7-5-timeout-reliability-policy-non-blocking: done
   7-6-observability-structured-logs-basic-counters: done
   7-7-test-harness-provider-mocks: done
+  7-8-tracking-service-abstraction-and-redirect-integration: done
   epic-7-retrospective: completed
 
   epic-8: contexted
-  8-1-ga4-measurement-protocol-payload-builder: review
+  8-1-ga4-measurement-protocol-payload-builder: drafted
   8-2-ga4-measurement-protocol-http-integration: review
   8-3-integrated-ga4-in-redirect-flow: review
   epic-8-retrospective: optional

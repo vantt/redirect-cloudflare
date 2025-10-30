@@ -120,6 +120,10 @@ export function parseDestinationFromQuery(url: string): { destination: string; d
     throw error
   }
 
+  if (!destination || destination.trim() === '') {
+    throw new RedirectError('Missing required parameter: to', 400, 'MISSING_PARAM')
+  }
+
   // Extract debug mode from various locations
   let debugMode = false
   let cleanDestination = destination

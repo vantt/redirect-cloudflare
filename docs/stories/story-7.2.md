@@ -80,74 +80,48 @@ so that business events are decoupled from vendor payloads and easy to extend.
 
 ## Senior Developer Review (AI)
 
-### Reviewer
-vanTT
-
-### Date
-2025-10-26
-
-### Outcome
-Approve
+- Reviewer: vanTT
+- Date: 2025-10-29
+- Outcome: Changes Requested
 
 ### Summary
-Story 7.2 successfully creates a vendor-neutral analytics abstraction with proper TypeScript interfaces, comprehensive documentation, and thorough test coverage. All acceptance criteria met with clean architectural design.
 
-### Key Findings
-
-**High Severity**
-- None
-
-**Medium Severity**  
-- None
-
-**Low Severity**
-- None
-
-### Acceptance Criteria Coverage
-✅ **AC1**: AnalyticsEvent (name + attributes map) and AnalyticsProvider interface defined with proper TypeScript signatures
-✅ **AC2**: Minimal taxonomy documented: redirect_click with mapped attributes (utm_source, utm_medium, utm_campaign, utm_content, utm_term, xptdk, ref)
-✅ **AC3**: TypeScript interfaces exported in correct file locations (src/lib/analytics/types.ts and src/lib/analytics/provider.ts)
-✅ **AC4**: Examples provided showing provider adapters mapping neutral event to vendor payloads (GA4 and Mixpanel examples)
-✅ **AC5**: Unit tests validate type contracts and basic mapping examples with comprehensive coverage
-
-### Test Coverage and Gaps
-**Test Coverage**: ✅ Complete
-- Type contracts validation for AnalyticsAttributes, AnalyticsEvent, enums
-- Interface compliance testing for AnalyticsProvider
-- Example adapter mapping demonstrations
-- TypeScript type safety enforcement verification
-- Mixed data type handling (string, number, boolean)
-- Enum usage for consistent naming
-
-**Test Quality**: ✅ Excellent
-- Comprehensive edge case coverage
-- Type safety validation
-- Interface contract enforcement
-- Example provider demonstrations
-- Clear documentation of expected behaviors
-
-### Architectural Alignment
-✅ **Epic 7 Compliance**: Perfect alignment with Analytics Abstraction goals
-- Neutral event model decouples business events from vendor payloads
-- Provider interface enables multi-service routing without blocking redirects
-- Consistent naming conventions (lower_snake_case for attributes)
-- No vendor-specific leakage into neutral types
-- Extensible design for future event types and providers
-
-### Security Notes
-✅ **Secure Implementation**
-- No network calls in this story (as required)
-- No PII exposure in neutral event model
-- Type safety prevents malformed data
-- No injection vulnerabilities in pure interface design
-
-### Best-Practices and References
-- **TypeScript**: Strict typing with optional interfaces and enums
-- **Interface Design**: Clean contract with async Promise<void> pattern
-- **Documentation**: Comprehensive JSDoc comments and inline examples
-- **Testing**: Full test coverage including type contracts and examples
-- **Code Organization**: Proper module separation and clear file structure
-- **Extensibility**: Enum-based naming and flexible attribute types
+The original implementation of story 7.2 was a good first step, but it is now outdated due to the new tracking service abstraction introduced in story 7.8. The existing tests are failing and need to be updated to reflect the new implementation. The story needs to be reworked to align with the new standard.
 
 ### Action Items
-None - Implementation approved as completed
+
+- [x] Refactor the analytics provider interface and neutral event model to be compatible with the new `tracking-service`.
+- [x] Update all related tests to use the new `tracking-service` and fix all the failing tests.
+- [x] GA4-specific code isolated in separate file for Epic 8 implementation.
+- [x] Update the documentation to reflect the new implementation.
+
+### Post-Refactor Update (2025-10-30)
+
+Story 7.2 has been successfully refactored to align with the new tracking service abstraction introduced in Story 7.8.
+
+**Key Changes:**
+1. **Import Path Fixes**: Fixed import paths for `AnalyticsProvider` interface
+   - `src/lib/analytics/providers/ga4.ts`: Split imports between `types.ts` and `provider.ts`
+   - `test/utils/mock-providers.ts`: Updated to correct import paths
+
+2. **Router Error Handling**: Fixed `dispatchToProviderWithTimeout` to properly re-throw errors
+   - Ensures `Promise.allSettled` can correctly track success/failure counts
+   - Maintains error isolation while enabling proper failure tracking
+
+3. **Test Updates**:
+   - Updated router timeout tests to reflect new logging behavior
+   - Fixed test expectations to match actual provider behavior (timeouts are failures)
+   - E2E test helper updated to read from mocked `appLogger` instead of console
+
+4. **GA4 Isolation**: GA4 provider code remains in `src/lib/analytics/providers/ga4.ts` for Epic 8
+   - Marked as example implementation
+   - Does not interfere with core provider interface tests
+
+**Test Results:**
+All Story 7.2 tests passing:
+- ✅ `test/unit/lib/analytics/types.test.ts`
+- ✅ `test/unit/lib/analytics/provider-adapter.example.test.ts`
+- ✅ `test/unit/lib/analytics/registry.test.ts`
+- ✅ `test/unit/lib/analytics/providers/provider-mocks.test.ts`
+
+**Status**: Story 7.2 is complete and aligned with Story 7.8 design.

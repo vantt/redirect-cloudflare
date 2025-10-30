@@ -153,11 +153,11 @@ async function dispatchToProviderWithTimeout(
     
   } catch (error) {
     const duration = Date.now() - startTime
-    
+
     // Determine if this was a timeout vs other error
-    const isTimeout = error instanceof Error && 
+    const isTimeout = error instanceof Error &&
       (error.message.includes('timeout') || error.message.includes('aborted'))
-    
+
     // Log error but don't re-throw (isolation)
     appLogger.error('Analytics router: provider dispatch failed', {
       providerName,
@@ -167,9 +167,11 @@ async function dispatchToProviderWithTimeout(
       providerIndex,
       isTimeout
     })
-    
+
+    // Re-throw so Promise.allSettled can track failures properly
     // Error isolation - don't let one provider failure affect others
     // or throw to caller (non-blocking guarantee)
+    throw error
   }
 }
 

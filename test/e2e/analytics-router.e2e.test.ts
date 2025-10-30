@@ -1,19 +1,28 @@
 /**
  * Analytics Router E2E Tests
- * 
+ *
  * End-to-end tests for analytics router using mock providers.
  * Tests multi-provider scenarios: success, failure, timeout, and mixed.
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+
+// Mock logger to capture log calls
+vi.mock('../../src/utils/logger', () => ({
+  appLogger: {
+    info: vi.fn(),
+    error: vi.fn(),
+    warn: vi.fn()
+  }
+}))
 import { AnalyticsEvent, EventName } from '../../src/lib/analytics/types'
 import { AnalyticsProvider } from '../../src/lib/analytics/provider'
-import { 
+import {
   createSuccessMock,
   createFailureMock,
   createTimeoutMock,
   createProvidersByType
-} from './providers/provider-mocks'
+} from '../utils/mock-providers'
 
 // Import the actual router implementation for testing
 import { routeAnalyticsEvent } from '../../src/lib/analytics/router'
@@ -24,7 +33,7 @@ import { routeAnalyticsEvent } from '../../src/lib/analytics/router'
  * the logged results and provider behavior for test assertions
  */
 async function routeAnalyticsEventForTesting(
-  providers: AnalyticsProvider[], 
+  providers: AnalyticsProvider[],
   event: AnalyticsEvent
 ): Promise<{
   totalProviders: number
@@ -34,50 +43,42 @@ async function routeAnalyticsEventForTesting(
   duration: number
 }> {
   const startTime = Date.now()
-  
-  // Mock the logger to capture provider results
-  const logCalls: any[] = []
-  const originalLog = console.log
-  console.log = (...args) => {
-    logCalls.push(args)
-    originalLog(...args)
-  }
-  
-  try {
-    // Call the actual router
-    await routeAnalyticsEvent(event, providers)
-    
-    // Extract results from log calls
-    const providerCalls = logCalls.filter(call => 
-      Array.isArray(call) && 
-      call.length > 0 && 
-      typeof call[0] === 'string' &&
-      call[0].includes('provider dispatch')
-    )
-    
-    const successful = providerCalls.filter(call => 
-      call[0].includes('successful')
-    ).length
-    
-    const failed = providerCalls.filter(call => 
-      call[0].includes('failed')
-    ).length
-    
-    const timedOut = providerCalls.filter(call => 
-      JSON.stringify(call).includes('isTimeout": true')
-    ).length
-    
-    return {
-      totalProviders: providers.length,
-      successful,
-      failed,
-      timedOut,
-      duration: Date.now() - startTime
-    }
-    
-  } finally {
-    // Restore console
-    console.log = originalLog
+
+  // Import the mocked logger to access its calls
+  const { appLogger } = await import('../../src/utils/logger')
+
+  // Clear previous calls
+  vi.clearAllMocks()
+
+  // Call the actual router
+  await routeAnalyticsEvent(event, providers)
+
+  // Extract results from logger calls
+  const infoCalls = (appLogger.info as any).mock.calls
+  const errorCalls = (appLogger.error as any).mock.calls
+
+  // Count successful providers (info logs with "provider dispatch successful")
+  const successful = infoCalls.filter((call: any[]) =>
+    call[0] === 'Analytics router: provider dispatch successful'
+  ).length
+
+  // Count failed providers (error logs with "provider dispatch failed")
+  const failedCalls = errorCalls.filter((call: any[]) =>
+    call[0] === 'Analytics router: provider dispatch failed'
+  )
+  const failed = failedCalls.length
+
+  // Count timeouts (failed calls where isTimeout is true)
+  const timedOut = failedCalls.filter((call: any[]) =>
+    call[1]?.isTimeout === true
+  ).length
+
+  return {
+    totalProviders: providers.length,
+    successful,
+    failed,
+    timedOut,
+    duration: Date.now() - startTime
   }
 }
 

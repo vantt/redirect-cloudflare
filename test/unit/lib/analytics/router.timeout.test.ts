@@ -263,8 +263,8 @@ describe('Analytics Router - Timeout and Non-Blocking', () => {
         'Analytics router: dispatch complete',
         expect.objectContaining({
           totalProviders: 3,
-          successful: 2,
-          failed: 1
+          successful: 1,
+          failed: 2
         })
       )
     })

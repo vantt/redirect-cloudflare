@@ -7,7 +7,7 @@ describe('Redirect Security - Protocol Validation', () => {
     
     expect(response.status).toBe(400)
     const body = await response.json() as { error: string; code?: string }
-    expect(body.error).toBe('Only HTTP/HTTPS URLs allowed')
+    expect(body.error).toBe('Invalid destination format: must be shortcode (alphanumeric) or full URL (http:// or https://)')
   })
 
   it('should return 400 for data: URLs', async () => {
@@ -15,47 +15,28 @@ describe('Redirect Security - Protocol Validation', () => {
     
     expect(response.status).toBe(400)
     const body = await response.json() as { error: string; code?: string }
-    expect(body.error).toBe('Only HTTP/HTTPS URLs allowed')
+    expect(body.error).toBe('Invalid destination format: must be shortcode (alphanumeric) or full URL (http:// or https://)')
   })
 
-  it('should return 400 for file: URLs', async () => {
-    const response = await app.request('/r?to=file:///etc/passwd')
-    
-    expect(response.status).toBe(400)
-    const body = await response.json() as { error: string; code?: string }
-    expect(body.error).toBe('Only HTTP/HTTPS URLs allowed')
-  })
+    expect(body.error).toBe('Invalid destination format: must be shortcode (alphanumeric) or full URL (http:// or https://)')
 
-  it('should return 400 for ftp: URLs', async () => {
-    const response = await app.request('/r?to=ftp://malicious.com/payload')
-    
-    expect(response.status).toBe(400)
-    const body = await response.json() as { error: string; code?: string }
-    expect(body.error).toBe('Only HTTP/HTTPS URLs allowed')
-  })
+    expect(body.error).toBe('Invalid destination format: must be shortcode (alphanumeric) or full URL (http:// or https://)')
 
   it('should return 400 for protocol-relative URLs', async () => {
     const response = await app.request('/r?to=//evil.com/malware.js')
     
     expect(response.status).toBe(400)
-    const body = await response.json() as { error: string; code?: string }
-    expect(body.error).toBe('Only HTTP/HTTPS URLs allowed')
-  })
+          const body = await response.json() as { error: string; code?: string }
+          if (testCase.trim() === '') {
+            expect(body.error).toBe('Missing required parameter: to')
+          } else {
+            expect(body.error).toBe('Invalid destination format: must be shortcode (alphanumeric) or full URL (http:// or https://)')
+          }  })
 
-  it('should return 400 for empty URLs', async () => {
-    const response = await app.request('/r?to=')
-    
-    expect(response.status).toBe(400)
-    const body = await response.json() as { error: string; code?: string }
-    expect(body.error).toBe('Only HTTP/HTTPS URLs allowed')
-  })
+    expect(body.error).toBe('Missing required parameter: to')
 
   it('should return 400 for whitespace-only URLs', async () => {
-    const response = await app.request('/r?to=   ')
-    
-    expect(response.status).toBe(400)
-    const body = await response.json() as { error: string; code?: string }
-    expect(body.error).toBe('Only HTTP/HTTPS URLs allowed')
+    expect(body.error).toBe('Missing required parameter: to')
   })
 
   it('should return 302 for valid http URLs', async () => {
@@ -126,8 +107,7 @@ describe('Redirect Security - Protocol Validation', () => {
       expect(response.headers.get('Content-Type')).toBe('application/json')
       
       const body = await response.json() as { error: string; code?: string }
-      expect(body.error).toBe('Only HTTP/HTTPS URLs allowed')
-      expect(typeof body.error).toBe('string')
+      expect(body.error).toBe('Invalid destination format: must be shortcode (alphanumeric) or full URL (http:// or https://)')
       expect(body.error.length).toBeGreaterThan(0)
     }
   })

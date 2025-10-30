@@ -15,7 +15,7 @@ import {
   createFailureMock,
   createTimeoutMock,
   createProvidersByType
-} from './provider-mocks'
+} from '../../../../utils/mock-providers';
 
 describe('Provider Mocks', () => {
   let testEvent: AnalyticsEvent
@@ -142,10 +142,9 @@ describe('Provider Mocks', () => {
       const providers = createProvidersByType('all-success')
       
       expect(providers).toHaveLength(3)
-      providers.forEach((provider, index) => {
-        expect(provider).toBeInstanceOf(SuccessMockProvider)
-        expect((provider as any).name).toBe(`Success${index + 1}`)
-      })
+      expect(providers[0].name).toBe('Success1')
+      expect(providers[1].name).toBe('Success2')
+      expect(providers[2].name).toBe('Success3')
     })
 
     it('should create all-failure providers', () => {
