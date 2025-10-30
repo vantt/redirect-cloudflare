@@ -119,7 +119,7 @@ async function dispatchToProviderWithTimeout(
   providerIndex: number,
   timeout: number
 ): Promise<void> {
-  const providerName = provider.constructor.name || `Provider${providerIndex}`
+  const providerName = provider.name || provider.constructor.name || `Provider${providerIndex}`
   const startTime = Date.now()
   
   appLogger.info('Analytics router: dispatching to provider', {

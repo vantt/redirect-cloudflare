@@ -1,0 +1,347 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>7</epicId>
+    <storyId>7.9</storyId>
+    <title>Test Infrastructure Fixes Post-Story 7.8</title>
+    <status>drafted</status>
+    <generatedAt>2025-10-30</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-7.9.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>a developer</asA>
+    <iWant>all test suites to pass with the new Story 7.8 architecture</iWant>
+    <soThat>we have confidence in test coverage and can proceed with Epic 8 implementation</soThat>
+    <tasks>
+### Group 1: KV Binding Test Setup (Priority HIGH - 10 failures)
+- Analyze current KV binding mock approach in test files
+- Create or update centralized test helper for KV namespace mocking
+- Update test/unit/bootstrap.test.ts (7 failures)
+- Update test/unit/handlers/redirect.test.ts (3 failures)
+
+### Group 2: Error Handler Type Recognition (Priority MEDIUM - 2 failures)
+- Review error handler type checking logic
+- Update test/unit/handlers/error-handler.test.ts
+
+### Group 3: Domain Allowlist Edge Cases (Priority MEDIUM - 2 failures)
+- Review domain allowlist validation logic
+- Update test/unit/middlewares/domain-allowlist.test.ts
+
+### Group 4: Structured Logging Format (Priority LOW - 5 failures)
+- Review Story 7.3 router observability implementation
+- Update test/unit/lib/analytics/router.observe.test.ts
+
+### Group 5: Validation & Documentation
+- Run full test suite (303/303 passing)
+- Document test setup patterns
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. Fix KV binding setup in test environment - 10 failing tests across bootstrap.test.ts and redirect.test.ts should pass
+2. Update error handler tests to properly recognize NotFoundError type - 2 failing tests in error-handler.test.ts should pass
+3. Fix domain allowlist edge case validation logic - 2 failing tests in domain-allowlist.test.ts should pass
+4. Update structured logging format expectations in router observability tests - 5 failing tests in router.observe.test.ts should pass
+5. All 303 tests pass (100% pass rate, up from 93.7%)
+6. No regression in existing functionality - all previously passing tests remain green
+7. Test setup documented for future reference (KV binding mock pattern)
+8. Story 7.8 architecture remains unchanged - fixes are test-only
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/test-failure-analysis-2025-10-30.md</path>
+        <title>Test Failure Analysis Report</title>
+        <section>Root Cause Analysis</section>
+        <snippet>Comprehensive analysis of 19 test failures across 6 test files: KV binding setup affecting 10 tests, error handler type recognition (2 failures), domain allowlist edge cases (2 failures), structured logging format (5 failures). Includes detailed categorization by story and priority assessment.</snippet>
+      </doc>
+      <doc>
+        <path>docs/tech-spec-epic-7.md</path>
+        <title>Technical Specification: Analytics Abstraction (Multi-Service)</title>
+        <section>System Architecture</section>
+        <snippet>Epic 7 provides analytics abstraction layer with provider interface, router fan-out, timeout protection, and structured logging. Story 7.8 introduced TrackingService abstraction with parameter extraction and fire-and-forget pattern.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-7.8.md</path>
+        <title>Story 7.8: Tracking Service Integration</title>
+        <section>Implementation Notes</section>
+        <snippet>TrackingService provides high-level interface for pre-redirect tracking with parameter extraction, merge strategy (original-wins), and non-blocking fire-and-forget pattern. Critical: Story 7.9 must NOT change this architecture.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-5.2.md</path>
+        <title>Story 5.2: Structured Logging</title>
+        <section>Log Format Specification</section>
+        <snippet>Structured JSON logging with specific field requirements for observability. Analytics router uses this for provider dispatch logging with duration, outcome metrics, and error details.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-1.11.md</path>
+        <title>Story 1.11: KV Client Abstraction</title>
+        <section>KV Client Interface</section>
+        <snippet>Provides abstraction over Cloudflare Workers KV binding for testability and mocking. Relevant for fixing KV binding setup in test environment.</snippet>
+      </doc>
+      <doc>
+        <path>docs/test-suite-structure.md</path>
+        <title>Test Suite Structure Documentation</title>
+        <section>Test Organization</section>
+        <snippet>Test pyramid structure with unit, integration, and e2e tests. Setup utilities in test/helpers/, fixtures in test/fixtures/, organized by module hierarchy.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>test/utils/mock-providers.ts</path>
+        <kind>test-utility</kind>
+        <symbol>BaseMockProvider, SuccessMockProvider, FailureMockProvider, TimeoutMockProvider</symbol>
+        <lines>1-120</lines>
+        <reason>Mock provider implementations for testing analytics router. Already has proper name property implementation that should be used as reference for fixing observe tests.</reason>
+      </artifact>
+      <artifact>
+        <path>test/helpers/config.ts</path>
+        <kind>test-utility</kind>
+        <symbol>createMockEnv, createTestEnvWithMultipleProviders, createTestEnvForDomains</symbol>
+        <lines>1-77</lines>
+        <reason>Test environment configuration helpers. Should be extended with KV binding mock setup to fix bootstrap and redirect test failures.</reason>
+      </artifact>
+      <artifact>
+        <path>test/fixtures/env.ts</path>
+        <kind>test-fixture</kind>
+        <symbol>defaultTestEnv, testEnvWithGA4, createTestEnv</symbol>
+        <lines>unknown</lines>
+        <reason>Base test environment fixtures. Likely missing SHORT_LINKS KV binding mock which causes 10 test failures.</reason>
+      </artifact>
+      <artifact>
+        <path>test/unit/lib/analytics/router.observe.test.ts</path>
+        <kind>test</kind>
+        <symbol>Analytics Router Observability Tests</symbol>
+        <lines>1-200</lines>
+        <reason>5 failing tests related to structured logging format. Needs mock provider names and log format assertion fixes.</reason>
+      </artifact>
+      <artifact>
+        <path>test/integration/error-handling.test.ts</path>
+        <kind>test</kind>
+        <symbol>Error Handler Integration Tests</symbol>
+        <lines>unknown</lines>
+        <reason>2 failing tests related to NotFoundError type recognition and response format. Referenced in test failure analysis.</reason>
+      </artifact>
+      <artifact>
+        <path>test/integration/routes/redirect-allowlist.test.ts</path>
+        <kind>test</kind>
+        <symbol>Domain Allowlist Tests</symbol>
+        <lines>unknown</lines>
+        <reason>2 failing tests related to domain validation edge cases. Feature flag checking may have issues.</reason>
+      </artifact>
+      <artifact>
+        <path>test/integration/routes/bootstrap-legacy.test.ts</path>
+        <kind>test</kind>
+        <symbol>Bootstrap Integration Tests</symbol>
+        <lines>unknown</lines>
+        <reason>7 failing tests due to missing KV binding mock (env.SHORT_LINKS undefined). Referenced as bootstrap.test.ts in analysis.</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/errors.ts</path>
+        <kind>error-class</kind>
+        <symbol>RedirectError</symbol>
+        <lines>1-15</lines>
+        <reason>Custom error class with statusCode property. Error handler tests expect NotFoundError to be recognized, may need additional error types or type checking fixes.</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/validation.ts</path>
+        <kind>service</kind>
+        <symbol>validateDestinationDomain, redirectSchema</symbol>
+        <lines>1-70</lines>
+        <reason>Domain allowlist validation logic. Contains the validateDestinationDomain function that has edge case failures in tests.</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/analytics/router.ts</path>
+        <kind>service</kind>
+        <symbol>routeAnalyticsEvent, dispatchToProviderWithTimeout</symbol>
+        <lines>1-192</lines>
+        <reason>Analytics router implementation from Story 7.3. Core functionality works (e2e tests pass), but observability logging needs format fixes.</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/analytics/tracking-service.ts</path>
+        <kind>service</kind>
+        <symbol>TrackingService</symbol>
+        <lines>unknown</lines>
+        <reason>Story 7.8 tracking service abstraction. Must NOT be modified - Story 7.9 fixes are test-only.</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/kv-store.ts</path>
+        <kind>service</kind>
+        <symbol>KVStore interface</symbol>
+        <lines>unknown</lines>
+        <reason>KV client abstraction from Story 1.11. Reference for creating proper KV binding mocks in test environment.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <runtime>
+        <package name="hono" version="^4.4.0" purpose="Web framework for Cloudflare Workers" />
+        <package name="@hono/zod-validator" version="^0.7.0" purpose="Zod validation middleware for Hono" />
+        <package name="zod" version="^4.1.0" purpose="Schema validation" />
+      </runtime>
+      <testing>
+        <package name="vitest" version="^4.0.3" purpose="Test framework - critical for Story 7.9 test fixes" />
+        <package name="@cloudflare/workers-types" version="^4.20241004.0" purpose="TypeScript types for Workers runtime including KV bindings" />
+        <package name="miniflare" version="^3.20250718.2" purpose="Local Workers simulator - provides KV namespace mocking capabilities" />
+        <package name="jsdom" version="^27.0.1" purpose="DOM simulation for tests" />
+      </testing>
+      <build>
+        <package name="typescript" version="^5.9.0" purpose="TypeScript compiler" />
+        <package name="wrangler" version="^4.45.0" purpose="Cloudflare Workers CLI" />
+        <package name="vite-tsconfig-paths" version="^5.1.4" purpose="Path resolution for Vitest" />
+      </build>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture">MUST NOT modify Story 7.8 TrackingService implementation or any production code - all fixes are test-only</constraint>
+    <constraint type="compatibility">MUST maintain 100% backward compatibility with existing test patterns and helper functions</constraint>
+    <constraint type="testing">MUST use Vitest 4.0.3 testing patterns - no migration to different test framework</constraint>
+    <constraint type="test-isolation">Each test fix must be isolated - no cascading changes that break other tests</constraint>
+    <constraint type="kv-binding">KV binding mock must match Cloudflare Workers KV namespace interface (get, put, delete methods with proper signatures)</constraint>
+    <constraint type="observability">Structured logging format must align with Story 5.2 specification - do not invent new log formats</constraint>
+    <constraint type="error-handling">Error type recognition must use instanceof checks consistently with existing error class hierarchy</constraint>
+    <constraint type="validation">Domain allowlist validation fixes must not break existing security guarantees</constraint>
+    <constraint type="documentation">Test setup patterns must be documented for future developers - include inline comments and/or separate docs</constraint>
+    <constraint type="regression">All 284 currently passing tests must remain green - zero regression tolerance</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>KVNamespace (Cloudflare Workers)</name>
+      <kind>Cloudflare Workers Runtime Binding</kind>
+      <signature>
+interface KVNamespace {
+  get(key: string, options?: { type: 'text' | 'json' | 'arrayBuffer' | 'stream' }): Promise&lt;any&gt;
+  put(key: string, value: string | ReadableStream | ArrayBuffer): Promise&lt;void&gt;
+  delete(key: string): Promise&lt;void&gt;
+  list(options?: { prefix?: string; limit?: number; cursor?: string }): Promise&lt;{ keys: Array&lt;{ name: string }&gt;; list_complete: boolean; cursor?: string }&gt;
+}
+      </signature>
+      <path>@cloudflare/workers-types</path>
+      <notes>Test environment must mock this interface for env.SHORT_LINKS binding. Use miniflare or manual mock implementation.</notes>
+    </interface>
+
+    <interface>
+      <name>AnalyticsProvider</name>
+      <kind>Interface</kind>
+      <signature>
+interface AnalyticsProvider {
+  name: string  // Required for observability logging
+  send(event: AnalyticsEvent): Promise&lt;void&gt;
+}
+      </signature>
+      <path>src/lib/analytics/provider.ts</path>
+      <notes>Mock providers in tests MUST include name property for router logging to work correctly</notes>
+    </interface>
+
+    <interface>
+      <name>Env (Test Environment)</name>
+      <kind>Type</kind>
+      <signature>
+interface Env {
+  SHORT_LINKS: KVNamespace  // Must be mocked in test environment
+  ALLOWED_DOMAINS?: string
+  ENABLE_TRACKING?: string
+  ANALYTICS_PROVIDERS?: string
+  ANALYTICS_TIMEOUT_MS?: string
+  // ... other env vars
+}
+      </signature>
+      <path>src/types/env.ts</path>
+      <notes>Test fixtures must provide complete Env with mocked KV binding. See test/fixtures/env.ts and test/helpers/config.ts</notes>
+    </interface>
+
+    <interface>
+      <name>Test Helper Pattern</name>
+      <kind>Pattern</kind>
+      <signature>
+export function createMockEnv(overrides: Partial&lt;Env&gt; = {}): Env {
+  return {
+    ...defaultEnv,
+    SHORT_LINKS: createMockKV(),  // Mock KV namespace
+    ...overrides
+  }
+}
+      </signature>
+      <path>test/helpers/config.ts</path>
+      <notes>Extend this pattern to include KV binding mock by default. All test files should use this helper instead of manual env construction.</notes>
+    </interface>
+  </interfaces>
+  <tests>
+    <standards>
+      <standard tool="Vitest" version="4.0.3" purpose="Primary test framework for unit, integration, and e2e tests" />
+      <standard tool="vi.mock" pattern="Module mocking" purpose="Mock external dependencies like logger and KV bindings" />
+      <standard tool="miniflare" version="3.20250718.2" purpose="Cloudflare Workers local simulator with KV namespace mocking" />
+      <standard pattern="Test Pyramid" purpose="Unit tests (fast, isolated) → Integration tests (module interactions) → E2E tests (full workflows)" />
+      <standard pattern="Test Fixtures" purpose="Centralized test data in test/fixtures/ for consistent test environments" />
+      <standard pattern="Test Helpers" purpose="Reusable test utilities in test/helpers/ and test/utils/ for DRY test code" />
+      <standard pattern="Real Timers for Async" purpose="Use vi.useRealTimers() for tests with actual timeouts and async delays (learned from Story 7.3 fixes)" />
+      <standard pattern="Mock Provider with name" purpose="All AnalyticsProvider mocks must include name property for router observability logging" />
+    </standards>
+
+    <locations>
+      <location path="test/integration/routes/bootstrap-legacy.test.ts" description="Bootstrap route registration tests - 7 failures due to missing KV binding mock" />
+      <location path="test/integration/routes/redirect-*.test.ts" description="Redirect handler tests including domain allowlist validation - 3 failures due to missing KV binding mock" />
+      <location path="test/integration/error-handling.test.ts" description="Error handler integration tests - 2 failures due to NotFoundError type recognition issues" />
+      <location path="test/integration/routes/redirect-allowlist.test.ts" description="Domain allowlist validation tests - 2 failures due to edge case logic bugs" />
+      <location path="test/unit/lib/analytics/router.observe.test.ts" description="Analytics router observability tests - 5 failures due to mock provider names and log format assertions" />
+      <location path="test/fixtures/env.ts" description="Base test environment fixtures - needs KV binding mock added to defaultTestEnv" />
+      <location path="test/helpers/config.ts" description="Test environment helper functions - needs KV binding mock integration" />
+      <location path="test/utils/mock-providers.ts" description="Analytics provider mocks - reference implementation for proper name property usage" />
+    </locations>
+
+    <ideas>
+      <!-- Group 1: KV Binding Test Setup (AC1) -->
+      <idea type="unit" ac="AC1" description="Create createMockKV() helper function that implements KVNamespace interface with get/put/delete methods" />
+      <idea type="unit" ac="AC1" description="Update test/fixtures/env.ts defaultTestEnv to include SHORT_LINKS: createMockKV()" />
+      <idea type="unit" ac="AC1" description="Update test/helpers/config.ts createMockEnv to always include KV binding mock by default" />
+      <idea type="integration" ac="AC1" description="Test bootstrap-legacy.test.ts with KV mock - verify all 7 tests pass (404 handling, invalid codes, middleware registration, error handlers)" />
+      <idea type="integration" ac="AC1" description="Test redirect handler with KV mock - verify domain allowlist validation and invalid short code handling pass" />
+      <idea type="unit" ac="AC1" description="Verify createMockKV returns valid KVNamespace with proper Promise return types" />
+      <idea type="integration" ac="AC1" description="Test that KV binding mock works with both successful and failed lookups (found/not found scenarios)" />
+
+      <!-- Group 2: Error Handler Type Recognition (AC2) -->
+      <idea type="unit" ac="AC2" description="Review src/lib/errors.ts - verify NotFoundError class exists with proper statusCode property" />
+      <idea type="integration" ac="AC2" description="Test error-handling.test.ts NotFoundError recognition - expect 404 status, not 500" />
+      <idea type="integration" ac="AC2" description="Test error-handling.test.ts generic Error handling - verify response format matches test expectations" />
+      <idea type="unit" ac="AC2" description="Verify error handler uses instanceof NotFoundError check consistently" />
+      <idea type="integration" ac="AC2" description="Test error response structure includes expected fields (status, message, code)" />
+
+      <!-- Group 3: Domain Allowlist Edge Cases (AC3) -->
+      <idea type="unit" ac="AC3" description="Test src/lib/validation.ts validateDestinationDomain with non-allowlisted domains when feature enabled" />
+      <idea type="integration" ac="AC3" description="Test redirect-allowlist.test.ts rejection of non-allowlisted domains - should reject, currently passes incorrectly" />
+      <idea type="integration" ac="AC3" description="Test redirect-allowlist.test.ts with feature disabled - should allow all domains" />
+      <idea type="unit" ac="AC3" description="Verify feature flag evaluation order in domain validation logic" />
+      <idea type="unit" ac="AC3" description="Test edge cases: empty allowlist, wildcard domains, subdomain matching" />
+
+      <!-- Group 4: Structured Logging Format (AC4) -->
+      <idea type="unit" ac="AC4" description="Update router.observe.test.ts mock providers to include name property" />
+      <idea type="unit" ac="AC4" description="Fix log format assertions to use call[0] for message, call[1] for metadata (not call.args)" />
+      <idea type="unit" ac="AC4" description="Test provider dispatch attempt logging with correct format" />
+      <idea type="unit" ac="AC4" description="Test provider dispatch success logging with duration and providerName" />
+      <idea type="unit" ac="AC4" description="Test provider dispatch failure logging with error details and isTimeout flag" />
+      <idea type="unit" ac="AC4" description="Adjust performance timing assertion to less strict threshold (allow for test environment variance)" />
+      <idea type="unit" ac="AC4" description="Verify all observability tests align with Story 5.2 structured logging specification" />
+
+      <!-- Group 5: Validation & Regression (AC5, AC6) -->
+      <idea type="e2e" ac="AC5" description="Run full test suite (npm test) and verify 303/303 tests passing (100% pass rate)" />
+      <idea type="e2e" ac="AC6" description="Verify all 284 previously passing tests remain green (zero regression)" />
+      <idea type="integration" ac="AC6" description="Spot check Story 7.3 e2e tests (13 tests) still pass after observe test fixes" />
+      <idea type="integration" ac="AC6" description="Spot check Story 7.5 timeout tests (11 tests) still pass after any timing-related changes" />
+      <idea type="integration" ac="AC5" description="Verify test pass rate improved from 93.7% (284/303) to 100% (303/303)" />
+
+      <!-- Documentation (AC7) -->
+      <idea type="documentation" ac="AC7" description="Add inline comments to test helpers explaining KV binding mock pattern" />
+      <idea type="documentation" ac="AC7" description="Update test-suite-structure.md with KV binding mock setup instructions" />
+      <idea type="documentation" ac="AC7" description="Document provider mock name property requirement for analytics tests" />
+    </ideas>
+
+    <affected-tests>
+      <!-- No affected tests in OTHER stories - Story 7.9 only fixes existing test failures -->
+      <!-- All changes are test-only and do not modify production code -->
+      <!-- Therefore, no tests in other stories will break due to Story 7.9 changes -->
+    </affected-tests>
+  </tests>
+</story-context>

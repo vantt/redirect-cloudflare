@@ -4,6 +4,7 @@ import { describe, it, expect } from 'vitest'
 import { Hono } from 'hono'
 import bootstrapApp from '../../src/routes/bootstrap'
 import redirectApp from '../../src/routes/redirect'
+import { defaultTestEnv } from '../fixtures/env'
 
 // Create test app that mimics main app structure
 const testApp = new Hono()
@@ -15,7 +16,7 @@ testApp.route('/r', redirectApp)
 describe('E2E Legacy URL Upgrade Flow', () => {
   it('should complete full flow: legacy hash → bootstrap → upgrade → final redirect', async () => {
     // Step 1: Request with legacy hash format
-    const bootstrapResponse = await testApp.request('/#https://target-site.com')
+    const bootstrapResponse = await testApp.request('/#https://target-site.com', {}, defaultTestEnv)
     
     expect(bootstrapResponse.status).toBe(200)
     expect(bootstrapResponse.headers.get('content-type')).toContain('text/html')
@@ -35,7 +36,7 @@ describe('E2E Legacy URL Upgrade Flow', () => {
     expect(upgradeUrl).toBe('/r?to=https%3A%2F%2Ftarget-site.com')
     
     // Step 3: Request the upgrade URL
-    const redirectResponse = await testApp.request(upgradeUrl)
+    const redirectResponse = await testApp.request(upgradeUrl, {}, defaultTestEnv)
     
     // Step 4: Verify final redirect
     expect(redirectResponse.status).toBe(302)
@@ -43,7 +44,7 @@ describe('E2E Legacy URL Upgrade Flow', () => {
   })
 
   it('should preserve tracking parameters through complete flow', async () => {
-    const bootstrapResponse = await testApp.request('/#https://target-site.com?utm_source=facebook&utm_campaign=promo')
+    const bootstrapResponse = await testApp.request('/#https://target-site.com?utm_source=facebook&utm_campaign=promo', {}, defaultTestEnv)
     
     const bootstrapHtml = await bootstrapResponse.text()
     
@@ -59,7 +60,7 @@ describe('E2E Legacy URL Upgrade Flow', () => {
     expect(upgradeUrl).toContain('utm_campaign=promo')
     
     // Test final redirect
-    const redirectResponse = await testApp.request(upgradeUrl)
+    const redirectResponse = await testApp.request(upgradeUrl, {}, defaultTestEnv)
     expect(redirectResponse.status).toBe(302)
     expect(redirectResponse.headers.get('location')).toBe(
       'https://target-site.com?utm_source=facebook&utm_campaign=promo'
@@ -67,7 +68,7 @@ describe('E2E Legacy URL Upgrade Flow', () => {
   })
 
   it('should handle isNoRedirect=1 through complete flow', async () => {
-    const bootstrapResponse = await testApp.request('/?isNoRedirect=1#https://target-site.com')
+    const bootstrapResponse = await testApp.request('/?isNoRedirect=1#https://target-site.com', {}, defaultTestEnv)
     
     const bootstrapHtml = await bootstrapResponse.text()
     
@@ -82,13 +83,13 @@ describe('E2E Legacy URL Upgrade Flow', () => {
     expect(upgradeUrl).toContain('debug=1')
     
     // Test final redirect
-    const redirectResponse = await testApp.request(upgradeUrl)
+    const redirectResponse = await testApp.request(upgradeUrl, {}, defaultTestEnv)
     expect(redirectResponse.status).toBe(302)
     expect(redirectResponse.headers.get('location')).toBe('https://target-site.com')
   })
 
   it('should handle root fallback correctly', async () => {
-    const response = await testApp.request('/')
+    const response = await testApp.request('/', {}, defaultTestEnv)
     
     // Should directly redirect to default URL (no bootstrap needed)
     expect(response.status).toBe(302)
@@ -98,7 +99,7 @@ describe('E2E Legacy URL Upgrade Flow', () => {
   it('should handle complex URL encoding through flow', async () => {
     const complexUrl = 'https://example.com/path with spaces?query=测试&param=value%20encoded'
     
-    const bootstrapResponse = await testApp.request(`/#${complexUrl}`)
+    const bootstrapResponse = await testApp.request(`/#${complexUrl}`, {}, defaultTestEnv)
     
     const bootstrapHtml = await bootstrapResponse.text()
     
@@ -113,7 +114,7 @@ describe('E2E Legacy URL Upgrade Flow', () => {
       throw new Error('Upgrade URL not found in HTML')
     }
     
-    const redirectResponse = await testApp.request(upgradeUrl)
+    const redirectResponse = await testApp.request(upgradeUrl, {}, defaultTestEnv)
     expect(redirectResponse.status).toBe(302)
     expect(redirectResponse.headers.get('location')).toBe(complexUrl)
   })
@@ -121,7 +122,7 @@ describe('E2E Legacy URL Upgrade Flow', () => {
   it('should handle malformed URLs gracefully through flow', async () => {
     const malformedUrl = 'not-a-valid-url'
     
-    const bootstrapResponse = await testApp.request(`/#${malformedUrl}`)
+    const bootstrapResponse = await testApp.request(`/#${malformedUrl}`, {}, defaultTestEnv)
     expect(bootstrapResponse.status).toBe(200)
     
     const bootstrapHtml = await bootstrapResponse.text()
@@ -137,7 +138,7 @@ describe('E2E Legacy URL Upgrade Flow', () => {
     expect(upgradeUrl).toContain('/r?to=not-a-valid-url')
     
     // Final redirect should still work (as fallback)
-    const redirectResponse = await testApp.request(upgradeUrl)
+    const redirectResponse = await testApp.request(upgradeUrl, {}, defaultTestEnv)
     expect(redirectResponse.status).toBe(302)
     expect(redirectResponse.headers.get('location')).toBe(malformedUrl)
   })
@@ -147,13 +148,13 @@ describe('E2E Legacy URL Upgrade Flow', () => {
     
     // Measure direct redirect performance
     const directStart = performance.now()
-    const directResponse = await testApp.request(`/r?to=${targetUrl}`)
+    const directResponse = await testApp.request(`/r?to=${targetUrl}`, {}, defaultTestEnv)
     const directEnd = performance.now()
     const directTime = directEnd - directStart
-    
+
     // Measure bootstrap upgrade performance
     const bootstrapStart = performance.now()
-    const bootstrapResponse = await testApp.request(`/#${targetUrl}`)
+    const bootstrapResponse = await testApp.request(`/#${targetUrl}`, {}, defaultTestEnv)
     const bootstrapEnd = performance.now()
     const bootstrapTime = bootstrapEnd - bootstrapStart
     

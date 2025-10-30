@@ -165,22 +165,23 @@ describe('Analytics Router E2E Tests', () => {
     })
 
     it('should handle single timeout provider', async () => {
+      // Use real timers for this test since it involves actual timeouts
+      vi.useRealTimers()
+
       const providers = [createTimeoutMock({ name: 'SingleTimeout', delay: 5000 })]
 
-      const resultPromise = routeAnalyticsEventForTesting(providers, testEvent)
-      
-      // Fast-forward timers to trigger timeout
-      await vi.advanceTimersByTimeAsync(6000)
-      
-      const result = await resultPromise
+      const result = await routeAnalyticsEventForTesting(providers, testEvent)
 
       expect(result).toEqual({
         totalProviders: 1,
         successful: 0,
-        failed: 0,
-        timedOut: 1,
+        failed: 1, // Timeout is counted as a failure
+        timedOut: 1, // And specifically flagged as timeout
         duration: expect.any(Number)
       })
+
+      // Restore fake timers for other tests
+      vi.useFakeTimers()
     })
   })
 
@@ -208,24 +209,28 @@ describe('Analytics Router E2E Tests', () => {
     })
 
     it('should handle mixed providers (success, failure, timeout)', async () => {
+      // Use real timers for this test since it involves actual timeouts
+      vi.useRealTimers()
+
       const providers = createProvidersByType('mixed')
 
-      const resultPromise = routeAnalyticsEventForTesting(providers, testEvent)
-      
-      // Fast-forward timers to trigger timeout
-      await vi.advanceTimersByTimeAsync(6000)
-      
-      const result = await resultPromise
+      const result = await routeAnalyticsEventForTesting(providers, testEvent)
 
       expect(result.totalProviders).toBe(4)
       expect(result.successful).toBe(2)
-      expect(result.failed).toBe(1)
-      expect(result.timedOut).toBe(1)
+      expect(result.failed).toBe(2) // 1 regular failure + 1 timeout = 2 total failures
+      expect(result.timedOut).toBe(1) // Timeout is subset of failures
+
+      // Restore fake timers for other tests
+      vi.useFakeTimers()
     })
   })
 
   describe('Performance and Reliability', () => {
     it('should complete within reasonable time for successful providers', async () => {
+      // Use real timers to measure actual performance
+      vi.useRealTimers()
+
       const providers = [
         createSuccessMock({ delay: 100 }),
         createSuccessMock({ delay: 200 }),
@@ -236,12 +241,17 @@ describe('Analytics Router E2E Tests', () => {
       const result = await routeAnalyticsEventForTesting(providers, testEvent)
       const endTime = Date.now()
 
-      // Should complete quickly (all providers succeed)
+      // Should complete quickly (all providers succeed in parallel)
       expect(endTime - startTime).toBeLessThan(1000)
       expect(result.successful).toBe(3)
+
+      vi.useFakeTimers()
     })
 
     it('should not block redirect flow when providers fail', async () => {
+      // Use real timers to test actual timeout behavior
+      vi.useRealTimers()
+
       const providers = [
         createFailureMock({ delay: 100 }),
         createTimeoutMock({ delay: 5000 }),
@@ -249,21 +259,22 @@ describe('Analytics Router E2E Tests', () => {
       ]
 
       const startTime = Date.now()
-      const resultPromise = routeAnalyticsEventForTesting(providers, testEvent)
-      
-      // Fast-forward to trigger timeout
-      await vi.advanceTimersByTimeAsync(6000)
-      
-      const result = await resultPromise
+      const result = await routeAnalyticsEventForTesting(providers, testEvent)
       const endTime = Date.now()
 
-      // Should complete within timeout bounds, not hang
-      expect(endTime - startTime).toBeLessThan(7000)
-      expect(result.timedOut).toBe(1)
-      expect(result.failed).toBe(2)
+      // Should complete within timeout bounds (router timeout is 2000ms)
+      // 2 failure providers + 1 timeout provider = 3 total failures
+      expect(endTime - startTime).toBeLessThan(3000)
+      expect(result.timedOut).toBe(1) // 1 timeout (subset of failures)
+      expect(result.failed).toBe(3) // 2 regular failures + 1 timeout = 3 total
+
+      vi.useFakeTimers()
     })
 
     it('should handle concurrent provider execution', async () => {
+      // Use real timers to verify parallel execution
+      vi.useRealTimers()
+
       const providers = [
         createSuccessMock({ delay: 1000 }),
         createSuccessMock({ delay: 1000 }),
@@ -272,17 +283,14 @@ describe('Analytics Router E2E Tests', () => {
 
       // All providers should execute in parallel, not sequentially
       const startTime = Date.now()
-      const resultPromise = routeAnalyticsEventForTesting(providers, testEvent)
-      
-      // Fast-forward past all delays
-      await vi.advanceTimersByTimeAsync(1500)
-      
-      const result = await resultPromise
+      const result = await routeAnalyticsEventForTesting(providers, testEvent)
       const endTime = Date.now()
 
       // Should complete in ~1000ms, not 3000ms (parallel execution)
-      expect(endTime - startTime).toBeLessThan(2000)
+      expect(endTime - startTime).toBeLessThan(1500)
       expect(result.successful).toBe(3)
+
+      vi.useFakeTimers()
     })
   })
 

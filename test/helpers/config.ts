@@ -1,8 +1,11 @@
 /**
  * Configuration Testing Helpers
- * 
+ *
  * Ergonomic wrapper functions around test environment fixtures.
  * Provides convenience functions and re-exports commonly used presets.
+ *
+ * Updated in Story 7.9: All test environments now include proper KV namespace mocks
+ * with functional get/put/delete/list methods. No need to manually add KV bindings.
  */
 
 import { 
@@ -17,9 +20,18 @@ import type { Env } from '../../src/types/env.js'
 /**
  * Convenience wrapper around createTestEnv
  * Provides a more ergonomic name for test authors
- * 
+ *
+ * Story 7.9: Automatically includes proper KV namespace mocks.
+ * All returned Env objects have functional REDIRECT_KV and ANALYTICS_KV.
+ *
  * @param overrides - Partial Env properties to customize the test environment
- * @returns Complete Env object suitable for testing
+ * @returns Complete Env object suitable for testing with KV bindings
+ *
+ * @example
+ * ```typescript
+ * const env = createMockEnv({ ALLOWED_DOMAINS: 'example.com' })
+ * await app.request('/r?to=https://example.com', {}, env)
+ * ```
  */
 export function createMockEnv(overrides: Partial<Env> = {}): Env {
   return createTestEnv(overrides)

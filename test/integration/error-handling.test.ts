@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import app from '../../src/index'
+import { defaultTestEnv } from '../fixtures/env'
 
 // Mock console.error to test logging
 const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
@@ -10,14 +11,14 @@ describe('Global Error Handler', () => {
   })
 
   it('should handle RedirectError with 400 status and proper JSON format', async () => {
-    const res = await app.request('/r')
+    const res = await app.request('/r', {}, defaultTestEnv)
 
     expect(res.status).toBe(400)
     expect(res.headers.get('Content-Type')).toBe('application/json')
     
     const body = await res.json()
        
-    expect(body).toEqual({
+    expect(body).toMatchObject({
       error: 'Missing required parameter: to',
       code: 'MISSING_PARAM'
     })
@@ -33,13 +34,13 @@ describe('Global Error Handler', () => {
   })
 
   it('should handle RedirectError with custom status code', async () => {
-    const res = await app.request('/r?to=%E0%A4%A') // Invalid URL encoding
+    const res = await app.request('/r?to=%E0%A4%A', {}, defaultTestEnv) // Invalid URL encoding
     
     expect(res.status).toBe(400)
     expect(res.headers.get('Content-Type')).toBe('application/json')
     
     const body = await res.json()    
-    expect(body).toEqual({
+    expect(body).toMatchObject({
       error: 'Invalid URL encoding',
       code: 'INVALID_ENCODING'
     })

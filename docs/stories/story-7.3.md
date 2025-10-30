@@ -1,6 +1,6 @@
 # Story 7.3: Analytics Router (Multi-Service Fan-Out)
 
-Status: Done
+Status: Ready for Review
 
 ## Story
 
@@ -10,14 +10,14 @@ so that adding/removing providers is simple and failures don't affect each other
 
 ## Acceptance Criteria
 
-1. Implement outeAnalyticsEvent(event, providers) that fans out concurrently
+1. Implement RouteAnalyticsEvent(event, providers) that fans out concurrently
 2. Provider errors are caught and logged; other providers continue (isolation)
 3. Supports zero, one, or many providers without special casing
 4. Unit tests cover single/multiple providers, failure of one provider, and no-provider case
 
 ## Tasks / Subtasks
 
-- [ ] Create src/lib/analytics/router.ts
+- [x] Create src/lib/analytics/router.ts
   - [x] Export async function routeAnalyticsEvent(event: AnalyticsEvent, providers: AnalyticsProvider[]): Promise<void>
   - [x] Iterate providers concurrently; isolate errors (try/catch per provider)
   - [x] Hook structured logging (attempt/success/failure/duration per provider)
@@ -26,6 +26,10 @@ so that adding/removing providers is simple and failures don't affect each other
   - [x] No providers (noop)
   - [x] Single provider success
   - [x] Multiple providers with one failing (others still run)
+- [x] Fix type integration with Story 7.8 tracking service
+  - [x] Update tracking service to use correct AnalyticsEvent type with attributes
+  - [x] Fix routeAnalyticsEvent call signature with proper parameters
+  - [x] Create mock providers wrapper for tracking service integration
 
 ## Dev Notes
 
@@ -43,7 +47,7 @@ so that adding/removing providers is simple and failures don't affect each other
 
 ### Context Reference
 
-- docs/stories/story-context-7.3.xml
+- docs/stories/story-context-7.3.xml (Updated 2025-10-30: Reflects Story 7.8 tracking service integration design)
 
 ### Debug Log
 
@@ -53,6 +57,12 @@ so that adding/removing providers is simple and failures don't affect each other
   - Added timeout support with configurable providerTimeout (default 2s)
   - Integrated structured logging for attempt/success/failure/duration per provider
   - Comprehensive unit tests covering all edge cases and isolation scenarios
+- **2025-10-30**: Fixed type integration issues with Story 7.8 tracking service
+  - Fixed tracking service to use AnalyticsEvent from ./types (not env.ts) with attributes
+  - Fixed buildRedirectEvent to create event with attributes instead of params
+  - Fixed routeAnalyticsEvent call signature with proper options and env parameters
+  - Added mock providers wrapper for tracking service integration
+  - Created basic router test for validation
 
 ### Completion Notes
 
@@ -82,10 +92,12 @@ Foundation ready for Epic 7.4 (integration into redirect flow) and Epic 7.5 (enh
 
 - Added: src/lib/analytics/router.ts (core router implementation)
 - Added: test/unit/lib/analytics/router.test.ts (comprehensive router tests)
+- Modified: src/lib/analytics/tracking-service.ts (fixed type integration)
 
 ### Change Log
 
 - 2025-10-26: Implemented analytics router with concurrent fan-out, error isolation, timeout support, and structured logging
+- 2025-10-30: Fixed type integration with Story 7.8 tracking service - updated imports, event structure, and function calls
 
 ## Senior Developer Review (AI)
 
