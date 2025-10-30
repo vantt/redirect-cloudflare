@@ -17,7 +17,11 @@ app.get('/', async (c) => {
     // Step 2: Resolve - Resolve destination with conditional KV loading
     const resolved = await resolveDestination(destination, c.env.REDIRECT_KV)
 
-    // Step 3: Debug - Show resolved info if debug mode
+    // Step 3: Validate - Validate final URL after resolution (BEFORE debug response)
+    // This ensures domain validation applies even in debug mode (Story 7.9 fix)
+    const validatedUrl = validateResolvedUrl(resolved.url, c.env.ALLOWED_DOMAINS)
+
+    // Step 4: Debug - Show resolved info if debug mode
     if (debugMode) {
       const debugInfo: DebugInfo = {
         original: destination,
@@ -28,9 +32,6 @@ app.get('/', async (c) => {
       }
       return createDebugResponse(debugInfo)
     }
-
-    // Step 4: Validate - Validate final URL after resolution
-    const validatedUrl = validateResolvedUrl(resolved.url, c.env.ALLOWED_DOMAINS)
 
     // Step 5: Track - Abstracted tracking call
     trackRedirect({

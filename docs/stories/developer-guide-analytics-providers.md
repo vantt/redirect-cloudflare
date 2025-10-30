@@ -144,7 +144,7 @@ const PROVIDER_FACTORIES: ProviderFactories = {
 Create comprehensive tests for your provider:
 
 ```typescript
-// In test/lib/analytics/providers/[provider-name].test.ts
+// In test/unit/lib/analytics/providers/[provider-name].test.ts
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { AnalyticsEvent, EventName } from '../../../src/lib/analytics/types'
 import { create[ProviderName]Provider } from '../provider-mocks'

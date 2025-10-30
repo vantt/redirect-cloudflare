@@ -7,6 +7,13 @@
     <generatedAt>2025-10-25T15:45:00.000Z</generatedAt>
     <generator>BMAD Story Context Workflow</generator>
     <sourceStoryPath>docs/stories/story-3.1.md</sourceStoryPath>
+    <deprecationNotice>
+      This context was written when the API used legacy `n=` parameter for debug mode.
+      BREAKING CHANGE in Story 1.10: The `n=` parameter has been REMOVED.
+      Lines 28, 49: References to `n` parameter should now use `debug` parameter.
+      Bootstrap HTML should construct `/r?to=...&amp;debug=...` URLs instead.
+      See docs/changes/legacy-n-param-removal-2025-10-28.md for details.
+    </deprecationNotice>
   </metadata>
 
   <story>

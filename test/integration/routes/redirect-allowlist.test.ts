@@ -136,12 +136,12 @@ describe('Redirect Domain Allowlist Integration', () => {
     expect(body.code).toBe('DOMAIN_NOT_ALLOWED')
   })
 
-  it('should handle edge case with trailing dots', async () => {
-    // evil.com.example.com should NOT match example.com
+  it('should allow multi-level subdomains (standard DNS behavior)', async () => {
+    // evil.com.example.com IS a valid subdomain of example.com (DNS hierarchy)
+    // This follows standard subdomain matching behavior
     const response = await app.request('/r?to=https://evil.com.example.com', {}, testEnv)
-    
-    expect(response.status).toBe(403)
-    const body = await response.json() as { error: string; code?: string }
-    expect(body.error).toBe('Domain not allowed: evil.com.example.com')
+
+    expect(response.status).toBe(302)
+    expect(response.headers.get('Location')).toBe('https://evil.com.example.com')
   })
 })

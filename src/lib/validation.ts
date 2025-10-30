@@ -56,14 +56,15 @@ export function validateDestinationDomain(
     if (allowedList.includes(hostname)) {
       return true
     }
-    
+
     // Check if hostname is a subdomain of any allowed domain
+    // Allows any depth of subdomains (standard DNS behavior)
     for (const allowedDomain of allowedList) {
-      if (hostname === allowedDomain || hostname.endsWith('.' + allowedDomain)) {
+      if (hostname.endsWith('.' + allowedDomain)) {
         return true
       }
     }
-    
+
     return false
   } catch {
     // If URL parsing fails, reject (defensive security)

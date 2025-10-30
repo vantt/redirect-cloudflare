@@ -1,12 +1,13 @@
 <story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
   <metadata>
     <epicId>7</epicId>
-    <storyId>3</storyId>
+    <storyId>7.3</storyId>
     <title>Analytics Router (Multi-Service Fan-Out)</title>
-    <status>drafted</status>
-    <generatedAt>2025-10-26</generatedAt>
-    <generator>BMAD Story Context Workflow</generator>
+    <status>Done</status>
+    <generatedAt>2025-10-30</generatedAt>
+    <generator>BMAD Story Context Workflow v6</generator>
     <sourceStoryPath>docs/stories/story-7.3.md</sourceStoryPath>
+    <updatedToReflect>Story 7.8 - Tracking Service Integration Design</updatedToReflect>
   </metadata>
 
   <story>
@@ -15,11 +16,12 @@
     <soThat>adding/removing providers is simple and failures don't affect each other</soThat>
     <tasks>
       - Create src/lib/analytics/router.ts
-      - Export async function routeAnalyticsEvent(event: AnalyticsEvent, providers: AnalyticsProvider[]): Promise<void>
-      - Iterate providers concurrently; isolate errors (try/catch per provider)
+      - Export async function routeAnalyticsEvent(event: AnalyticsEvent, providers: AnalyticsProvider[], options?: RouterOptions, env?: Env): Promise&lt;void&gt;
+      - Iterate providers concurrently using Promise.allSettled; isolate errors (try/catch per provider)
       - Hook structured logging (attempt/success/failure/duration per provider)
-      - Add timeout policy integration placeholder (detail in Story 7.5)
-      - Unit tests: no providers, single provider success, multi-provider with one failing
+      - Add timeout policy integration with configurable providerTimeout (default 2000ms)
+      - Router is consumed by tracking-service.ts (Story 7.8) for unified tracking abstraction
+      - Unit tests: no providers (noop), single provider success, multi-provider with one failing, timeout handling
     </tasks>
   </story>
 
@@ -32,60 +34,200 @@
 
   <artifacts>
     <docs>
-      <doc path="docs/epics.md" title="Epics" section="Story 7.3" snippet="Router fans out to multiple providers with error isolation and no blocking"/>
-      <doc path="docs/architecture.md" title="Architecture" section="Analytics Abstraction (Epic 7)" snippet="Router responsibilities, non-blocking goals, structured logging"/>
-      <doc path="docs/architecture.md" title="Architecture" section="Sequence Diagram (ASCII)" snippet="/r builds event, registry loads providers, router fan-out with per-provider timeout"/>
+      <doc path="docs/tech-spec-epic-7.md" title="Epic 7 Technical Specification" section="Services and Modules - router.ts" snippet="routeAnalyticsEvent(event, providers) — fan-out concurrently to multiple providers; per-provider error isolation; apply timeout (AbortSignal.timeout); structured logging for attempt/success/failure/duration"/>
+      <doc path="docs/tech-spec-epic-7.md" title="Epic 7 Technical Specification" section="Workflows and Sequencing" snippet="loadProviders(c.env) -> providers; routeAnalyticsEvent(event, providers, { timeoutMs: 2000 }); send concurrently to each provider (each with AbortSignal.timeout); catch and log errors per provider; never throw to main flow"/>
+      <doc path="docs/tech-spec-epic-7.md" title="Epic 7 Technical Specification" section="Non-Functional Requirements - Performance" snippet="Tracking before redirect must NOT block response flow; protected by AbortSignal.timeout(2000) per ADR-003; provider errors/timeout don't affect 301/302; fan-out runs concurrently"/>
+      <doc path="docs/stories/story-7.8.md" title="Story 7.8 - Tracking Service Abstraction" section="Integration Design" snippet="trackRedirect() calls routeAnalyticsEvent() with loadProviders(); router provides fire-and-forget analytics dispatch; tracking-service.ts is the single entry point consuming router"/>
+      <doc path="docs/stories/story-7.2.md" title="Story 7.2 - Neutral Event Model" section="Provider Interface" snippet="AnalyticsProvider interface with send(event: AnalyticsEvent): Promise&lt;void&gt;; router dispatches to all providers implementing this contract"/>
     </docs>
     <code>
       <artifact>
         <path>src/lib/analytics/router.ts</path>
         <kind>library</kind>
         <symbol>routeAnalyticsEvent</symbol>
-        <lines>1-180</lines>
-        <reason>Core router dispatching to providers concurrently</reason>
+        <lines>1-192</lines>
+        <reason>Core router dispatching to providers concurrently with Promise.allSettled, timeout protection, and per-provider error isolation</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/analytics/router.ts</path>
+        <kind>library</kind>
+        <symbol>dispatchToProviderWithTimeout</symbol>
+        <lines>116-176</lines>
+        <reason>Individual provider dispatch with timeout and structured logging for attempt/success/failure/duration</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/analytics/router.ts</path>
+        <kind>library</kind>
+        <symbol>RouterOptions interface</symbol>
+        <lines>23-26</lines>
+        <reason>Configuration for router behavior, including providerTimeout override</reason>
       </artifact>
       <artifact>
         <path>src/lib/analytics/provider.ts</path>
         <kind>library</kind>
         <symbol>AnalyticsProvider interface</symbol>
-        <lines>1-120</lines>
-        <reason>Contract used by router</reason>
+        <lines>1-29</lines>
+        <reason>Contract that all providers must implement; router dispatches events to providers via send() method</reason>
       </artifact>
       <artifact>
         <path>src/lib/analytics/types.ts</path>
         <kind>library</kind>
-        <symbol>AnalyticsEvent</symbol>
-        <lines>1-120</lines>
-        <reason>Neutral event model consumed by router</reason>
+        <symbol>AnalyticsEvent interface</symbol>
+        <lines>20-26</lines>
+        <reason>Neutral event model consumed by router; includes name and attributes structure</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/analytics/types.ts</path>
+        <kind>library</kind>
+        <symbol>AnalyticsAttributes type</symbol>
+        <lines>14</lines>
+        <reason>Type definition for event attributes; supports string, number, and boolean values</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/analytics/tracking-service.ts</path>
+        <kind>library</kind>
+        <symbol>trackRedirect</symbol>
+        <lines>58-78</lines>
+        <reason>Story 7.8 consumer of router; demonstrates real-world usage of routeAnalyticsEvent() in unified tracking service</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/analytics/registry.ts</path>
+        <kind>library</kind>
+        <symbol>loadProviders</symbol>
+        <lines>N/A</lines>
+        <reason>Loads provider instances from env configuration; providers array is passed to router</reason>
+      </artifact>
+      <artifact>
+        <path>src/utils/logger.ts</path>
+        <kind>utility</kind>
+        <symbol>appLogger</symbol>
+        <lines>N/A</lines>
+        <reason>Structured logger used throughout router for attempt/success/failure/duration logging</reason>
       </artifact>
     </code>
     <dependencies>
-      <dependency path="package.json" reason="Vitest for unit tests; structured logging utilities"/>
+      <node>
+        <package name="vitest" version="^4.0.3" purpose="Unit testing framework"/>
+        <package name="hono" version="^4.4.0" purpose="Web framework - Env type definition"/>
+        <package name="typescript" version="^5.9.0" purpose="Type safety and compilation"/>
+      </node>
+      <runtime>
+        <dependency name="Cloudflare Workers" purpose="Runtime environment with AbortController and setTimeout support"/>
+        <dependency name="Promise.allSettled" purpose="ES2020 feature for concurrent provider dispatch with isolation"/>
+      </runtime>
     </dependencies>
   </artifacts>
 
   <constraints>
-    <constraint type="non-blocking" description="Router must not delay redirect response; runs in fire-and-forget pattern relative to response path"/>
-    <constraint type="isolation" description="Per-provider try/catch; one provider failure must not affect others"/>
-    <constraint type="logging" description="Emit structured logs for attempt/success/failure/duration; avoid PII"/>
+    <constraint type="non-blocking" description="Router must not delay redirect response; runs in fire-and-forget pattern relative to response path; tracking errors NEVER block redirect 301/302 response"/>
+    <constraint type="isolation" description="Per-provider try/catch + Promise.allSettled; one provider failure must not affect others; all providers attempted regardless of individual failures"/>
+    <constraint type="timeout" description="Configurable providerTimeout (default 2000ms from ADR-003); each provider protected by AbortController + Promise.race pattern; timeout status logged"/>
+    <constraint type="logging" description="Emit structured logs for attempt/success/failure/duration per provider; avoid PII; JSON one-line format for Cloudflare dashboard"/>
+    <constraint type="integration" description="Router consumed by tracking-service.ts (Story 7.8); not called directly from redirect.ts; trackRedirect() is the unified entry point"/>
+    <constraint type="provider-contract" description="All providers must implement AnalyticsProvider interface with send(event) method; router agnostic to vendor-specific implementations"/>
   </constraints>
 
   <interfaces>
-    <interface name="routeAnalyticsEvent" location="lib/analytics/router.ts" signature="(event: AnalyticsEvent, providers: AnalyticsProvider[]) => Promise<void>"/>
+    <interface name="routeAnalyticsEvent">
+      <location>src/lib/analytics/router.ts</location>
+      <signature>async function routeAnalyticsEvent(event: AnalyticsEvent, providers: AnalyticsProvider[], options?: RouterOptions, env?: Env): Promise&lt;void&gt;</signature>
+      <description>Main router function dispatching events to multiple providers concurrently</description>
+      <parameters>
+        <param name="event" type="AnalyticsEvent" description="Neutral analytics event to route"/>
+        <param name="providers" type="AnalyticsProvider[]" description="Array of provider instances to dispatch to"/>
+        <param name="options" type="RouterOptions" optional="true" description="Optional configuration (e.g., providerTimeout override)"/>
+        <param name="env" type="Env" optional="true" description="Environment variables for timeout configuration"/>
+      </parameters>
+      <returns>Promise&lt;void&gt; that resolves when all providers complete (never throws)</returns>
+    </interface>
+    <interface name="AnalyticsProvider">
+      <location>src/lib/analytics/provider.ts</location>
+      <signature>interface AnalyticsProvider { readonly name: string; send(event: AnalyticsEvent): Promise&lt;void&gt; }</signature>
+      <description>Provider contract that router dispatches to; all analytics providers must implement this</description>
+    </interface>
+    <interface name="RouterOptions">
+      <location>src/lib/analytics/router.ts</location>
+      <signature>interface RouterOptions { providerTimeout?: number }</signature>
+      <description>Configuration options for router behavior</description>
+    </interface>
+    <interface name="dispatchToProviderWithTimeout">
+      <location>src/lib/analytics/router.ts</location>
+      <signature>async function dispatchToProviderWithTimeout(provider: AnalyticsProvider, event: AnalyticsEvent, providerIndex: number, timeout: number): Promise&lt;void&gt;</signature>
+      <description>Internal function handling individual provider dispatch with timeout and structured logging</description>
+    </interface>
   </interfaces>
 
   <tests>
     <standards>
-      <standard tool="Vitest v4.0+" purpose="Unit testing"/>
+      <standard tool="Vitest" version="^4.0.3" purpose="Unit testing framework for router logic"/>
+      <standard pattern="Mocking" purpose="Mock AnalyticsProvider instances for testing isolation and error scenarios"/>
+      <standard pattern="Structured Logging Assertions" purpose="Verify appLogger.info/error calls with correct structured fields"/>
+      <standard framework="Miniflare" version="^3.20250718.2" purpose="Integration tests with Cloudflare Workers emulation"/>
     </standards>
     <locations>
-      <location path="test/unit/lib/analytics/router.test.ts" description="Router behavior: noop, single success, multi with failure"/>
+      <location path="test/unit/lib/analytics/router.observe.test.ts" description="Router observability: logging for attempt/success/failure/duration per provider"/>
+      <location path="test/unit/lib/analytics/router.timeout.test.ts" description="Router timeout behavior: provider exceeding timeout, timeout configuration from env"/>
+      <location path="test/unit/lib/analytics/provider-adapter.example.test.ts" description="Example provider implementation and adapter pattern"/>
+      <location path="test/e2e/analytics-router.e2e.test.ts" description="End-to-end router integration: redirect flow not blocked by tracking failures"/>
     </locations>
     <ideas>
-      <test-idea type="unit" description="No providers -> completes without errors"/>
-      <test-idea type="unit" description="Multiple providers -> all invoked; one throw does not stop others"/>
-      <test-idea type="unit" description="Logs success/failure for each provider with durations"/>
+      <test-idea type="unit" ac="AC3" description="No providers (zero providers) -> router completes without errors; log shows 'no providers configured'"/>
+      <test-idea type="unit" ac="AC1,AC2" description="Single provider success -> provider.send() called once; success logged with duration"/>
+      <test-idea type="unit" ac="AC1,AC2" description="Multiple providers all succeed -> all provider.send() called concurrently; all success logged"/>
+      <test-idea type="unit" ac="AC2" description="Multiple providers, one fails -> failed provider logs error; other providers still execute and succeed (isolation)"/>
+      <test-idea type="unit" ac="AC2" description="Multiple providers, all fail -> all failures logged; router completes without throwing (fire-and-forget)"/>
+      <test-idea type="unit" ac="AC1,AC2" description="Provider timeout -> timeout detected; logged with isTimeout flag; other providers continue"/>
+      <test-idea type="unit" ac="AC1" description="Custom providerTimeout from options -> timeout applied correctly; logged in structured output"/>
+      <test-idea type="unit" ac="AC1" description="Custom providerTimeout from env.ANALYTICS_TIMEOUT_MS -> timeout resolved from env; applied to all providers"/>
+      <test-idea type="integration" ac="AC1,AC2" description="Redirect succeeds when router throws error -> tracking error isolated; redirect 302 returned"/>
+      <test-idea type="integration" ac="AC1,AC2,AC3" description="Redirect succeeds with no providers configured -> tracking gracefully degraded; redirect works"/>
+      <test-idea type="unit" description="Provider name logging -> constructor.name or fallback ProviderN used for logging"/>
+      <test-idea type="unit" description="Router duration logging -> total router duration logged after Promise.allSettled completes"/>
+      <test-idea type="unit" description="Mixed success/failure/timeout -> correct counts logged (successful, failed); all scenarios handled"/>
     </ideas>
+    <affected-tests>
+      <test path="test/unit/lib/analytics/tracking-service.test.ts" reason="Story 7.8 consumer - tracking service calls routeAnalyticsEvent; may need router mock updates"/>
+      <test path="test/integration/routes/redirect-tracking.test.ts" reason="Story 7.8 integration - redirect flow uses tracking-service which consumes router"/>
+    </affected-tests>
   </tests>
+
+  <implementation-notes>
+    <note type="design-evolution" story="7.8">
+      Router is now consumed by unified tracking-service.ts (Story 7.8). The tracking service provides single entry point trackRedirect() that:
+      1. Extracts tracking params with fallback (destination URL first, original request URL second)
+      2. Builds neutral AnalyticsEvent from merged params
+      3. Loads providers via loadProviders(env)
+      4. Calls routeAnalyticsEvent() for concurrent dispatch
+      Router remains provider-agnostic and focused solely on concurrent fan-out with isolation.
+    </note>
+    <note type="concurrency-pattern">
+      Uses Promise.allSettled for perfect isolation - each provider dispatch wrapped in individual try/catch, then settled together.
+      No single provider can block others or throw to caller. Router always completes successfully.
+    </note>
+    <note type="timeout-strategy">
+      Timeout implemented via AbortController + Promise.race pattern:
+      1. Create AbortController for provider call
+      2. Set setTimeout to abort after timeout
+      3. Race provider.send() against timeout promise
+      4. Clear timeout if provider completes first
+      5. Catch and log timeout errors with isTimeout flag
+    </note>
+    <note type="logging-schema">
+      Structured logs include: providerName, eventName, attributeCount, duration, providerIndex, timeout, isTimeout, successful/failed counts.
+      Follows Cloudflare Workers JSON one-line format for dashboard visibility.
+    </note>
+    <note type="integration-flow" story="7.8">
+      Integration flow (Story 7.8):
+      redirect.ts -> trackRedirect(context, env) -> routeAnalyticsEvent(event, providers, options, env)
+      Router no longer called directly from redirect.ts; trackRedirect() is the abstraction boundary.
+    </note>
+  </implementation-notes>
+
+  <related-stories>
+    <story id="7.1" title="Parameter Extraction" relationship="Provides TrackingParams extraction used by tracking-service (Story 7.8) before calling router"/>
+    <story id="7.2" title="Neutral Event Model and Provider Interface" relationship="Defines AnalyticsEvent and AnalyticsProvider types consumed by router"/>
+    <story id="7.8" title="Tracking Service Abstraction" relationship="Primary consumer of router; trackRedirect() calls routeAnalyticsEvent() with loaded providers"/>
+    <story id="8.x" title="GA4 Provider Implementation (Future)" relationship="Will implement AnalyticsProvider interface; router dispatches events to GA4 provider"/>
+  </related-stories>
 </story-context>
 
