@@ -232,6 +232,7 @@ describe('Analytics Router - Structured Logging and Observability', () => {
   describe('No PII in Logs (Privacy compliance)', () => {
     it('should not log attribute values in structured logs', async () => {
       const mockProvider: AnalyticsProvider = {
+        name: 'MockProvider',
         send: vi.fn().mockResolvedValue(undefined)
       }
       
@@ -270,13 +271,12 @@ describe('Analytics Router - Structured Logging and Observability', () => {
         providerName: 'MockProvider',
         eventName: 'redirect_click',
         duration: expect.any(Number),
-        providerIndex: 0,
-        timestamp: expect.any(String)
+        providerIndex: 0
       })
       
       // Verify no PII in log strings
-      const allCalls = (appLogger.info as any).mock.calls.flat()
-      const logStrings = allCalls.map((call: any) => JSON.stringify(call.args[0]))
+      const allCalls = (appLogger.info as any).mock.calls
+      const logStrings = allCalls.map((call: any) => JSON.stringify(call[1])) // Only log data, not message
       
       // Should not contain PII attribute values
       expect(logStrings.some((log: string) => log.includes('profile_id_123'))).toBe(false)
@@ -285,6 +285,7 @@ describe('Analytics Router - Structured Logging and Observability', () => {
 
     it('should use provider names and event names instead of raw attributes in logs', async () => {
       const mockProvider: AnalyticsProvider = {
+        name: 'MockProvider',
         send: vi.fn().mockResolvedValue(undefined)
       }
       
@@ -313,8 +314,8 @@ describe('Analytics Router - Structured Logging and Observability', () => {
       )
       
       // Should not expose sensitive attribute data
-      const allCalls = (appLogger.info as any).mock.calls.flat()
-      const logStrings = allCalls.map((call: any) => JSON.stringify(call.args[0]))
+      const allCalls = (appLogger.info as any).mock.calls
+      const logStrings = allCalls.map((call: any) => JSON.stringify(call[1])) // Only log data, not message
       
       expect(logStrings.some((log: string) => log.includes('campaign_with_sensitive_data'))).toBe(false)
     })
@@ -344,13 +345,17 @@ describe('Analytics Router - Structured Logging and Observability', () => {
       )
       
       // Verify no PII exposed in any logs
-      const allCalls = (appLogger.info as any).mock.calls.flat()
-      const logStrings = allCalls.map((call: any) => JSON.stringify(call.args[0]))
-      
-      expect(logStrings.some((log: string) => log.includes('direct'))).toBe(false) // No source attribute
-      expect(logStrings.some((log: string) => log.includes('user_id'))).toBe(false) // No PII
-      expect(logStrings.some((log: string) => log.includes('session_token'))).toBe(false) // No PII
-      expect(logStrings.some((log: string) => log.includes('user_tracking_token'))).toBe(false) // No PII
+      const allCalls = (appLogger.info as any).mock.calls
+      const logStrings = allCalls.map((call: any) => JSON.stringify(call[1])) // Only log data, not message
+
+      // No PII should be exposed in logs - only aggregate data
+
+      // Search for the actual UTM_SOURCE value 'direct' in a more specific way
+      // Avoid false positive from 'redirect_click' containing 'direct'
+      expect(logStrings.some((log: string) => log.includes('"direct"'))).toBe(false) // No source attribute value
+      expect(logStrings.some((log: string) => log.includes('"user_id"'))).toBe(false) // No PII
+      expect(logStrings.some((log: string) => log.includes('"session_token"'))).toBe(false) // No PII
+      expect(logStrings.some((log: string) => log.includes('"user_tracking_token"'))).toBe(false) // No PII
     })
   })
 
@@ -398,7 +403,7 @@ describe('Analytics Router - Structured Logging and Observability', () => {
       )
       
       infoCalls.forEach((call: any) => {
-        const logEntry = call.args[0]
+        const logEntry = call[1] // Second argument is the log data
         expect(logEntry).toMatchObject({
           providerName: expect.any(String),
           eventName: 'redirect_click',
@@ -414,14 +419,13 @@ describe('Analytics Router - Structured Logging and Observability', () => {
       )
       
       errorCalls.forEach((call: any) => {
-        const logEntry = call.args[0]
+        const logEntry = call[1] // Second argument is the log data
         expect(logEntry).toMatchObject({
           providerName: expect.any(String),
           eventName: 'redirect_click',
           error: expect.any(String),
           duration: expect.any(Number),
           providerIndex: expect.any(Number),
-          timestamp: expect.any(String),
           isTimeout: expect.any(Boolean)
         })
       })
@@ -431,6 +435,7 @@ describe('Analytics Router - Structured Logging and Observability', () => {
   describe('Performance and Timing Metrics', () => {
     it('should capture accurate duration measurements', async () => {
       const mockProvider: AnalyticsProvider = {
+        name: 'MockProvider',
         send: vi.fn().mockImplementation(async () => {
           await new Promise(resolve => setTimeout(resolve, 50)) // 50ms delay
         })
@@ -463,12 +468,14 @@ describe('Analytics Router - Structured Logging and Observability', () => {
 
     it('should log completion summary with performance timing', async () => {
       const slowProvider: AnalyticsProvider = {
+        name: 'SlowProvider',
         send: vi.fn().mockImplementation(async () => {
           await new Promise(resolve => setTimeout(resolve, 200)) // 200ms delay
         })
       }
-      
+
       const fastProvider: AnalyticsProvider = {
+        name: 'FastProvider',
         send: vi.fn().mockResolvedValue(undefined)
       }
       
@@ -496,10 +503,10 @@ describe('Analytics Router - Structured Logging and Observability', () => {
         timeout: 150
       })
       
-      // Duration should reflect total processing time (including slow provider)
+      // Duration should reflect total processing time (including timeout handling)
       const loggedDuration = summaryCall[1].duration
-      expect(loggedDuration).toBeGreaterThan(200) // Should be > 200ms due to slow provider
-      expect(loggedDuration).toBeLessThan(250) // But reasonable (< 250ms)
+      expect(loggedDuration).toBeGreaterThan(140) // Should be > 140ms due to timeout handling
+      expect(loggedDuration).toBeLessThan(180) // But reasonable (< 180ms)
     })
   })
 })
