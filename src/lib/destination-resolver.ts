@@ -65,7 +65,17 @@ export async function resolveDestination(
   destination: string,
   kvStore: KVNamespace
 ): Promise<ResolvedDestination> {
-  // Case 1: Shortcode resolution
+
+  // Case 1: Direct URL
+  if (isFullUrl(destination)) {
+    return {
+      url: destination,
+      type: 'temporary', // Default for direct URLs
+      source: 'direct'
+    }
+  }
+
+  // Case 2: Shortcode resolution
   if (isShortcode(destination)) {
     const redirectData = await getRedirect(destination, kvStore)
     
@@ -82,15 +92,6 @@ export async function resolveDestination(
       type: redirectData.type || 'temporary',
       source: 'kv',
       shortcode: destination
-    }
-  }
-  
-  // Case 2: Direct URL
-  if (isFullUrl(destination)) {
-    return {
-      url: destination,
-      type: 'temporary', // Default for direct URLs
-      source: 'direct'
     }
   }
   

@@ -6,9 +6,10 @@ const app = new Hono<{ Bindings: Env }>()
 /**
  * Root endpoint handler for legacy client bootstrap
  * Serves minimal HTML that detects fragment-based URLs and upgrades to server-side redirects
+ * Note: Hash fragments are client-side only and not sent to server
  */
 app.get('/', (c) => {
-  const html = generateBootstrapHTML()
+  const html = generateBootstrapHTML(c.env.DEFAULT_REDIRECT_URL || 'https://example.com/fallback')
   return c.html(html, {
     headers: {
       'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -20,8 +21,9 @@ app.get('/', (c) => {
 
 /**
  * Generate bootstrap HTML with inline JavaScript for URL upgrade
+ * @param fallbackUrl - URL to redirect to if no hash fragment exists
  */
-function generateBootstrapHTML(): string {
+function generateBootstrapHTML(fallbackUrl: string): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,24 +32,32 @@ function generateBootstrapHTML(): string {
     <meta name="robots" content="noindex, nofollow">
     <title>Redirecting...</title>
     <script>
-    // get redirect url (part after #)
-    var path = window.location.href;
-    var hashInd = path.indexOf("#");
-    var redirectUrl = path.slice(hashInd + 1);
+      // get redirect url (part after #)
+      var path = window.location.href;
+      var hashInd = path.indexOf("#");
+      var redirectUrl = path.slice(hashInd + 1);
 
-    // get isNoRedirect value (0 or 1): https://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript/901144#901144
-    var queryParams = new URLSearchParams(window.location.search);
-    var isNoRedirect = queryParams.get("isNoRedirect");
-    var isRedirect = !Boolean(parseInt(isNoRedirect));
+      // get isNoRedirect value (0 or 1): https://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript/901144#901144
+      var queryParams = new URLSearchParams(window.location.search);
+      var isNoRedirect = queryParams.get("isNoRedirect");
+      var isRedirect = !Boolean(parseInt(isNoRedirect));
 
-    setTimeout(function () {
-      var newLocation = '/r?to=' + redirectUrl;
+      setTimeout(function () {
+        // If no hash fragment, redirect to fallback URL
+        if (!redirectUrl || redirectUrl === "") {
+          window.location.href = '${fallbackUrl}';
+          return;
+        }
 
-      if (isRedirect && newLocation !== "") {
-        window.location.href = newLocation;
-      }
-    }, 200);
-  </script>
+        var newLocation = '/r?to=' + encodeURIComponent(redirectUrl);
+
+        // Perform redirect (unless isNoRedirect=1 prevents it)
+        // Note: isNoRedirect only affects client-side auto-redirect, not server behavior
+        if (isRedirect && newLocation !== "") {
+          window.location.href = newLocation;
+        }
+      }, 200);
+    </script>
     <noscript>
         <div style="font-family: Arial, sans-serif; text-align: center; margin-top: 50px;">
             <h1>JavaScript Required</h1>

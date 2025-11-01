@@ -72,15 +72,17 @@ describe('Bootstrap Legacy URL Tests', () => {
 
   // These tests CAN be done server-side - testing HTML structure and headers
   it('should include proper cache control headers', async () => {
-    const response = await testApp.request('/')
+    const { defaultTestEnv } = await import('../../fixtures/env')
+    const response = await testApp.request('/', {}, defaultTestEnv)
 
     expect(response.headers.get('cache-control')).toBe('no-cache, no-store, must-revalidate')
     expect(response.headers.get('pragma')).toBe('no-cache')
   })
 
   it('should include noscript fallback', async () => {
-    const response = await testApp.request('/')
-    
+    const { defaultTestEnv } = await import('../../fixtures/env')
+    const response = await testApp.request('/', {}, defaultTestEnv)
+
     const html = await response.text()
     expect(html).toContain('<noscript>')
     expect(html).toContain('JavaScript Required')
