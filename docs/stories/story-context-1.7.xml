@@ -101,7 +101,7 @@
       <typescript>5.9.0</typescript>
       <vitest>4.0.3</vitest>
       <miniflare>3.20250718.2</miniflare>
-      <wrangler>4.45.0</wrangler>
+      <wrangler>4.45.3</wrangler>
       <hono>4.4.0</hono>
     </dependencies>
   </artifacts>

@@ -114,7 +114,7 @@
       <zod>4.1.0</zod>
       <vitest>4.0.3</vitest>
       <miniflare>3.20250718.2</miniflare>
-      <wrangler>4.45.0</wrangler>
+      <wrangler>4.45.3</wrangler>
     </dependencies>
   </artifacts>
 

@@ -188,7 +188,7 @@
       </testing>
       <build>
         <package name="typescript" version="^5.9.0" purpose="TypeScript compiler" />
-        <package name="wrangler" version="^4.45.0" purpose="Cloudflare Workers CLI" />
+        <package name="wrangler" version="^4.45.3" purpose="Cloudflare Workers CLI" />
         <package name="vite-tsconfig-paths" version="^5.1.4" purpose="Path resolution for Vitest" />
       </build>
     </dependencies>

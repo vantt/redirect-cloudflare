@@ -112,7 +112,7 @@ Documentation
 ]]></code>
     <dependencies><![CDATA[
 - ecosystem: npm | packages: hono@^4.4.0; @hono/zod-validator@^0.7.0; zod@^4.1.0
-- ecosystem: npm-dev | packages: typescript@^5.9.0; vitest@^4.0.3; miniflare@^3.20250718.2; wrangler@^4.45.0; @cloudflare/workers-types@^4.20241004.0
+- ecosystem: npm-dev | packages: typescript@^5.9.0; vitest@^4.0.3; miniflare@^3.20250718.2; wrangler@^4.45.3; @cloudflare/workers-types@^4.20241004.0
 ]]></dependencies>
   </artifacts>
 

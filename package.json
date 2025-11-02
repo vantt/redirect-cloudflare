@@ -10,12 +10,14 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241004.0",
+    "@types/jsdom": "^27.0.0",
     "@types/node": "^24.9.1",
     "jsdom": "^27.0.1",
     "miniflare": "^3.20250718.2",
     "typescript": "^5.9.0",
+    "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^4.0.3",
-    "wrangler": "^4.45.0"
+    "wrangler": "^4.45.3"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.7.0",

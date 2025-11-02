@@ -15,8 +15,10 @@
  * const env = createMockEnv({ ENABLE_TRACKING: 'true' })
  */
 import { defineConfig } from 'vitest/config'
+import tsconfigPaths from 'vite-tsconfig-paths'
 
 export default defineConfig({
+  plugins: [tsconfigPaths()],
   test: {
     globals: true,
     environment: 'node',
@@ -26,10 +28,5 @@ export default defineConfig({
     hookTimeout: 10000,
     // Temporarily disable setupFiles to isolate issue
     // setupFiles: ['./test/setup.ts'],
-  },
-  resolve: {
-    alias: {
-      '@': './src',
-    },
   },
 })
