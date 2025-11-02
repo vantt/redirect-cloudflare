@@ -6,9 +6,33 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "types": ["@cloudflare/workers-types"],
-    "outDir": "dist"
+    "types": [
+      "@cloudflare/workers-types"
+    ],
+    "outDir": "dist",
+    "paths": {
+      "@src/*": [
+        "./src/*"
+      ],
+      "@test/*": [
+        "./test/*"
+      ],
+      "@test-utils/*": [
+        "./test/utils/*"
+      ],
+      "@test-fixtures/*": [
+        "./test/fixtures/*"
+      ],
+      "@lib/*": [
+        "./src/lib/*"
+      ],
+      "@types/*": [
+        "./src/types/*"
+      ]
+    }
   },
-  "include": ["src", "test"]
+  "include": [
+    "src",
+    "test"
+  ]
 }
-
