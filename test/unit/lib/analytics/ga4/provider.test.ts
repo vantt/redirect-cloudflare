@@ -60,8 +60,15 @@ describe('GA4Provider', () => {
     it('should log initialization info', () => {
       new GA4Provider(validConfig)
 
-      expect(appLogger.info).toHaveBeenCalledWith('GA4 provider initialized', {
+      expect(appLogger.info).toHaveBeenCalledWith('GA4 HTTP client initialized', {
         measurementId: 'G-TEST123456',
+        timeout: 2000,
+        endpoint: 'https://www.google-analytics.com/mp/collect'
+      })
+
+      expect(appLogger.info).toHaveBeenCalledWith('GA4 provider initialized with HTTP capability', {
+        measurementId: 'G-TEST123456',
+        timeout: 2000,
         debug: false
       })
     })
@@ -90,8 +97,15 @@ describe('GA4Provider', () => {
       const debugConfig = { ...validConfig, debug: true }
       const provider = new GA4Provider(debugConfig)
 
-      expect(appLogger.info).toHaveBeenCalledWith('GA4 provider initialized', {
+      expect(appLogger.info).toHaveBeenCalledWith('GA4 HTTP client initialized', {
         measurementId: 'G-TEST123456',
+        timeout: 2000,
+        endpoint: 'https://www.google-analytics.com/mp/collect'
+      })
+
+      expect(appLogger.info).toHaveBeenCalledWith('GA4 provider initialized with HTTP capability', {
+        measurementId: 'G-TEST123456',
+        timeout: 2000,
         debug: true
       })
     })
@@ -114,11 +128,13 @@ describe('GA4Provider', () => {
     it('should send event successfully', async () => {
       await expect(provider.send(mockEvent)).resolves.not.toThrow()
 
-      expect(appLogger.info).toHaveBeenCalledWith('GA4 payload built (HTTP delivery in Story 8.2)', {
+      expect(appLogger.info).toHaveBeenCalledWith('GA4 event sent successfully', {
         eventName: 'redirect_click',
         clientId: expect.any(String),
         eventCount: 1,
-        debug: undefined
+        latencyMs: expect.any(Number),
+        measurementId: 'G-TEST123456',
+        payloadSize: expect.any(Number)
       })
     })
 
@@ -129,7 +145,9 @@ describe('GA4Provider', () => {
       await disabledProvider.send(mockEvent)
 
       expect(appLogger.debug).toHaveBeenCalledWith('GA4 provider disabled - skipping event', {
-        eventName: 'redirect_click'
+        eventName: 'redirect_click',
+        enabled: false,
+        hasHttpClient: false
       })
     })
 
@@ -165,7 +183,8 @@ describe('GA4Provider', () => {
 
       expect(appLogger.error).toHaveBeenCalledWith('GA4 provider: failed to process event', {
         eventName: 'redirect_click',
-        error: 'Payload building failed'
+        error: 'Payload building failed',
+        errorType: 'Error'
       })
     })
 
@@ -175,14 +194,13 @@ describe('GA4Provider', () => {
 
       await debugProvider.send(mockEvent)
 
-      expect(appLogger.info).toHaveBeenCalledWith('GA4 payload built (HTTP delivery in Story 8.2)', {
+      expect(appLogger.info).toHaveBeenCalledWith('GA4 event sent successfully', {
         eventName: 'redirect_click',
         clientId: expect.any(String),
         eventCount: 1,
-        debug: expect.objectContaining({
-          client_id: expect.any(String),
-          events: expect.any(Array)
-        })
+        latencyMs: expect.any(Number),
+        measurementId: 'G-TEST123456',
+        payloadSize: expect.any(Number)
       })
     })
 
@@ -239,7 +257,9 @@ describe('GA4Provider', () => {
         measurementId: 'G-TEST123456',
         apiSecret: '***',
         debug: false,
-        defaultParameters: {}
+        defaultParameters: {},
+        timeout: 2000,
+        httpClientStatus: 'initialized'
       })
     })
 
@@ -282,10 +302,13 @@ describe('GA4Provider', () => {
 
       await expect(provider.send(complexEvent)).resolves.not.toThrow()
 
-      expect(appLogger.info).toHaveBeenCalledWith('GA4 payload built (HTTP delivery in Story 8.2)', {
+      expect(appLogger.info).toHaveBeenCalledWith('GA4 event sent successfully', {
         eventName: 'redirect_click',
         clientId: expect.any(String),
-        eventCount: 1
+        eventCount: 1,
+        latencyMs: expect.any(Number),
+        measurementId: 'G-TEST123456',
+        payloadSize: expect.any(Number)
       })
     })
 
@@ -301,7 +324,7 @@ describe('GA4Provider', () => {
         await expect(provider.send(event)).resolves.not.toThrow()
       }
 
-      expect(appLogger.info).toHaveBeenCalledTimes(4)
+      expect(appLogger.info).toHaveBeenCalledTimes(5) // 1 initialization + 3 success logs
     })
   })
 

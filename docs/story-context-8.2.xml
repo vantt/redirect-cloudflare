@@ -1,0 +1,126 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>8</epicId>
+    <storyId>2</storyId>
+    <title>GA4 Measurement Protocol HTTP Integration</title>
+    <status>Draft</status>
+    <generatedAt>2025-11-01T00:00:00.000Z</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-8.2.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>GA4 analytics provider</asA>
+    <iWant>send Measurement Protocol events via HTTP POST with timeout and error isolation</iWant>
+    <soThat>analytics data is reliably delivered to Google Analytics without blocking user redirects</soThat>
+    <tasks>- Task 1 (AC: 1, 6) - HTTP Client Implementation
+  - Subtask 1.1: Create src/lib/analytics/ga4/http-client.ts
+  - Subtask 1.2: Implement sendGA4Request() with proper GA4 endpoint
+  - Subtask 1.3: Add query parameters and headers per Measurement Protocol v2
+- Task 2 (AC: 2, 3, 5) - Error Handling and Validation
+  - Subtask 2.1: Update GA4Provider constructor with environment validation
+  - Subtask 2.2: Add timeout implementation using AbortSignal.timeout(2000)
+  - Subtask 2.3: Implement comprehensive error catching and logging
+- Task 3 (AC: 4, 8) - Integration and Testing
+  - Subtask 3.1: Integrate http-client into GA4Provider.send() method
+  - Subtask 3.2: Add structured logging for request/response monitoring
+  - Subtask 3.3: Create Miniflare integration tests
+  - Subtask 3.4: Add performance and timeout unit tests</tasks>
+  </story>
+
+  <acceptanceCriteria>1. HTTP Integration: GA4Provider.send() method sends POST request to https://www.google-analytics.com/mp/collect with proper query parameters (measurement_id, api_secret) and JSON body
+2. Timeout Implementation: Request uses AbortSignal.timeout(2000) for 2-second timeout per ADR-003
+3. Error Handling: Network errors, timeouts, and HTTP errors are caught, logged with structured format, and never thrown to block redirect flow
+4. Environment Validation: Provider validates required GA4 environment variables on initialization, logs warnings for missing config
+5. Structured Logging: Integration with appLogger for request/response monitoring (success/failure, timing, error details)
+6. Protocol Compliance: Request follows GA4 Measurement Protocol v2 specification (headers, body format, query params)
+7. Integration Testing: Miniflare integration tests verify correct HTTP calls with proper URL, headers, and payload structure
+8. Performance Testing: Unit tests verify timeout behavior and measure request timing under 2s threshold</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <artifact path="docs/tech-spec-epic-8.md" title="Google Analytics 4 Integration" section="Non-Functional Requirements" snippet="Timeout chuẩn: 2000ms cho HTTP POST GA4 (AbortSignal.timeout). Luôn await gửi GA4 với timeout; lỗi/timeout không chặn redirect."/>
+      <artifact path="docs/tech-spec-epic-8.md" title="Google Analytics 4 Integration" section="Security" snippet="Bảo mật secret: GA4_API_SECRET là Wrangler secret; không commit. Không log PII; chỉ log nhãn chiến dịch và trạng thái gửi."/>
+      <artifact path="docs/tech-spec-epic-7.md" title="Analytics Abstraction (Multi-Service)" section="Detailed Design" snippet="routeAnalyticsEvent(event, providers) — fan-out concurrently to multiple providers; per-provider error isolation; apply timeout (AbortSignal.timeout); structured logging for attempt/success/failure/duration"/>
+      <artifact path="docs/architecture.md" title="Architecture Document" section="Analytics Architecture" snippet="Reliability: Per-provider timeout default 2s via AbortSignal.timeout(2000); router always returns within budget"/>
+      <artifact path="docs/stories/story-8.1.md" title="GA4 Measurement Protocol Payload Builder" section="Context" snippet="Story 8.1 completed: GA4Provider class implements AnalyticsProvider interface với payload builder; Payload builder creates GA4 Measurement Protocol v2 compliant payloads"/>
+    </docs>
+    <code>
+      <artifact path="src/lib/analytics/ga4/provider.ts" kind="provider" symbol="GA4Provider.send()" lines="49-89" reason="Core method to be updated with HTTP integration - currently builds payload but TODO for actual HTTP delivery"/>
+      <artifact path="src/lib/analytics/ga4/provider.ts" kind="provider" symbol="GA4Provider.sendToGA4()" lines="120-126" reason="Placeholder method for Story 8.2 implementation - contains TODO and URL structure"/>
+      <artifact path="src/lib/analytics/ga4/types.ts" kind="types" symbol="GA4Config" lines="79-91" reason="Configuration interface including measurementId, apiSecret, and debug flag"/>
+      <artifact path="src/lib/analytics/ga4/types.ts" kind="types" symbol="GA4Payload" lines="13-25" reason="Payload structure created by Story 8.1 to be sent in Story 8.2"/>
+      <artifact path="src/types/env.ts" kind="env" symbol="GA4_MEASUREMENT_ID" lines="12-13" reason="Environment variable for GA4 Measurement ID"/>
+      <artifact path="src/types/env.ts" kind="env" symbol="GA4_API_SECRET" lines="12-13" reason="Environment variable for GA4 API Secret"/>
+      <artifact path="src/lib/analytics/provider.ts" kind="interface" symbol="AnalyticsProvider" lines="16-28" reason="Core interface that GA4Provider.send() must implement"/>
+      <artifact path="src/lib/analytics/router.ts" kind="router" symbol="routeAnalyticsEvent" reason="Router that calls GA4Provider.send() with timeout isolation"/>
+    </code>
+    <dependencies>
+      <dependency ecosystem="Node.js">
+        <package name="hono" version="^4.4.0" purpose="Web framework"/>
+        <package name="zod" version="^4.1.0" purpose="Schema validation"/>
+        <package name="@hono/zod-validator" version="^0.7.0" purpose="Hono validator middleware"/>
+      </dependency>
+      <dependency ecosystem="Cloudflare Workers">
+        <package name="@cloudflare/workers-types" version="^4.20241004.0" purpose="TypeScript types for Cloudflare Workers"/>
+        <api name="AbortSignal.timeout" version="Native" purpose="HTTP request timeout control"/>
+        <api name="fetch" version="Native" purpose="HTTP requests to GA4 Measurement Protocol"/>
+      </dependency>
+      <dependency ecosystem="Testing">
+        <package name="vitest" version="^4.0.3" purpose="Unit and integration testing framework"/>
+        <package name="miniflare" version="^3.20250718.2" purpose="Cloudflare Workers testing environment for HTTP integration"/>
+      </dependency>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture" description="HTTP integration must be within GA4Provider.send() method following Epic 7 provider patterns"/>
+    <constraint type="performance" description="HTTP requests must use AbortSignal.timeout(2000) per ADR-003 to protect redirect performance"/>
+    <constraint type="error-handling" description="Network/timeout/HTTP errors must be caught, logged with structured format, and never thrown to maintain provider isolation"/>
+    <constraint type="security" description="GA4_API_SECRET must be handled securely as Wrangler secret, no PII in logs"/>
+    <constraint type="protocol" description="HTTP requests must follow GA4 Measurement Protocol v2 specification with proper endpoint, headers, and query parameters"/>
+    <constraint type="integration" description="HTTP integration must build on Story 8.1 payload builder foundation"/>
+  </constraints>
+  <interfaces>
+    <interface name="GA4Provider.send()" kind="method" signature="async send(event: AnalyticsEvent): Promise<void>" path="src/lib/analytics/ga4/provider.ts"/>
+    <interface name="GA4Config" kind="type interface" signature="interface GA4Config { measurementId: string; apiSecret: string; debug?: boolean }" path="src/lib/analytics/ga4/types.ts"/>
+    <interface name="GA4Payload" kind="type interface" signature="interface GA4Payload { client_id: string; events: GA4Event[]; timestamp_micros?: string }" path="src/lib/analytics/ga4/types.ts"/>
+    <interface name="Env" kind="environment" signature="interface Env { GA4_MEASUREMENT_ID?: string; GA4_API_SECRET?: string; ANALYTICS_TIMEOUT_MS?: string }" path="src/types/env.ts"/>
+  </interfaces>
+  <tests>
+    <standards>
+      <standard tool="vitest" version="^4.0.3" purpose="Unit and integration testing framework"/>
+      <standard tool="miniflare" version="^3.20250718.2" purpose="Cloudflare Workers runtime emulation for HTTP testing"/>
+      <standard pattern="mock-fetch" purpose="Mock fetch API for HTTP integration testing"/>
+      <standard pattern="timeout-testing" purpose="Test AbortSignal.timeout(2000) behavior"/>
+      <standard pattern="error-isolation" purpose="Verify errors don't throw from provider"/>
+    </standards>
+    <locations>
+      <location path="test/unit/lib/analytics/ga4/http-client.test.ts" description="Unit tests for HTTP client implementation"/>
+      <location path="test/unit/lib/analytics/ga4/provider.test.ts" description="Updated provider tests with HTTP integration"/>
+      <location path="test/integration/analytics/ga4-http-integration.test.ts" description="Miniflare integration tests for actual HTTP calls"/>
+      <location path="test/integration/analytics/ga4-provider-end-to-end.test.ts" description="End-to-end tests with TrackingService integration"/>
+    </locations>
+    <ideas>
+      <test type="unit" ac="1" description="Test HTTP POST request to correct GA4 endpoint with proper query parameters"/>
+      <test type="unit" ac="1" description="Test JSON request body formatting and Content-Type header"/>
+      <test type="unit" ac="2" description="Test AbortSignal.timeout(2000) triggers correctly"/>
+      <test type="unit" ac="3" description="Test network errors are caught and logged without throwing"/>
+      <test type="unit" ac="3" description="Test HTTP timeout errors are caught and logged"/>
+      <test type="unit" ac="3" description="Test HTTP error responses (4xx, 5xx) are handled gracefully"/>
+      <test type="unit" ac="4" description="Test provider initialization with missing GA4_MEASUREMENT_ID"/>
+      <test type="unit" ac="4" description="Test provider initialization with missing GA4_API_SECRET"/>
+      <test type="unit" ac="5" description="Test structured logging for successful requests (timing, payload size)"/>
+      <test type="unit" ac="5" description="Test structured logging for failed requests (error type, latency)"/>
+      <test type="unit" ac="6" description="Test GA4 Measurement Protocol v2 compliance in request format"/>
+      <test type="integration" ac="7" description="Test HTTP integration with Miniflare fetch mocking"/>
+      <test type="integration" ac="7" description="Test complete request URL construction with query params"/>
+      <test type="integration" ac="8" description="Test performance timing stays under 2000ms threshold"/>
+      <test type="integration" ac="8" description="Test concurrent calls don't interfere with each other"/>
+      <test type="edge-case" ac="3" description="Test malformed GA4 endpoint URLs"/>
+      <test type="edge-case" ac="4" description="Test empty or invalid measurement ID format"/>
+      <test type="edge-case" ac="5" description="Test logging with very long payloads (truncation)"/>
+      <test type="security" ac="4" description="Test API secret is not exposed in logs"/>
+    </ideas>
+  </tests>
+</story-context>

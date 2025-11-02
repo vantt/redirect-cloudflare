@@ -88,4 +88,7 @@ export interface GA4Config {
 
   /** Debug mode flag */
   debug?: boolean
+
+  /** Request timeout in milliseconds (default: 2000) */
+  timeout?: number
 }
