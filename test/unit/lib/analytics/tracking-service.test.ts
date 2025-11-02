@@ -6,6 +6,8 @@ import { createTestEnv } from '../../../fixtures/env';
 import { AnalyticsProvider } from '../../../../src/lib/analytics/provider';
 
 class MockProvider implements AnalyticsProvider {
+  readonly name = 'mock-provider';
+
   async send(): Promise<void> {
     // do nothing
   }
@@ -31,7 +33,13 @@ describe('TrackingService', () => {
     expect(registry.loadProviders).toHaveBeenCalled();
     expect(router.routeAnalyticsEvent).toHaveBeenCalledWith(
       expect.objectContaining({
-        params: expect.objectContaining({ utm_source: 'google' }),
+        name: 'redirect_click',
+        attributes: expect.objectContaining({
+          utm_source: 'google',
+          short_url: 'abc',
+          destination_url: 'https://example.com?utm_source=google',
+          redirect_type: 'temporary'
+        }),
       }),
       expect.any(Array)
     );
@@ -50,7 +58,13 @@ describe('TrackingService', () => {
 
     expect(router.routeAnalyticsEvent).toHaveBeenCalledWith(
       expect.objectContaining({
-        params: expect.objectContaining({ utm_source: 'facebook' }),
+        name: 'redirect_click',
+        attributes: expect.objectContaining({
+          utm_source: 'facebook',
+          short_url: 'abc',
+          destination_url: 'https://example.com',
+          redirect_type: 'temporary'
+        }),
       }),
       expect.any(Array)
     );
@@ -69,7 +83,14 @@ describe('TrackingService', () => {
 
     expect(router.routeAnalyticsEvent).toHaveBeenCalledWith(
       expect.objectContaining({
-        params: expect.objectContaining({ utm_source: 'facebook', utm_medium: 'cpc' }),
+        name: 'redirect_click',
+        attributes: expect.objectContaining({
+          utm_source: 'facebook',  // original wins
+          utm_medium: 'cpc',
+          short_url: 'abc',
+          destination_url: 'https://example.com?utm_source=google&utm_medium=cpc',
+          redirect_type: 'temporary'
+        }),
       }),
       expect.any(Array)
     );

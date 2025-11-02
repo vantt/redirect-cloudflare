@@ -1,4 +1,5 @@
-import type { Env, TrackingParams, AnalyticsEvent } from '../../types/env';
+import type { Env, TrackingParams } from '../../types/env';
+import type { AnalyticsEvent } from './types';
 import { appLogger } from '../../utils/logger';
 import { extractTrackingParams } from '../parameter-extractor';
 
@@ -35,18 +36,16 @@ function buildRedirectEvent(
 ): AnalyticsEvent {
   const event: AnalyticsEvent = {
     name: 'redirect_click',
-    params: {
+    attributes: {
       ...trackingParams,
       short_url: context.shortUrl,
       destination_url: context.destinationUrl,
       redirect_type: context.redirectType,
     },
-    user_id: context.ip,
-    timestamp: new Date().toISOString(),
   };
 
   if (context.userAgent) {
-    event.params.user_agent = context.userAgent;
+    event.attributes.user_agent = context.userAgent;
   }
 
   return event;

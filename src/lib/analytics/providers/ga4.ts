@@ -1,37 +1,32 @@
-import { AnalyticsEvent } from '../types';
-import { AnalyticsProvider } from '../provider';
+import { GA4Provider } from '../ga4';
+import type { GA4Config } from '../ga4/types';
 
 /**
- * GA4 Analytics Provider (Example)
- * 
- * This is an example implementation of a GA4 provider.
- * It is not intended for production use.
- * 
+ * GA4 Provider Factory
+ *
+ * Factory function to create GA4 provider instances for the analytics registry.
+ * Uses the new GA4Provider implementation from src/lib/analytics/ga4/.
+ *
  * Part of Epic 8: GA4 Provider Implementation
  */
-export class ExampleGA4Provider implements AnalyticsProvider {
-  readonly name = 'ga4';
-  private measurementId: string;
-  private apiSecret: string;
 
-  constructor(measurementId: string, apiSecret: string) {
-    this.measurementId = measurementId;
-    this.apiSecret = apiSecret;
-  }
+/**
+ * Creates a GA4 provider instance from environment configuration
+ *
+ * @param env - Environment variables containing GA4 configuration
+ * @returns GA4Provider instance
+ */
+export function createGA4Provider(env: any): GA4Provider {
+  const config: GA4Config = {
+    measurementId: env.GA4_MEASUREMENT_ID || '',
+    apiSecret: env.GA4_API_SECRET || '',
+    debug: env.GA4_DEBUG === 'true',
+    defaultParameters: {}
+  };
 
-  async send(event: AnalyticsEvent): Promise<void> {
-    // In a real implementation, this would send the event to GA4
-    throw new Error('Example provider - implement in Epic 8');
-  }
-
-  private mapAttributes(attributes: Record<string, any>): Record<string, string> {
-    const mapped: Record<string, string> = {};
-    for (const key in attributes) {
-      if (Object.prototype.hasOwnProperty.call(attributes, key)) {
-        // Map and convert to string
-        mapped[key] = String(attributes[key]);
-      }
-    }
-    return mapped;
-  }
+  return new GA4Provider(config);
 }
+
+// Re-export for backward compatibility
+export { GA4Provider } from '../ga4';
+export type { GA4Config } from '../ga4/types';

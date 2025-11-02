@@ -2,7 +2,11 @@ import { AnalyticsProvider } from '../../../../../src/lib/analytics/provider';
 import { AnalyticsEvent } from '../../../../../src/lib/analytics/types';
 
 export class SuccessMockProvider implements AnalyticsProvider {
-  constructor(private options: { name?: string, delay?: number } = {}) {}
+  readonly name: string;
+
+  constructor(private options: { name?: string, delay?: number } = {}) {
+    this.name = options.name || 'success-mock';
+  }
 
   async send(event: AnalyticsEvent): Promise<void> {
     if (this.options.delay) {
@@ -13,7 +17,11 @@ export class SuccessMockProvider implements AnalyticsProvider {
 }
 
 export class FailureMockProvider implements AnalyticsProvider {
-  constructor(private options: { name?: string, delay?: number, errorMessage?: string } = {}) {}
+  readonly name: string;
+
+  constructor(private options: { name?: string, delay?: number, errorMessage?: string } = {}) {
+    this.name = options.name || 'failure-mock';
+  }
 
   async send(event: AnalyticsEvent): Promise<void> {
     if (this.options.delay) {
@@ -24,7 +32,11 @@ export class FailureMockProvider implements AnalyticsProvider {
 }
 
 export class TimeoutMockProvider implements AnalyticsProvider {
-  constructor(private options: { name?: string, delay?: number } = {}) {}
+  readonly name: string;
+
+  constructor(private options: { name?: string, delay?: number } = {}) {
+    this.name = options.name || 'timeout-mock';
+  }
 
   async send(event: AnalyticsEvent): Promise<void> {
     return new Promise(() => {}); // Never resolves

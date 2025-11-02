@@ -21,12 +21,8 @@ export interface RedirectData {
   created?: string // ISO 8601 (optional)
 }
 
-export interface AnalyticsEvent {
-  name: string
-  params: Record<string, string | number | boolean>
-  user_id?: string
-  timestamp: string
-}
+// AnalyticsEvent moved to src/lib/analytics/types.ts as part of Epic 7
+// Use: import { AnalyticsEvent } from '../lib/analytics/types'
 
 export interface TrackingParams {
   utm_source?: string

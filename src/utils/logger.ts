@@ -13,14 +13,14 @@ interface LogMetadata {
 }
 
 interface LogEntry {
-  level: 'info' | 'error' | 'warn'
+  level: 'info' | 'error' | 'warn' | 'debug'
   message: string
   timestamp: string
   [key: string]: any
 }
 
 class StructuredLogger {
-  private createLogEntry(level: 'info' | 'error' | 'warn', message: string, metadata?: LogMetadata): LogEntry {
+  private createLogEntry(level: 'info' | 'error' | 'warn' | 'debug', message: string, metadata?: LogMetadata): LogEntry {
     const entry: LogEntry = {
       level,
       message,
@@ -47,6 +47,11 @@ class StructuredLogger {
   error(message: string, metadata?: LogMetadata): void {
     const entry = this.createLogEntry('error', message, metadata)
     console.error(JSON.stringify(entry))
+  }
+
+  debug(message: string, metadata?: LogMetadata): void {
+    const entry = this.createLogEntry('debug', message, metadata)
+    console.log(JSON.stringify(entry))
   }
 }
 

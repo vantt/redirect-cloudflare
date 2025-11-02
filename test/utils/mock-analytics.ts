@@ -7,7 +7,7 @@ import { vi, expect } from 'vitest'
 
 export interface MockGA4Event {
   name: string
-  params: Record<string, string | number | boolean>
+  attributes: Record<string, string | number | boolean>
   user_id?: string
   timestamp: string
 }
@@ -52,7 +52,7 @@ export class MockAnalyticsAPI {
   mockSuccessfulRedirect(): MockGA4Event {
     return {
       name: 'redirect_executed',
-      params: {
+      attributes: {
         redirect_id: 'test-redirect',
         destination_url: 'https://example.com',
         redirect_type: 'temporary',
@@ -65,7 +65,7 @@ export class MockAnalyticsAPI {
   mockFailedRedirect(): MockGA4Event {
     return {
       name: 'redirect_failed',
-      params: {
+      attributes: {
         redirect_id: 'test-redirect',
         error_message: 'Analytics service unavailable',
         success: false

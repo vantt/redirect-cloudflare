@@ -5,7 +5,7 @@
  * and behave as expected in success, failure, and timeout scenarios
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { AnalyticsEvent, EventName } from '../../../../../src/lib/analytics/types'
 import { 
   SuccessMockProvider, 
