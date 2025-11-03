@@ -4,9 +4,25 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev",
+    "dev": "wrangler dev --env dev",
     "build": "tsc -p .",
-    "test": "vitest"
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "test:watch": "vitest --watch",
+    "deploy:dev": "wrangler deploy --env dev",
+    "deploy:staging": "wrangler deploy --env staging",
+    "deploy:prod": "wrangler deploy --env production",
+    "deploy:dry": "wrangler deploy --dry-run --env production",
+    "logs:dev": "wrangler tail --env dev",
+    "logs:staging": "wrangler tail --env staging",
+    "logs:prod": "wrangler tail --env production",
+    "kv:list": "wrangler kv:namespace list --env production",
+    "kv:list:staging": "wrangler kv:namespace list --env staging",
+    "secret:dev": "wrangler secret put GA4_API_SECRET --env dev",
+    "secret:staging": "wrangler secret put GA4_API_SECRET --env staging",
+    "secret:prod": "wrangler secret put GA4_API_SECRET --env production",
+    "validate": "wrangler validate",
+    "whoami": "wrangler whoami"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241004.0",

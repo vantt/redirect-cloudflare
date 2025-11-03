@@ -1,13 +1,86 @@
 name = "cloudflare_redirect"
 main = "src/index.ts"
 compatibility_date = "2025-10-24"
+compatibility_flags = ["nodejs_compat"]
 
+# (Optional) Khai báo KV toàn cục để IDE nhận diện binding
+# Lưu ý: Chỉ là placeholder, Wrangler sẽ ưu tiên env cụ thể bên dưới
 [[kv_namespaces]]
 binding = "REDIRECT_KV"
-preview_id = "04adc1306db64f7d9d29f5e3343a3d7f" 
-id = "66ac68eae673447a9baf6ce94f7abff6"
+id = "REPLACE_GLOBAL_REDIRECT_KV_ID"
 
 [[kv_namespaces]]
 binding = "ANALYTICS_KV"
-preview_id = "04adc1306db64f7d9d29f5e3343a3d7f" 
-id = "b8f9a2c3d7741f4a8c9a3f45f2a1b3a"
+id = "REPLACE_GLOBAL_ANALYTICS_KV_ID"
+
+# =====================
+# DEV ENVIRONMENT
+# =====================
+[env.dev]
+name = "cloudflare_redirect_dev"
+
+[env.dev.vars]
+DEFAULT_REDIRECT_URL = "https://dev.example.com"
+GA4_MEASUREMENT_ID   = "G-DEVXXXXXXXXX"
+ENVIRONMENT          = "dev"
+ENABLE_TRACKING      = "true"
+ANALYTICS_PROVIDERS  = "ga4"
+ALLOWED_DOMAINS      = "finejapanvietnam.com,example.com,test.com,localhost"
+
+[[env.dev.kv_namespaces]]
+binding    = "REDIRECT_KV"
+id         = "REPLACE_DEV_REDIRECT_KV_ID"
+preview_id = "REPLACE_DEV_REDIRECT_KV_PREVIEW_ID"
+
+[[env.dev.kv_namespaces]]
+binding    = "ANALYTICS_KV"
+id         = "REPLACE_DEV_ANALYTICS_KV_ID"
+preview_id = "REPLACE_DEV_ANALYTICS_KV_PREVIEW_ID"
+
+# =====================
+# STAGING ENVIRONMENT
+# =====================
+[env.staging]
+name = "cloudflare_redirect_staging"
+
+[env.staging.vars]
+DEFAULT_REDIRECT_URL = "https://staging.example.com"
+GA4_MEASUREMENT_ID   = "G-STAGINGXXXXXXX"
+ENVIRONMENT          = "staging"
+ENABLE_TRACKING      = "true"
+ANALYTICS_PROVIDERS  = "ga4"
+ALLOWED_DOMAINS      = "example.com,test.com"
+
+[[env.staging.kv_namespaces]]
+binding    = "REDIRECT_KV"
+id         = "REPLACE_STAGING_REDIRECT_KV_ID"
+preview_id = "REPLACE_STAGING_REDIRECT_KV_PREVIEW_ID"
+
+[[env.staging.kv_namespaces]]
+binding    = "ANALYTICS_KV"
+id         = "REPLACE_STAGING_ANALYTICS_KV_ID"
+preview_id = "REPLACE_STAGING_ANALYTICS_KV_PREVIEW_ID"
+
+# =====================
+# PRODUCTION ENVIRONMENT
+# =====================
+[env.production]
+name = "cloudflare_redirect_production"
+
+[env.production.vars]
+DEFAULT_REDIRECT_URL = "https://example.com"
+GA4_MEASUREMENT_ID   = "G-PRODXXXXXXXXX"
+ENVIRONMENT          = "production"
+ENABLE_TRACKING      = "true"
+ANALYTICS_PROVIDERS  = "ga4"
+ALLOWED_DOMAINS      = "finejapanvietnam.com,example.com,test.com,localhost"
+
+[[env.production.kv_namespaces]]
+binding    = "REDIRECT_KV"
+id         = "REPLACE_PROD_REDIRECT_KV_ID"
+preview_id = "REPLACE_PROD_REDIRECT_KV_PREVIEW_ID" # tùy chọn, nếu muốn preview tách biệt
+
+[[env.production.kv_namespaces]]
+binding    = "ANALYTICS_KV"
+id         = "REPLACE_PROD_ANALYTICS_KV_ID"
+preview_id = "REPLACE_PROD_ANALYTICS_KV_PREVIEW_ID" # tùy chọn

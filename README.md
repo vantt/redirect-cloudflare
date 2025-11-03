@@ -7,19 +7,126 @@ Developer bootstrap for Cloudflare Workers + Hono.
 - Cloudflare `wrangler` CLI
 
 ## Setup
-```
+```bash
 npm install
 ```
 
 ## Development
-```
+
+```bash
+# Start development server
 npm run dev
+
+# Run tests
+npm test
+
+# Build project
+npm run build
+```
+
+## 🚀 Deployment
+
+### Quick Start
+
+```bash
+# Deploy to staging
+npm run deploy:staging
+
+# Deploy to production (use with caution)
+npm run deploy:prod
+
+# View production logs
+npm run logs:prod
+```
+
+### Documentation
+
+- 📖 **[Deployment Guide](./docs/deployment-guide.md)** - Complete setup for 3 environments
+- 🚀 **[Wrangler Commands](./docs/wrangler-commands.md)** - Quick reference for all commands
+- 🏗️ **[Architecture](./docs/architecture.md)** - System architecture and design decisions
+- 📋 **[Stories & Epics](./docs/epics.md)** - Development stories and progress
+
+## 📁 Project Structure
+
+**IMPORTANT**: Before adding code, read [Project Structure Guide](docs/project-structure.md)
+
+```
+src/
+├── lib/
+│   ├── analytics/          # Analytics system (Epic 7)
+│   │   ├── ga4/            # GA4 provider (Epic 8)
+│   │   ├── providers/      # Provider factories
+│   │   ├── router.ts       # Event routing
+│   │   └── types.ts        # Analytics types
+│   ├── destination-resolver.ts # Destination URL resolution
+│   ├── errors.ts           # Custom error classes
+│   ├── kv-store.ts         # KV store abstraction
+│   ├── query-parser.ts     # Query string parsing
+│   └── validation.ts       # URL and domain validation
+├── routes/
+│   ├── bootstrap.ts        # Legacy URL bootstrap
+│   └── redirect.ts         # Main redirect endpoint
+├── types/
+│   └── env.ts              # Environment variable types
+└── utils/
+    └── logger.ts           # Structured logger
+
+test/
+├── unit/
+│   └── lib/
+│       ├── analytics/
+│       │   ├── providers/
+│       │   └── ga4/
+│       └── ...
+├── integration/
+└── fixtures/
 ```
 
 ## Testing
 
 ```bash
 npm test
+```
+
+### 🧪 Test Structure Rules
+
+**CRITICAL**: Read [Testing Guide](docs/testing-guide.md) before creating tests!
+
+```bash
+# ✅ CORRECT
+src/lib/analytics/ga4/provider.ts
+test/unit/lib/analytics/providers/ga4.test.ts
+
+# ❌ WRONG - Don't create ga4/ in tests!
+test/unit/lib/analytics/ga4/provider.test.ts
+```
+
+### Test Commands
+```bash
+npm test                    # All tests
+npm test test/unit         # Unit tests only
+npm test test/integration   # Integration tests only
+npm test -- --coverage     # With coverage
+npm test -- --watch        # Watch mode
+```
+
+## 📚 Documentation
+
+### Required Reading
+1. [Project Structure Guide](docs/project-structure.md) ⭐ **MOST IMPORTANT**
+2. [Developer Guide](docs/developer-guide.md) ⭐ **SECOND MOST IMPORTANT**
+3. [Testing Guide](docs/testing-guide.md) ⭐ **THIRD MOST IMPORTANT**
+4. [Onboarding Checklist](docs/onboarding-checklist.md)
+
+### Documentation Structure
+```
+docs/
+├── project-structure.md      # File organization rules
+├── developer-guide.md         # Development guidelines
+├── testing-guide.md           # Testing best practices
+├── onboarding-checklist.md    # New developer checklist
+├── stories/                   # User stories
+└── epic-overviews/            # Epic documentation
 ```
 
 ### Testing Environment
@@ -95,12 +202,14 @@ cp .env.example .env
 | `ALLOWED_DOMAINS` | No | - | Comma-separated list of allowed redirect domains. If set, redirects are restricted to these domains only. |
 | `ENABLE_TRACKING` | No | `false` | Feature flag to enable analytics tracking. Set to `"true"` to enable. |
 | `DEFAULT_REDIRECT_URL` | No | - | Default URL for root endpoint when no hash fragment is present. |
-| `ANALYTICS_PROVIDERS` | No | - | Comma-separated list of analytics providers. Supported: `"ga4"`. |
+| `ANALYTICS_PROVIDERS` | No | - | Comma-separated list of analytics providers. Supported: `"ga4"`, `"mixpanel"`. |
 | `GA4_MEASUREMENT_ID` | Conditional* | - | Google Analytics 4 Measurement ID (format: `G-XXXXXXXXXX`). |
 | `GA4_API_SECRET` | Conditional* | - | Google Analytics 4 API Secret from GA4 Admin > Data Streams > Measurement Protocol API secrets. |
+| `MIXPANEL_TOKEN` | Conditional** | - | Mixpanel Project Token. |
 | `ANALYTICS_TIMEOUT_MS` | No | `2000` | Per-provider analytics timeout in milliseconds. Must be a positive number. |
 
 *Required when `ANALYTICS_PROVIDERS` includes `"ga4"`.
+**Required when `ANALYTICS_PROVIDERS` includes `"mixpanel"`.
 
 #### Local Development Setup
 
@@ -149,13 +258,16 @@ curl "https://your-worker.workers.dev/r?to=https%3A%2F%2Fexample.com%2Fpath%3Fqu
 
 # Raw destination (supported for simple URLs)
 curl "https://your-worker.workers.dev/r?to=https://example.com"
+
+# Shortcode destination
+curl "https://your-worker.workers.dev/r?to=shortcode123"
 ```
 
 ### Parameters
 
 | Parameter | Required | Description |
 |------------|------------|-------------|
-| `to` | Yes | Destination URL to redirect to. Can be URL-encoded or raw format. |
+| `to` | Yes | Destination URL to redirect to. Can be a full URL (URL-encoded or raw) or a shortcode. |
 | `debug` | No | Debug mode flag. Set to `1` to return JSON response instead of redirect.`n` legacy usage is translated automatically during migration.|
 
 ### Debug Mode
