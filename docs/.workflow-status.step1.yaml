@@ -1,5 +1,0 @@
-workflow: workflow-status
-step: 1
-status: completed
-status_file_found: true
-status_file_path: docs/bmm-workflow-status.md

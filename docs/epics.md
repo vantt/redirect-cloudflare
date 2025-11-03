@@ -676,7 +676,8 @@ Provide a vendor‑neutral analytics layer: extract tracking data, define a neut
 
 **Acceptance Criteria:**
 1. Define AnalyticsEvent (event name + attributes map) and AnalyticsProvider interface (e.g., send(event: AnalyticsEvent): Promise<void>)
-2. Document minimal taxonomy: edirect_click with mapped attributes (utm_source, utm_medium, utm_campaign, utm_content, utm_term, xptdk, ref)
+2. Document minimal taxonomy: 
+edirect_click with mapped attributes (utm_source, utm_medium, utm_campaign, utm_content, utm_term, xptdk, ref)
 3. TypeScript interfaces exported (e.g., src/lib/analytics/types.ts, src/lib/analytics/provider.ts)
 4. Examples included showing how a provider adapts neutral event → vendor payload
 5. Unit tests validate type contracts and basic mapping examples
@@ -692,7 +693,8 @@ Provide a vendor‑neutral analytics layer: extract tracking data, define a neut
 **So that** adding/removing providers is simple and failures don’t affect each other.
 
 **Acceptance Criteria:**
-1. Implement outeAnalyticsEvent(event, providers) that fans‑out concurrently
+1. Implement 
+outeAnalyticsEvent(event, providers) that fans‑out concurrently
 2. Provider errors are caught and logged; other providers continue (isolation)
 3. Supports zero, one, or many providers without special casing
 4. Unit tests cover single/multiple providers, failure of one provider, and no‑provider case

@@ -1,7 +1,0 @@
-workflow: sprint-planning
-step: 4
-status: completed
-status_file: docs/sprint-status.yaml
-story_location_written: "{project-root}/docs/stories"
-ordering: epic_then_stories_then_retro
-generated_timestamp_updated: true

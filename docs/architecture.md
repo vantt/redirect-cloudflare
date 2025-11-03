@@ -48,58 +48,35 @@ This establishes the base architecture with (provided by starter):
 ## Project Structure
 
 ```
+src/
+├── lib/
+│   ├── analytics/          # Analytics system (Epic 7)
+│   │   ├── ga4/            # GA4 provider (Epic 8)
+│   │   ├── providers/      # Provider factories
+│   │   ├── router.ts       # Event routing
+│   │   └── types.ts        # Analytics types
+│   ├── destination-resolver.ts # Destination URL resolution
+│   ├── errors.ts           # Custom error classes
+│   ├── kv-store.ts         # KV store abstraction
+│   ├── query-parser.ts     # Query string parsing
+│   └── validation.ts       # URL and domain validation
+├── routes/
+│   ├── bootstrap.ts        # Legacy URL bootstrap
+│   └── redirect.ts         # Main redirect endpoint
+├── types/
+│   └── env.ts              # Environment variable types
+└── utils/
+    └── logger.ts           # Structured logger
 
-+-- src/
-¦   +-- index.ts                    # Entry point - Hono app initialization
-¦   +-- routes/
-¦   ¦   +-- redirect.ts             # /r endpoint - canonical server-side redirect
-¦   ¦   +-- bootstrap.ts            # / endpoint - legacy client upgrade bootstrap
-¦   +-- lib/
-¦   ¦   +-- analytics/              # Analytics abstraction layer
-¦   ¦   +-- validation.ts           # Zod schemas for URL validation
-¦   ¦   +-- tracking.ts             # GA4 Measurement Protocol integration
-¦   ¦   +-- kv-store.ts             # KV operations (get/put redirect mappings)
-¦   ¦   +-- errors.ts               # Custom error classes (RedirectError)
-¦   ¦   +-- config.ts               # Environment configuration management
-¦   +-- types/
-¦   ¦   +-- env.ts                  # Environment bindings type definitions
-¦   +-- utils/
-¦       +-- logger.ts               # Custom structured logger
-+-- test/
-¦   +-- setup.ts                    # Global test setup
-¦   +-- helpers/                    # Test utilities & helpers
-¦   ¦   +-- config.ts               # Test environment mocks
-¦   +-- fixtures/                   # Test fixtures & mock data
-¦   ¦   +-- env.ts                  # Environment test fixtures
-¦   +-- unit/                       # Unit Tests (isolated component tests)
-¦   ¦   +-- lib/                    # Library module unit tests
-¦   ¦   ¦   +-- analytics/          # Analytics module unit tests
-¦   ¦   ¦   +-- validation.test.ts  # Validation logic tests
-¦   ¦   ¦   +-- tracking.test.ts    # Tracking functions tests
-¦   ¦   ¦   +-- kv-store.test.ts    # KV operations tests
-¦   ¦   ¦   +-- config.test.ts      # Config management tests
-¦   ¦   +-- routes/                 # Route function unit tests
-¦   ¦       +-- parse-destination.test.ts
-¦   +-- integration/                # Integration Tests (component interactions)
-¦   ¦   +-- routes/                 # HTTP route integration tests
-¦   ¦   ¦   +-- redirect-basic.test.ts
-¦   ¦   ¦   +-- redirect-validation.test.ts
-¦   ¦   ¦   +-- bootstrap-legacy.test.ts
-¦   ¦   +-- redirect-endpoint.test.ts
-¦   ¦   +-- error-handling.test.ts
-¦   +-- e2e/                        # End-to-End Tests (complete workflows)
-¦   ¦   +-- analytics-router.e2e.test.ts
-¦   ¦   +-- legacy-upgrade.e2e.test.ts
-¦   +-- utils/                      # Test utilities
-¦       +-- common.test-utils.ts
-¦       +-- mock-analytics.ts
-+-- wrangler.toml                   # Cloudflare Workers configuration
-+-- vitest.config.ts                # Vitest + Miniflare test configuration
-+-- tsconfig.json                   # TypeScript configuration
-+-- package.json                    # Dependencies and scripts
-+-- .prettierrc                     # Code formatting rules
-+-- .eslintrc.json                  # Linting rules
-+-- README.md                       # Setup and deployment documentation
+test/
+├── unit/
+│   └── lib/
+│       ├── analytics/
+│       │   ├── providers/
+│       │   └── ga4/
+│       └── ...
+├── integration/
+└── fixtures/
 ```
 
 ## Epic to Architecture Mapping
@@ -108,14 +85,14 @@ Based on PRD functional requirements, epics map to architectural components:
 
 | Epic | Description | Architecture Components | Key Technologies |
 | ---- | ----------- | ----------------------- | ---------------- |
-| **Epic 1: Core Redirect Engine** | Server-side 301/302 redirects from short URLs | `routes/redirect.ts`, `lib/kv-store.ts`, `lib/validation.ts` | Hono routing, Cloudflare KV, Zod validation |
-| **Epic 2: Pre-Redirect Tracking (Foundation)** | Extract tracking params (UTM/xptdk), prepare neutral event | `lib/tracking.ts` | URL parsing, typed TrackingParams |
+| **Epic 1: Core Redirect Engine** | Server-side 301/302 redirects from short URLs | `routes/redirect.ts`, `lib/kv-store.ts`, `lib/validation.ts`, `lib/destination-resolver.ts` | Hono routing, Cloudflare KV, Zod validation |
+| **Epic 2: Pre-Redirect Tracking (Foundation)** | Extract tracking params (UTM/xptdk), prepare neutral event | `lib/parameter-extractor.ts` | URL parsing, typed TrackingParams |
 | **Epic 3: Legacy Client Bootstrap** | Upgrade legacy `/#...` URLs to `/r?to=...` | `routes/bootstrap.ts` (minimal HTML + JS) | Hono static responses, client-side redirect |
 | **Epic 4: URL Management API** | CRUD operations for URL mappings (future/optional) | `routes/admin.ts` (future), `lib/kv-store.ts` | Hono REST endpoints, KV bindings |
-| **Epic 5: Debugging & Monitoring** | Debug mode (isNoRedirect=1), structured logging | `lib/logger.ts`, error handling in all routes | Hono logger middleware, custom structured logs |
+| **Epic 5: Debugging & Monitoring** | Debug mode (isNoRedirect=1), structured logging | `lib/logger.ts`, `lib/query-parser.ts`, `lib/response-builder.ts`, error handling in all routes | Hono logger middleware, custom structured logs |
 | **Epic 6: Security & Validation** | URL sanitization, open redirect prevention, optional domain allowlist | `lib/validation.ts`, `lib/errors.ts` | Zod schemas, URL parsing, domain checks |
-| **Epic 7: Analytics Abstraction (Multi-Service)** | Neutral event model, provider interface, router fan-out, registry, timeouts, observability | `src/lib/analytics/*`, `lib/tracking.ts`, `routes/redirect.ts` | Provider registry (env), concurrent dispatch with isolation, AbortSignal timeout, structured logs |
-| **Epic 8: GA4 Integration** | GA4 payload builder, HTTP integration with timeout, wiring into redirect flow | `lib/tracking.ts`, `routes/redirect.ts` | GA4 Measurement Protocol v2, Fetch API with timeout |
+| **Epic 7: Analytics Abstraction (Multi-Service)** | Neutral event model, provider interface, router fan-out, registry, timeouts, observability | `src/lib/analytics/*`, `lib/analytics/tracking-service.ts`, `routes/redirect.ts` | Provider registry (env), concurrent dispatch with isolation, AbortSignal timeout, structured logs |
+| **Epic 8: GA4 Integration** | GA4 payload builder, HTTP integration with timeout, wiring into redirect flow | `lib/analytics/ga4/*`, `lib/analytics/providers/ga4.ts`, `lib/analytics/tracking-service.ts` | GA4 Measurement Protocol v2, Fetch API with timeout |
 
 
 ## Analytics Abstraction (Epic 7)
@@ -160,6 +137,9 @@ Rationale:
 - `src/routes/redirect.ts`
   - Build `AnalyticsEvent` from `TrackingParams`
   - `const providers = loadProviders(c.env)` ? `await routeAnalyticsEvent(event, providers)` (non-blocking vs redirect path)
+
+- `src/lib/analytics/tracking-service.ts`
+    - `export async function trackRedirect(context: RedirectTrackingContext, env: Env): Promise<void>`
 
 - Tests (structure only)
   - `test/unit/lib/analytics/router.test.ts`

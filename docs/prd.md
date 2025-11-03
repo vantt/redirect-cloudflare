@@ -34,9 +34,10 @@ Analysis has shown that a Jamstack architecture using Cloudflare Workers is the 
 2.  **FR2: Pre-Redirect Tracking:** The system must extract, process, and send tracking parameters (e.g., UTM, `xptdk`) to an analytics service *before* executing the redirect.
 3.  **FR3: Analytics Integration:** The system must integrate with Google Analytics 4 (GA4) for event tracking. The data payload must be consistent with the legacy system.
 4.  **FR4: Link Management:** The system must provide a mechanism for managing the mapping between short URLs and destination URLs (e.g., via a CRUD API backed by Cloudflare KV).
-5.  **FR5: Debugging Mode:** The system must support a query parameter (`isNoRedirect=1`) to prevent redirection, allowing for tracking verification.
+5.  **FR5: Debugging Mode:** The system must support a `debug` query parameter that accepts flexible truthy/falsy values to prevent redirection for tracking verification. Truthy values (e.g., `1`, `true`, `yes`, `on`) enable debug mode, while falsy values (e.g., `0`, `false`, `no`, `off`) disable it. The check is case-insensitive. Invalid values will be logged as a warning and treated as falsy.
 6.  **FR6: Graceful Handling:** The system must handle malformed, invalid, or missing URLs gracefully, logging errors and redirecting to a pre-configured default page without crashing.
 7.  **FR7: URL Encoding:** The system must correctly handle URL-encoded characters within the destination URL.
+8.  **FR8: Legacy URL Compatibility:** The system must provide a backward compatibility mode for legacy URLs that use the `/#destination-url` pattern. This is achieved by serving a lightweight HTML page at the root (`/`) that uses client-side JavaScript to parse the URL fragment and upgrade it to a server-side redirect by calling the `/r?to=<encoded-destination-url>` endpoint. This ensures that old links continue to function while allowing them to be processed by the new server-side logic.
 
 ### 2.2. Non-Functional Requirements
 
@@ -103,6 +104,7 @@ The primary end-user experience is invisible and instantaneous. For administrato
 | `ANALYTICS_PROVIDERS` | No | - | Comma-separated list of analytics providers (e.g., "ga4") |
 | `GA4_MEASUREMENT_ID` | Conditional* | - | Google Analytics 4 Measurement ID |
 | `GA4_API_SECRET` | Conditional* | - | Google Analytics 4 API Secret |
+| `MIXPANEL_TOKEN` | Conditional** | - | Mixpanel Project Token. |
 | `ANALYTICS_TIMEOUT_MS` | No | `"2000"` | Per-provider analytics timeout in milliseconds |
 
 *Required if `ANALYTICS_PROVIDERS` includes "ga4"
@@ -146,15 +148,7 @@ Components:
 
 ### 5.3. Optional Parameters
 
-No-redirect flag, applied to the parent (outside the fragment):
-
-```
-https://redirect.example.com#[destination-url]?isNoRedirect=[0|1]
-```
-
-- `isNoRedirect=1`: prevent redirect (debug)
-- `isNoRedirect=0` or omitted: allow redirect (default)
-- Note: `isNoRedirect` belongs to the parent URL, not the `destination-url`
+- `debug`: A query parameter to enable debugging mode. It accepts flexible truthy/falsy values (e.g., `1`, `true`, `yes`, `on` to enable; `0`, `false`, `no`, `off` to disable). When enabled, the service returns a JSON response with debug information instead of performing a redirect.
 
 ### 5.4. Tracking Parameters (Inside Destination)
 
@@ -177,7 +171,7 @@ Guidelines:
 ### 5.6. Implementation Notes (Legacy)
 
 1. Perform GTM/GA4 tracking before redirect
-2. Only redirect when `isNoRedirect` is not `1` and destination is present
+2. Only redirect when destination is present
 3. Accept both encoded and unencoded destination URLs; normalize safely
 4. Extract tracking parameters from the destination URL
 5. Handle malformed URLs and log failures for monitoring
@@ -209,8 +203,8 @@ Goal: Preserve existing `/#...` links for backward compatibility while upgrading
 1) Lightweight client bootstrap at `/` (backward compatible)
 - Server returns a tiny HTML (noindex) with a small JS bootstrap
 - On load, JS reads `window.location.hash`. If a destination is present:
-  - Parse/normalize the destination URL; also read outer query params (e.g., `?isNoRedirect=1`)
-  - If `isNoRedirect=1`: render a simple debug view (no redirect) with a "Force Server Redirect" button/link
+  - Parse/normalize the destination URL; also read outer query params (e.g., `?debug=1`)
+  - If debug mode is enabled: render a simple debug view (no redirect) with a "Force Server Redirect" button/link
   - Else: upgrade to server-side by `location.replace('/r?to=' + encodeURIComponent(destinationURL) + extraFlags)`
 
 2) Canonical server endpoint at `/r`
@@ -218,7 +212,7 @@ Goal: Preserve existing `/#...` links for backward compatibility while upgrading
 - Server flow:
   - Validate `to` (require http/https; optional domain allowlist)
   - Perform pre-redirect tracking (extract UTM/xptdk, send GA/GTM, log edge events)
-  - If `debug=1` (no redirect): return debug JSON/HTML showing payload and destination
+  - If `debug` parameter is truthy: return debug JSON/HTML showing payload and destination
   - Else: return 301/302 to `to` with appropriate headers (e.g., `Cache-Control`, `noindex`)
 
 3) Optional convenience: `/?to=...`
@@ -249,9 +243,15 @@ Example flows:
 Quick implementation notes:
 - `/`: ~1–2KB HTML + JS to parse hash, read `search`, optional beacon, then `location.replace` to `/r`
 - `/r`: Cloudflare Worker (TypeScript) validates `to`, extracts tracking, sends GA/GTM, returns 301/302
-- `isNoRedirect`: place outside fragment (e.g., `?isNoRedirect=1`) or map to `debug=1` when upgrading to `/r`
 
-### 5.10. Best Practices
+### 5.10. API Contracts
+
+**GET `/r`**
+
+- **`to`** (required): The destination URL or shortcode.
+- **`debug`** (optional): Enables debug mode. Accepts truthy values like `1`, `true`, `yes`, `on`. When enabled, returns a JSON response with debug information instead of a redirect.
+
+### 5.11. Best Practices
 
 1. Include tracking parameters in the destination URL
 2. Use URL encoding for special characters
