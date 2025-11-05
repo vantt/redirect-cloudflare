@@ -33,7 +33,7 @@ generated: 2025-11-01T00:00:00.000Z
 project: cloudflareRedirect
 project_key: cloudflareRedirect
 tracking_system: file-system
-story_location: {project-root}/docs/stories
+story_location: {project-root}/docs/project-management/stories
 
 development_status:
   epic-1: done

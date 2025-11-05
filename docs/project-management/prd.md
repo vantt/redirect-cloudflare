@@ -1,4 +1,4 @@
-# Jamstack URL Shortener Service Product Requirements Document (PRD)
+# Simple Redirect Service - Product Requirements Document (PRD)
 
 ## 1. Goals and Background Context
 
@@ -18,11 +18,11 @@ Analysis has shown that a Jamstack architecture using Cloudflare Workers is the 
 
 ### 1.3. Change Log
 
-| Date | Version | Description | Author |
-| :--- | :--- | :--- | :--- |
-| 2025-10-17 | 0.1 | Initial brownfield analysis draft | Gemini |
-| 2025-10-19 | 0.2 | Initial greenfield PRD draft | John (PM) |
-| 2025-10-24 | 1.0 | Consolidated and unified PRD | Gemini |
+| Date       | Version | Description                       | Author    |
+| :--------- | :------ | :-------------------------------- | :-------- |
+| 2025-10-17 | 0.1     | Initial brownfield analysis draft | Gemini    |
+| 2025-10-19 | 0.2     | Initial greenfield PRD draft      | John (PM) |
+| 2025-10-24 | 1.0     | Consolidated and unified PRD      | Gemini    |
 
 ---
 
@@ -96,16 +96,16 @@ The primary end-user experience is invisible and instantaneous. For administrato
 
 **Environment Variables:**
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `ALLOWED_DOMAINS` | No | - | Comma-separated list of allowed redirect domains |
-| `ENABLE_TRACKING` | No | `"false"` | Feature flag to enable analytics tracking |
-| `DEFAULT_REDIRECT_URL` | No | - | Default URL for root endpoint when no hash provided |
-| `ANALYTICS_PROVIDERS` | No | - | Comma-separated list of analytics providers (e.g., "ga4") |
-| `GA4_MEASUREMENT_ID` | Conditional* | - | Google Analytics 4 Measurement ID |
-| `GA4_API_SECRET` | Conditional* | - | Google Analytics 4 API Secret |
-| `MIXPANEL_TOKEN` | Conditional** | - | Mixpanel Project Token. |
-| `ANALYTICS_TIMEOUT_MS` | No | `"2000"` | Per-provider analytics timeout in milliseconds |
+| Variable               | Required      | Default   | Description                                               |
+| ---------------------- | ------------- | --------- | --------------------------------------------------------- |
+| `ALLOWED_DOMAINS`      | No            | -         | Comma-separated list of allowed redirect domains          |
+| `ENABLE_TRACKING`      | No            | `"false"` | Feature flag to enable analytics tracking                 |
+| `DEFAULT_REDIRECT_URL` | No            | -         | Default URL for root endpoint when no hash provided       |
+| `ANALYTICS_PROVIDERS`  | No            | -         | Comma-separated list of analytics providers (e.g., "ga4") |
+| `GA4_MEASUREMENT_ID`   | Conditional*  | -         | Google Analytics 4 Measurement ID                         |
+| `GA4_API_SECRET`       | Conditional*  | -         | Google Analytics 4 API Secret                             |
+| `MIXPANEL_TOKEN`       | Conditional** | -         | Mixpanel Project Token.                                   |
+| `ANALYTICS_TIMEOUT_MS` | No            | `"2000"`  | Per-provider analytics timeout in milliseconds            |
 
 *Required if `ANALYTICS_PROVIDERS` includes "ga4"
 
@@ -275,12 +275,12 @@ Quick implementation notes:
 
 ## 6. Risk Assessment and Mitigation
 
-| Risk | Mitigation Strategy |
-| :--- | :--- |
-| **Technical:** GTM/GA4 tracking event is not fired correctly or is lost. | Implement thorough testing of the tracking mechanism in a staging environment. Ensure the `fetch` request for tracking is awaited before the redirect response is returned. |
-| **Integration:** Future changes in GTM/GA4 data layer requirements break the integration. | Use environment variables in the worker for GTM/GA4 identifiers to allow for easy updates. Keep the tracking payload generation logic modular and easy to modify. |
-| **Deployment:** An incorrect deployment brings down the entire redirect service. | Use the Wrangler CLI's support for environments (e.g., `dev`, `staging`, `production`) to test deployments before they go live. Implement a CI/CD pipeline with automated testing gates. |
-| **Security:** Open redirect vulnerabilities from unsanitized inputs. | Implement a strict validation and sanitization layer for all incoming data, particularly the destination URL. Maintain an allow-list of trusted domains if possible. |
+| Risk                                                                                      | Mitigation Strategy                                                                                                                                                                      |
+| :---------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Technical:** GTM/GA4 tracking event is not fired correctly or is lost.                  | Implement thorough testing of the tracking mechanism in a staging environment. Ensure the `fetch` request for tracking is awaited before the redirect response is returned.              |
+| **Integration:** Future changes in GTM/GA4 data layer requirements break the integration. | Use environment variables in the worker for GTM/GA4 identifiers to allow for easy updates. Keep the tracking payload generation logic modular and easy to modify.                        |
+| **Deployment:** An incorrect deployment brings down the entire redirect service.          | Use the Wrangler CLI's support for environments (e.g., `dev`, `staging`, `production`) to test deployments before they go live. Implement a CI/CD pipeline with automated testing gates. |
+| **Security:** Open redirect vulnerabilities from unsanitized inputs.                      | Implement a strict validation and sanitization layer for all incoming data, particularly the destination URL. Maintain an allow-list of trusted domains if possible.                     |
 
 ---
 
