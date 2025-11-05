@@ -12,6 +12,7 @@ export interface Env {
   ANALYTICS_PROVIDERS?: string // Comma-separated list of provider tokens (e.g., "ga4,mixpanel")
   GA4_MEASUREMENT_ID?: string // Google Analytics 4 Measurement ID
   GA4_API_SECRET?: string // Google Analytics 4 API Secret
+  GA4_DEBUG?: string // GA4 debug mode flag (default: "false")
   MIXPANEL_TOKEN?: string // Mixpanel API Token
   ANALYTICS_TIMEOUT_MS?: string // Per-provider timeout in milliseconds (default: "2000")
 }

@@ -20,8 +20,15 @@ export interface AnalyticsProvider {
   readonly name: string
 
   /**
+   * Check if the provider is properly configured and ready to send events
+   *
+   * @returns true if provider is configured with required credentials
+   */
+  isConfigured(): boolean
+
+  /**
    * Send an analytics event to the provider
-   * 
+   *
    * @param event - Neutral analytics event to send
    * @returns Promise that resolves when the event is sent (or fails)
    */

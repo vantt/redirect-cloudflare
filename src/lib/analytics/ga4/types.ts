@@ -91,4 +91,7 @@ export interface GA4Config {
 
   /** Request timeout in milliseconds (default: 2000) */
   timeout?: number
+
+  /** HTTP client initialization status (for debugging) */
+  httpClientStatus?: 'initialized' | 'not_initialized'
 }

@@ -109,11 +109,11 @@ describe('Redirect Schema Protocol Validation', () => {
     const result = redirectSchema.safeParse({
       to: 'https://example.com'
     })
-    
+
     expect(result.success).toBe(true)
     if (result.success) {
       expect(result.data.to).toBe('https://example.com')
-      expect(result.data.n).toBeUndefined()
+      // Note: 'n' parameter (legacy no-redirect) has been removed from schema
     }
   })
 

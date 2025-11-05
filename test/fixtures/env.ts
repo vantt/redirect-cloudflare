@@ -92,3 +92,9 @@ export function createTestEnv(overrides: Partial<Env> = {}): Env {
     ...merged
   } as Env
 }
+
+/**
+ * Alias for createTestEnv - maintains backward compatibility
+ * @deprecated Use createTestEnv instead
+ */
+export const createMockEnv = createTestEnv

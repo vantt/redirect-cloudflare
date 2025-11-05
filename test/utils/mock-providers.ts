@@ -16,6 +16,10 @@ import { AnalyticsProvider } from '../../src/lib/analytics/provider';
 abstract class BaseMockProvider implements AnalyticsProvider {
   constructor(public readonly name: string = 'mock', protected delay: number = 0) {}
 
+  isConfigured(): boolean {
+    return true // Mock providers are always configured
+  }
+
   abstract send(event: AnalyticsEvent): Promise<void>
 }
 
