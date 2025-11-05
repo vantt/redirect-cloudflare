@@ -7,11 +7,11 @@ compatibility_flags = ["nodejs_compat"]
 # Lưu ý: Chỉ là placeholder, Wrangler sẽ ưu tiên env cụ thể bên dưới
 [[kv_namespaces]]
 binding = "REDIRECT_KV"
-id = "REPLACE_GLOBAL_REDIRECT_KV_ID"
+id = "23717fb69ec34910b4d0942167001260"
+preview_id = "9097b5ddc08d4448b45fc416f107cb88"
 
-[[kv_namespaces]]
-binding = "ANALYTICS_KV"
-id = "REPLACE_GLOBAL_ANALYTICS_KV_ID"
+# Note: ANALYTICS_KV removed - retry queue deferred to Epic 9
+# Current analytics implementation is fire-and-forget without persistence
 
 # =====================
 # DEV ENVIRONMENT
@@ -21,21 +21,16 @@ name = "cloudflare_redirect_dev"
 
 [env.dev.vars]
 DEFAULT_REDIRECT_URL = "https://dev.example.com"
-GA4_MEASUREMENT_ID   = "G-DEVXXXXXXXXX"
-ENVIRONMENT          = "dev"
-ENABLE_TRACKING      = "true"
-ANALYTICS_PROVIDERS  = "ga4"
-ALLOWED_DOMAINS      = "finejapanvietnam.com,example.com,test.com,localhost"
+GA4_MEASUREMENT_ID = "G-DEVXXXXXXXXX"
+ENVIRONMENT = "dev"
+ENABLE_TRACKING = "true"
+ANALYTICS_PROVIDERS = "ga4"
+ALLOWED_DOMAINS = "finejapanvietnam.com,example.com,test.com,localhost"
 
 [[env.dev.kv_namespaces]]
-binding    = "REDIRECT_KV"
-id         = "REPLACE_DEV_REDIRECT_KV_ID"
-preview_id = "REPLACE_DEV_REDIRECT_KV_PREVIEW_ID"
-
-[[env.dev.kv_namespaces]]
-binding    = "ANALYTICS_KV"
-id         = "REPLACE_DEV_ANALYTICS_KV_ID"
-preview_id = "REPLACE_DEV_ANALYTICS_KV_PREVIEW_ID"
+binding = "REDIRECT_KV"
+id = "23717fb69ec34910b4d0942167001260"
+preview_id = "9097b5ddc08d4448b45fc416f107cb88"
 
 # =====================
 # STAGING ENVIRONMENT
@@ -45,21 +40,16 @@ name = "cloudflare_redirect_staging"
 
 [env.staging.vars]
 DEFAULT_REDIRECT_URL = "https://staging.example.com"
-GA4_MEASUREMENT_ID   = "G-STAGINGXXXXXXX"
-ENVIRONMENT          = "staging"
-ENABLE_TRACKING      = "true"
-ANALYTICS_PROVIDERS  = "ga4"
-ALLOWED_DOMAINS      = "example.com,test.com"
+GA4_MEASUREMENT_ID = "G-STAGINGXXXXXXX"
+ENVIRONMENT = "staging"
+ENABLE_TRACKING = "true"
+ANALYTICS_PROVIDERS = "ga4"
+ALLOWED_DOMAINS = "example.com,test.com"
 
 [[env.staging.kv_namespaces]]
-binding    = "REDIRECT_KV"
-id         = "REPLACE_STAGING_REDIRECT_KV_ID"
-preview_id = "REPLACE_STAGING_REDIRECT_KV_PREVIEW_ID"
-
-[[env.staging.kv_namespaces]]
-binding    = "ANALYTICS_KV"
-id         = "REPLACE_STAGING_ANALYTICS_KV_ID"
-preview_id = "REPLACE_STAGING_ANALYTICS_KV_PREVIEW_ID"
+binding = "REDIRECT_KV"
+id = "23717fb69ec34910b4d0942167001260"
+preview_id = "9097b5ddc08d4448b45fc416f107cb88"
 
 # =====================
 # PRODUCTION ENVIRONMENT
@@ -69,18 +59,14 @@ name = "cloudflare_redirect_production"
 
 [env.production.vars]
 DEFAULT_REDIRECT_URL = "https://example.com"
-GA4_MEASUREMENT_ID   = "G-PRODXXXXXXXXX"
-ENVIRONMENT          = "production"
-ENABLE_TRACKING      = "true"
-ANALYTICS_PROVIDERS  = "ga4"
-ALLOWED_DOMAINS      = "finejapanvietnam.com,example.com,test.com,localhost"
+GA4_MEASUREMENT_ID = "G-PRODXXXXXXXXX"
+GA4_API_SECRET = "ádfasfsadfasdf"
+ENVIRONMENT = "production"
+ENABLE_TRACKING = "true"
+ANALYTICS_PROVIDERS = "ga4"
+ALLOWED_DOMAINS = "finejapanvietnam.com,example.com,test.com,localhost"
 
 [[env.production.kv_namespaces]]
-binding    = "REDIRECT_KV"
-id         = "REPLACE_PROD_REDIRECT_KV_ID"
-preview_id = "REPLACE_PROD_REDIRECT_KV_PREVIEW_ID" # tùy chọn, nếu muốn preview tách biệt
-
-[[env.production.kv_namespaces]]
-binding    = "ANALYTICS_KV"
-id         = "REPLACE_PROD_ANALYTICS_KV_ID"
-preview_id = "REPLACE_PROD_ANALYTICS_KV_PREVIEW_ID" # tùy chọn
+binding = "REDIRECT_KV"
+id = "23717fb69ec34910b4d0942167001260"
+preview_id = "9097b5ddc08d4448b45fc416f107cb88"

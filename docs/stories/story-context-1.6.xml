@@ -112,7 +112,7 @@
       <signature>
         export interface Env {
           REDIRECT_KV: KVNamespace
-          ANALYTICS_KV: KVNamespace
+          // Note: ANALYTICS_KV removed - retry queue deferred to Epic 9
           ALLOWED_DOMAINS?: string
           ENABLE_TRACKING?: string
           DEFAULT_REDIRECT_URL?: string

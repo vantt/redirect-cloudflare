@@ -841,17 +841,95 @@ Deliver GA4-specific analytics integration behind the generalized tracking abstr
 **Prerequisites:** Story 7.1 (extraction), Story 8.1 (payload builder), Story 8.2 (GA4 send), Story 1.5 (redirect flow to integrate into)
 
 ---
- ## Epic 4: URL Management API
+## Epic 4: Short URL Management API
+
+**Priority:** P2 
+
+**Rationale:**
+Core KV operations implemented in Epic 1 (Story 1.2) provide programmatic interface for future admin UI integration.
+
+**Future Scope:**
+- REST API endpoints for Short URL CRUD operations
+- Simple api acess token for rest endpoints.
+
+**Story Count:** 0 stories (not included in current MVP)
+
+---
+
+## Epic 9: Analytics Retry Queue (Deferred)
+
+**Priority:** P2 (Future - Deferred)
+
+**Status:** Deferred - To be implemented in future iteration
+
+**Rationale:**
+Current analytics implementation uses fire-and-forget approach without persistence. While this meets MVP requirements for real-time analytics tracking, it lacks resilience for handling temporary analytics service outages. Epic 9 will add a retry buffer using KV storage and Worker Cron to replay failed analytics events.
+
+**Expanded Goal:**
+Implement a resilient analytics pipeline with KV-based retry queue and scheduled replay mechanism. When analytics providers (GA4, Mixpanel, etc.) are temporarily unavailable, failed events will be stored in KV with TTL and replayed by a Worker Cron job. This ensures analytics data completeness without impacting redirect performance.
+
+**Architecture Components:**
+- `ANALYTICS_KV` namespace - Retry queue storage (schema: `retry:${timestamp}:${uuid}`)
+- `src/lib/analytics/retry-queue.ts` - Enqueue/dequeue operations
+- `src/cron/analytics-replay.ts` - Worker Cron job for replay
+- TTL-based cleanup - Automatic expiry of old retry entries
+
+**Requirements:**
+
+1. **Storage Schema**
+   - Key pattern: `retry:${timestamp}:${uuid}` for chronological ordering
+   - Value: JSON payload with event data, provider name, attempt count, TTL metadata
+   - TTL: 7 days default (configurable via `ANALYTICS_RETRY_TTL_DAYS`)
+
+2. **Enqueue Logic**
+   - When provider send() fails with network/timeout error, enqueue to KV
+   - Use `ctx.waitUntil()` to ensure KV write completes without blocking redirect
+   - Log enqueue operations with structured logging
+
+3. **Worker Cron Replay**
+   - Schedule: Every 5 minutes (configurable via `ANALYTICS_RETRY_CRON`)
+   - Batch size: 100 events per execution (configurable via `ANALYTICS_RETRY_BATCH_SIZE`)
+   - Read oldest entries from KV, attempt resend to providers
+   - On success: Delete from KV
+   - On failure: Increment attempt count, re-enqueue with backoff (max 3 attempts)
+   - Handle idempotency to prevent duplicate events
+
+4. **Error Handling & Observability**
+   - Structured logs for enqueue, replay, success, failure
+   - Metrics: retry queue size, replay success rate, retry exhaustion count
+   - Alert on high retry queue growth (indicates persistent provider issues)
+
+5. **Testing Requirements**
+   - Unit: Enqueue with KV mock, TTL validation
+   - Integration: Simulate GA4 downtime → verify event queued → cron replays successfully
+   - E2E: Validate idempotency and max retry limits
+
+**Covers PRD Requirements:** NFR5 (Analytics reliability enhancement)
+
+**Dependencies:**
+- Cloudflare Workers Cron (Free tier: 3 cron schedules)
+- KV namespace: ANALYTICS_KV (requires creation and wrangler.toml binding)
+- Existing analytics abstraction from Epic 7 (AnalyticsProvider interface, router)
+
+**Story Count:** TBD (estimated 4-6 stories)
+
+**Deferred Until:**
+- MVP deployed and stabilized
+- Analytics volume and failure rate metrics collected
+- Business case validated for retry implementation cost vs data completeness benefit
+
+---
+
+## Epic 10: Admin UI
 
 **Priority:** P2 (Future - Deferred)
 
 **Status:** Deferred to separate project phase
 
 **Rationale:**
-Admin UI and web-based CRUD interface explicitly deferred to separate project per architectural decision (ADR and readiness report). Core KV operations implemented in Epic 1 (Story 1.2) provide programmatic interface for future admin UI integration.
+Admin UI and web-based CRUD interface explicitly deferred to separate project per architectural decision (ADR and readiness report).
 
 **Future Scope:**
-- REST API endpoints for URL CRUD operations
 - Admin authentication and authorization
 - Web-based admin dashboard
 - URL statistics and analytics
@@ -859,4 +937,3 @@ Admin UI and web-based CRUD interface explicitly deferred to separate project pe
 **Story Count:** 0 stories (not included in current MVP)
 
 ---
-

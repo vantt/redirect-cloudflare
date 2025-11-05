@@ -162,7 +162,8 @@ Ràng buộc môi trường (Wrangler):
 
 - Runtime & Platform
   - Cloudflare Workers (compatibility_date: 2025-10-24) — wrangler.toml: wrangler.toml:1
-  - KV Namespaces: REDIRECT_KV, ANALYTICS_KV — wrangler.toml bindings
+  - KV Namespaces: REDIRECT_KV (URL mappings) — wrangler.toml bindings
+  - Note: ANALYTICS_KV removed - retry queue deferred to Epic 9; current pipeline is fire-and-forget
 
 - Language & Framework
   - TypeScript ^5.9.0 — package.json: typescript

@@ -69,7 +69,7 @@ Epic 2 extends the core redirect service with comprehensive analytics tracking c
    ↓
 4. Analytics Event → GA4 MP → Google Analytics
    ↓
-5. Tracking Data → ANALYTICS_KV (for retries/debugging)
+5. Event analytics fire-and-forget (retry queue deferred to Epic 9)
 ```
 
 ## Privacy and Compliance
@@ -198,11 +198,9 @@ ANALYTICS_ENABLED=true
 
 ### KV Namespace Setup
 ```bash
-# Production
-wrangler kv:namespace create "ANALYTICS_KV"
-
-# Development
-wrangler kv:namespace create "ANALYTICS_KV" --preview
+# Note: ANALYTICS_KV removed - retry queue deferred to Epic 9
+# Current implementation uses fire-and-forget analytics without persistence
+# Only REDIRECT_KV namespace is required for URL mappings
 ```
 
 ## Risk Mitigation

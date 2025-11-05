@@ -12,7 +12,6 @@ import {
 function createTestEnv(overrides: Partial<Env> = {}): Env {
   return {
     REDIRECT_KV: {} as any,
-    ANALYTICS_KV: {} as any,
     ...overrides,
   };
 }

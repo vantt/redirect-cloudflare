@@ -23,7 +23,8 @@
   - Runtime: Cloudflare Workers (compatibility_date: 2025-10-24)
   - Framework: Hono v4.4.0 (ultra-fast web framework)
   - Language: TypeScript v5.9+ (strict mode, ES2022 target)
-  - Data Store: Cloudflare KV (2 namespaces: REDIRECT_KV, ANALYTICS_KV)
+  - Data Store: Cloudflare KV (namespace: REDIRECT_KV for URL mappings)
+    - Note: Analytics retry queue deferred to Epic 9 - current implementation is fire-and-forget
   - Validation: Zod v4.1.0 + @hono/zod-validator v0.7.0
   - Testing: Vitest v4.0.3 + Miniflare v3.20250718.2
 

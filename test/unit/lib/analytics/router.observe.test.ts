@@ -22,13 +22,6 @@ function createTestEnv(overrides = {}) {
       delete: vi.fn(),
       getWithMetadata: vi.fn()
     },
-    ANALYTICS_KV: {
-      get: vi.fn(),
-      list: vi.fn(),
-      put: vi.fn(),
-      delete: vi.fn(),
-      getWithMetadata: vi.fn()
-    },
     ...overrides
   }
 }

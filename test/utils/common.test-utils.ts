@@ -113,7 +113,7 @@ export async function testEndpointWithMethod(
 
 export function createMockEnv(kvNamespace?: any) {
   return {
-    REDIRECT_KV: kvNamespace || createMockKV(),
-    ANALYTICS_KV: kvNamespace || createMockKV()
+    REDIRECT_KV: kvNamespace || createMockKV()
+    // Note: ANALYTICS_KV removed - retry queue deferred to Epic 9
   }
 }

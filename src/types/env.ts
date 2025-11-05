@@ -4,7 +4,8 @@ import type { KVNamespace } from '@cloudflare/workers-types'
 
 export interface Env {
   REDIRECT_KV: KVNamespace
-  ANALYTICS_KV: KVNamespace
+  // Note: ANALYTICS_KV removed - retry queue deferred to Epic 9
+  // Current analytics is fire-and-forget without persistence
   ALLOWED_DOMAINS?: string
   ENABLE_TRACKING?: string // Feature flag to enable/disable tracking (default: "false")
   DEFAULT_REDIRECT_URL?: string // Default URL for root endpoint when no hash provided

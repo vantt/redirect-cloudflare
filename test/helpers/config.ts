@@ -22,7 +22,8 @@ import type { Env } from '../../src/types/env.js'
  * Provides a more ergonomic name for test authors
  *
  * Story 7.9: Automatically includes proper KV namespace mocks.
- * All returned Env objects have functional REDIRECT_KV and ANALYTICS_KV.
+ * All returned Env objects have functional REDIRECT_KV.
+ * Note: ANALYTICS_KV removed - retry queue deferred to Epic 9
  *
  * @param overrides - Partial Env properties to customize the test environment
  * @returns Complete Env object suitable for testing with KV bindings

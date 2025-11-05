@@ -233,11 +233,12 @@ npx wrangler secret delete GA4_API_SECRET --env production
 ```bash
 # Staging KV namespaces
 npx wrangler kv:namespace create REDIRECT_KV --env staging
-npx wrangler kv:namespace create ANALYTICS_KV --env staging
 
 # Production KV namespaces
 npx wrangler kv:namespace create REDIRECT_KV --env production
-npx wrangler kv:namespace create ANALYTICS_KV --env production
+
+# Note: ANALYTICS_KV removed - retry queue deferred to Epic 9
+# Current analytics implementation is fire-and-forget without persistence
 ```
 
 ### Update wrangler.toml with KV IDs
@@ -249,9 +250,7 @@ After creating namespaces, update `wrangler.toml`:
 binding = "REDIRECT_KV"
 id = "staging-redirect-kv-id"  # Replace with actual ID
 
-[[env.staging.kv_namespaces]]
-binding = "ANALYTICS_KV"
-id = "staging-analytics-kv-id"  # Replace with actual ID
+# Note: ANALYTICS_KV removed - retry queue deferred to Epic 9
 ```
 
 ### KV Operations

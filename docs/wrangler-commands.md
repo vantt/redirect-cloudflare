@@ -229,14 +229,15 @@ npx wrangler kv:bulk put ./data.json --env production --binding REDIRECT_KV --dr
 ```bash
 # Create staging KV namespace
 npx wrangler kv:namespace create REDIRECT_KV --env staging
-npx wrangler kv:namespace create ANALYTICS_KV --env staging
 
 # Create production KV namespace
 npx wrangler kv:namespace create REDIRECT_KV --env production
-npx wrangler kv:namespace create ANALYTICS_KV --env production
 
 # Preview KV namespace creation
 npx wrangler kv:namespace create REDIRECT_KV --env staging --preview
+
+# Note: ANALYTICS_KV removed - retry queue deferred to Epic 9
+# Current analytics implementation is fire-and-forget without persistence
 ```
 
 ## 🔐 Secrets Management

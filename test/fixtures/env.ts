@@ -18,7 +18,6 @@ import { createMockKV } from '../utils/mock-kv.js'
  */
 export const defaultTestEnv: Partial<Env> = {
   REDIRECT_KV: createMockKV(),
-  ANALYTICS_KV: createMockKV(),
   ALLOWED_DOMAINS: 'example.com,test.com',
   ENABLE_TRACKING: 'false',
   DEFAULT_REDIRECT_URL: 'https://example.com',
@@ -34,7 +33,6 @@ export const defaultTestEnv: Partial<Env> = {
  */
 export const testEnvWithGA4: Env = {
   REDIRECT_KV: createMockKV(),
-  ANALYTICS_KV: createMockKV(),
   ALLOWED_DOMAINS: 'example.com,test.com',
   ENABLE_TRACKING: 'true',
   DEFAULT_REDIRECT_URL: 'https://example.com',
@@ -52,7 +50,6 @@ export const testEnvWithGA4: Env = {
  */
 export const testEnvMinimal: Env = {
   REDIRECT_KV: createMockKV(),
-  ANALYTICS_KV: createMockKV(),
   ENABLE_TRACKING: 'false',
   ANALYTICS_TIMEOUT_MS: '2000'
 }
@@ -65,7 +62,6 @@ export const testEnvMinimal: Env = {
  */
 export const testEnvInvalid: Partial<Env> = {
   REDIRECT_KV: createMockKV(),
-  ANALYTICS_KV: createMockKV(),
   ALLOWED_DOMAINS: '', // Empty domain list - should cause validation error
   ENABLE_TRACKING: 'invalid_boolean', // Invalid boolean value
   ANALYTICS_PROVIDERS: 'unknown_provider', // Unknown provider
@@ -93,7 +89,6 @@ export function createTestEnv(overrides: Partial<Env> = {}): Env {
   // Use overrides if provided, otherwise create new mocks
   return {
     REDIRECT_KV: overrides.REDIRECT_KV || createMockKV(),
-    ANALYTICS_KV: overrides.ANALYTICS_KV || createMockKV(),
     ...merged
   } as Env
 }
