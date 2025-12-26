@@ -34,7 +34,9 @@ describe('Analytics Router - Timeout and Non-Blocking', () => {
   describe('Timeout Policy Integration', () => {
     it('should use default timeout when ANALYTICS_TIMEOUT_MS not set', async () => {
       const mockProvider = {
-        send: vi.fn().mockResolvedValue(undefined)
+        name: 'MockProvider',
+        send: vi.fn().mockResolvedValue(undefined),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
       
       const event = {
@@ -60,7 +62,9 @@ describe('Analytics Router - Timeout and Non-Blocking', () => {
 
     it('should use environment timeout when ANALYTICS_TIMEOUT_MS is set', async () => {
       const mockProvider = {
-        send: vi.fn().mockResolvedValue(undefined)
+        name: 'MockProvider',
+        send: vi.fn().mockResolvedValue(undefined),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
       
       const event = {
@@ -88,7 +92,9 @@ describe('Analytics Router - Timeout and Non-Blocking', () => {
 
     it('should use options timeout when provided', async () => {
       const mockProvider = {
-        send: vi.fn().mockResolvedValue(undefined)
+        name: 'MockProvider',
+        send: vi.fn().mockResolvedValue(undefined),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
       
       const event = {
@@ -114,7 +120,9 @@ describe('Analytics Router - Timeout and Non-Blocking', () => {
 
     it('should override environment timeout with options timeout', async () => {
       const mockProvider = {
-        send: vi.fn().mockResolvedValue(undefined)
+        name: 'MockProvider',
+        send: vi.fn().mockResolvedValue(undefined),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
       
       const event = {
@@ -142,7 +150,9 @@ describe('Analytics Router - Timeout and Non-Blocking', () => {
 
     it('should warn on invalid ANALYTICS_TIMEOUT_MS and use default', async () => {
       const mockProvider = {
-        send: vi.fn().mockResolvedValue(undefined)
+        name: 'MockProvider',
+        send: vi.fn().mockResolvedValue(undefined),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
       
       const event = {
@@ -168,13 +178,17 @@ describe('Analytics Router - Timeout and Non-Blocking', () => {
   describe('Non-Blocking Behavior', () => {
     it('should complete promptly even when one provider hangs', async () => {
       const fastProvider = {
-        send: vi.fn().mockResolvedValue(undefined)
+        name: 'FastProvider',
+        send: vi.fn().mockResolvedValue(undefined),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
       
       const slowProvider = {
+        name: 'SlowProvider',
         send: vi.fn().mockImplementation(async () => {
           await new Promise(resolve => setTimeout(resolve, 5000)) // Hang for 5 seconds
-        })
+        }),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
       
       const event = {
@@ -213,7 +227,9 @@ describe('Analytics Router - Timeout and Non-Blocking', () => {
 
     it('should never throw on provider failures or timeouts', async () => {
       const failingProvider = {
-        send: vi.fn().mockRejectedValue(new Error('Provider error'))
+        name: 'FailingProvider',
+        send: vi.fn().mockRejectedValue(new Error('Provider error')),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
       
       const event = {
@@ -227,17 +243,23 @@ describe('Analytics Router - Timeout and Non-Blocking', () => {
 
     it('should handle mixed success and failure outcomes', async () => {
       const successProvider1 = {
-        send: vi.fn().mockResolvedValue(undefined)
+        name: 'SuccessProvider1',
+        send: vi.fn().mockResolvedValue(undefined),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
       
       const timeoutProvider = {
+        name: 'TimeoutProvider',
         send: vi.fn().mockImplementation(async () => {
           await new Promise(resolve => setTimeout(resolve, 300)) // Normal success but slower
-        })
+        }),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
       
       const failureProvider = {
-        send: vi.fn().mockRejectedValue(new Error('Network error'))
+        name: 'FailureProvider',
+        send: vi.fn().mockRejectedValue(new Error('Network error')),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
       
       const event = {
@@ -266,9 +288,11 @@ describe('Analytics Router - Timeout and Non-Blocking', () => {
   describe('Timeout Detection and Logging', () => {
     it('should detect timeout and log as timeout error', async () => {
       const slowProvider = {
+        name: 'SlowProvider',
         send: vi.fn().mockImplementation(async () => {
           await new Promise(resolve => setTimeout(resolve, 300)) // Slower than 200ms timeout
-        })
+        }),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
       
       const event = {
@@ -296,7 +320,9 @@ describe('Analytics Router - Timeout and Non-Blocking', () => {
 
     it('should distinguish between timeout and other errors', async () => {
       const errorProvider = {
-        send: vi.fn().mockRejectedValue(new Error('Authentication failed'))
+        name: 'ErrorProvider',
+        send: vi.fn().mockRejectedValue(new Error('Authentication failed')),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
       
       const event = {
@@ -326,15 +352,19 @@ describe('Analytics Router - Timeout and Non-Blocking', () => {
   describe('Performance and Latency Budget', () => {
     it('should complete within reasonable time even with slow providers', async () => {
       const slowProvider1 = {
+        name: 'SlowProvider1',
         send: vi.fn().mockImplementation(async () => {
           await new Promise(resolve => setTimeout(resolve, 5000))
-        })
+        }),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
       
       const slowProvider2 = {
+        name: 'SlowProvider2',
         send: vi.fn().mockImplementation(async () => {
           await new Promise(resolve => setTimeout(resolve, 4000))
-        })
+        }),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
       
       const event = {

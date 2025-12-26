@@ -265,7 +265,7 @@ describe('GA4Provider', () => {
 
     it('should handle undefined API secret', () => {
       const configWithoutSecret = { ...validConfig, apiSecret: undefined }
-      const provider = new GA4Provider(configWithoutSecret)
+      const provider = new GA4Provider(configWithoutSecret as any)
       const config = provider.getConfig()
 
       expect(config.apiSecret).toBeUndefined()
@@ -334,8 +334,8 @@ describe('GA4Provider', () => {
       const malformedEvent: AnalyticsEvent = {
         name: 'redirect_click',
         attributes: {
-          utm_source: null,
-          utm_medium: undefined,
+          utm_source: null as any,
+          utm_medium: undefined as any,
           custom_param: 'valid_value'
         }
       }

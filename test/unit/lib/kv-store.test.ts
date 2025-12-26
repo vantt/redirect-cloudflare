@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import { Miniflare } from 'miniflare'
+import type { KVNamespace } from '@cloudflare/workers-types'
 import { getRedirect, putRedirect } from '../../../src/lib/kv-store'
 import type { RedirectData } from '../../../src/types/env'
 

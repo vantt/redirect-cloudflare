@@ -11,6 +11,10 @@ class MockProvider implements AnalyticsProvider {
   async send(): Promise<void> {
     // do nothing
   }
+
+  isConfigured(): boolean {
+    return true;
+  }
 }
 
 describe('TrackingService', () => {

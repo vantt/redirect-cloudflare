@@ -277,7 +277,7 @@ describe('GA4 Payload Builder', () => {
         try {
           buildGA4Payload(event, '')
         } catch (error) {
-          expect(error.message).toBe('GA4 measurement ID is required')
+          expect((error as Error).message).toBe('GA4 measurement ID is required')
         }
       }).not.toThrow()
     })

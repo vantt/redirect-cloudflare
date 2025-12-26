@@ -58,7 +58,7 @@ describe('Simplified End-to-End Redirect Analytics Integration', () => {
         GA4_API_SECRET: ''
       }
 
-      const providers = loadProviders(envWithoutGA4)
+      const providers = loadProviders(envWithoutGA4 as any)
 
       // Provider should be created but not configured
       expect(providers).toHaveLength(1)
@@ -75,7 +75,7 @@ describe('Simplified End-to-End Redirect Analytics Integration', () => {
         ENABLE_TRACKING: 'true'
       }
 
-      const providers = loadProviders(envWithGA4Enabled)
+      const providers = loadProviders(envWithGA4Enabled as any)
       expect(providers).toHaveLength(1)
       expect(providers[0].name).toBe('ga4')
     })
@@ -87,7 +87,7 @@ describe('Simplified End-to-End Redirect Analytics Integration', () => {
         ENABLE_TRACKING: 'true'
       }
 
-      const providers = loadProviders(envWithoutGA4)
+      const providers = loadProviders(envWithoutGA4 as any)
       expect(providers).toHaveLength(0)
     })
 
@@ -98,7 +98,7 @@ describe('Simplified End-to-End Redirect Analytics Integration', () => {
         ENABLE_TRACKING: 'true'
       }
 
-      const providers = loadProviders(envWithEmptyProviders)
+      const providers = loadProviders(envWithEmptyProviders as any)
       expect(providers).toHaveLength(0)
     })
   })
@@ -124,7 +124,7 @@ describe('Simplified End-to-End Redirect Analytics Integration', () => {
 
       // Should not throw during provider loading
       expect(() => {
-        const providers = loadProviders(invalidEnv)
+        const providers = loadProviders(invalidEnv as any)
         expect(providers).toHaveLength(1)
         expect(providers[0].isConfigured()).toBe(false)
       }).not.toThrow()
@@ -137,7 +137,7 @@ describe('Simplified End-to-End Redirect Analytics Integration', () => {
         // Missing GA4_MEASUREMENT_ID and GA4_API_SECRET
       }
 
-      const providers = loadProviders(envWithoutGA4Config)
+      const providers = loadProviders(envWithoutGA4Config as any)
       expect(providers).toHaveLength(1)
       expect(providers[0].isConfigured()).toBe(false)
     })

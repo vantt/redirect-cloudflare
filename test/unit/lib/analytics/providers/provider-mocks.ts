@@ -14,6 +14,10 @@ export class SuccessMockProvider implements AnalyticsProvider {
     }
     return Promise.resolve();
   }
+
+  isConfigured(): boolean {
+    return true;
+  }
 }
 
 export class FailureMockProvider implements AnalyticsProvider {
@@ -29,6 +33,10 @@ export class FailureMockProvider implements AnalyticsProvider {
     }
     return Promise.reject(new Error(this.options.errorMessage || 'Mock provider failed to send event'));
   }
+
+  isConfigured(): boolean {
+    return true;
+  }
 }
 
 export class TimeoutMockProvider implements AnalyticsProvider {
@@ -40,6 +48,10 @@ export class TimeoutMockProvider implements AnalyticsProvider {
 
   async send(event: AnalyticsEvent): Promise<void> {
     return new Promise(() => {}); // Never resolves
+  }
+
+  isConfigured(): boolean {
+    return true;
   }
 }
 

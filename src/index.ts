@@ -12,7 +12,7 @@ const app = new Hono()
 // This ensures all required env vars are properly configured before processing requests
 app.use('*', async (c, next) => {
   // Only validate if env is available (skip in test environments where env might not be set)
-  if (c.env && typeof c.env === 'object' && Object.keys(c.env).length > 0) {
+  if (c.env && typeof c.env === 'object') {
     try {
       validateRequiredEnvVars(c.env as Env)
     } catch (error) {

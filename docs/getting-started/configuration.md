@@ -10,6 +10,19 @@ This guide covers essential configuration for the cloudflareRedirect service.
 
 ---
 
+## Configuration Files & Precedence
+
+- **`.env`**: Used **ONLY for local development**. Contains secrets and local overrides. High priority locally.
+- **`wrangler.toml`**: Used for **infrastructure and deployment**. Contains defaults and non-secret config. Lower priority locally, base config for production.
+
+> **Rule of Thumb**:
+>
+> - Want to change settings just for **YOU** (Locally)? -> Edit `.env`
+> - Want to change settings for **EVERYONE** (Project)? -> Edit `wrangler.toml`
+> - Want to change **SECRETS** (Production Keys)? -> Use `wrangler secret put`
+
+---
+
 ## Environment Variables
 
 ### Basic Configuration
@@ -76,6 +89,7 @@ ANALYTICS_PROVIDERS = "ga4"
 ```
 
 **Secrets (via CLI):**
+
 ```bash
 npx wrangler secret put GA4_API_SECRET --env staging
 ```
@@ -98,6 +112,7 @@ ALLOWED_DOMAINS = "example.com,trusted.org"
 ```
 
 **Secrets (via CLI):**
+
 ```bash
 npx wrangler secret put GA4_API_SECRET --env production
 ```
@@ -124,6 +139,7 @@ npx wrangler secret put GA4_API_SECRET --env production
 ### Step 3: Configure
 
 **Local (.env):**
+
 ```bash
 GA4_MEASUREMENT_ID=G-XXXXXXXXXX
 GA4_API_SECRET=your-secret-here
@@ -132,6 +148,7 @@ ENABLE_TRACKING=true
 ```
 
 **Production (wrangler.toml + CLI):**
+
 ```toml
 [env.production.vars]
 GA4_MEASUREMENT_ID = "G-XXXXXXXXXX"
@@ -172,6 +189,7 @@ ALLOWED_DOMAINS=example.com,partner.com,trusted.org
 ### Behavior
 
 **Allowed:**
+
 ```bash
 curl "http://localhost:8787/r?to=https://example.com/page"
 # → 302 redirect ✅
@@ -181,6 +199,7 @@ curl "http://localhost:8787/r?to=https://www.example.com/page"
 ```
 
 **Blocked:**
+
 ```bash
 curl "http://localhost:8787/r?to=https://untrusted.com"
 # → 403 Forbidden ❌
@@ -198,20 +217,20 @@ curl "http://localhost:8787/r?to=https://untrusted.com"
 
 ### Required Variables
 
-| Variable | Description | Example |
-|----------|-------------|---------|
+| Variable               | Description                      | Example               |
+| ---------------------- | -------------------------------- | --------------------- |
 | `DEFAULT_REDIRECT_URL` | Fallback URL when no destination | `https://example.com` |
 
 ### Optional Variables
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `ENABLE_TRACKING` | `false` | Enable analytics tracking |
-| `ANALYTICS_PROVIDERS` | - | Comma-separated provider list |
-| `GA4_MEASUREMENT_ID` | - | GA4 Measurement ID |
-| `GA4_API_SECRET` | - | GA4 API Secret |
-| `ANALYTICS_TIMEOUT_MS` | `2000` | Analytics timeout (ms) |
-| `ALLOWED_DOMAINS` | - | Domain allowlist |
+| Variable               | Default | Description                   |
+| ---------------------- | ------- | ----------------------------- |
+| `ENABLE_TRACKING`      | `false` | Enable analytics tracking     |
+| `ANALYTICS_PROVIDERS`  | -       | Comma-separated provider list |
+| `GA4_MEASUREMENT_ID`   | -       | GA4 Measurement ID            |
+| `GA4_API_SECRET`       | -       | GA4 API Secret                |
+| `ANALYTICS_TIMEOUT_MS` | `2000`  | Analytics timeout (ms)        |
+| `ALLOWED_DOMAINS`      | -       | Domain allowlist              |
 
 ---
 

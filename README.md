@@ -11,6 +11,7 @@ High-performance URL redirect service built on Cloudflare Workers.
 A serverless URL redirect service that runs at the edge on Cloudflare's global network. Built with **Hono** and **TypeScript**, it provides sub-5ms redirect latency with built-in analytics tracking.
 
 **Perfect for:**
+
 - URL shortening services
 - Marketing campaign tracking
 - Legacy URL migration
@@ -21,12 +22,14 @@ A serverless URL redirect service that runs at the edge on Cloudflare's global n
 ## ✨ Key Features
 
 ### Core Capabilities
+
 - 🚀 **Server-Side Redirects** - Fast 301/302 redirects with KV-backed URL mapping
 - 📊 **Pre-Redirect Analytics** - Track events BEFORE redirect happens (GA4 + extensible)
 - 🔄 **Legacy URL Support** - Auto-upgrade `/#url` format to modern `/r?to=url`
 - 🐛 **Debug Mode** - Test redirects without actual navigation (`debug=1` parameter)
 
 ### Technical Highlights
+
 - ⚡ **Edge Performance** - Sub-5ms latency via Cloudflare Workers + V8 isolates
 - 🔒 **Type Safety** - Full TypeScript with Zod validation
 - 🧪 **Comprehensive Testing** - 300+ tests (98.3% pass rate) with Vitest + Miniflare
@@ -79,18 +82,21 @@ wrangler deploy      # Deploy (see deployment guide first!)
 ### By User Level
 
 **🟢 Beginner** (Start here!)
+
 - [Installation Guide](./docs/getting-started/installation.md) - Setup from scratch (15 min)
 - [Your First Redirect](./docs/getting-started/first-redirect.md) - Quick tutorial (5 min)
 - [How It Works](./docs/getting-started/how-it-works.md) - Conceptual overview (20 min)
 - [Configuration Guide](./docs/getting-started/configuration.md) - Basic setup (10 min)
 
 **🟡 Intermediate** (Building features)
+
 - [Developer Guide](./docs/guides/developer-guide.md) ⭐ - Development workflow & patterns
 - [Testing Guide](./docs/guides/testing-guide.md) ⭐ - Testing strategy & best practices
 - [Deployment Guide](./docs/guides/deployment-guide.md) ⭐ - 3-environment deployment
 - [Wrangler Commands](./docs/guides/wrangler-commands.md) - Cloudflare CLI reference
 
 **🔴 Advanced** (Deep technical)
+
 - [Architecture](./docs/architecture/architecture.md) - System design & ADRs
 - [Project Structure](./docs/architecture/project-structure.md) - File organization rules (IMPORTANT!)
 - [Analytics System](./docs/features/analytics/) - Multi-provider analytics architecture
@@ -153,6 +159,7 @@ npm test test/unit/lib/validation.test.ts
 ```
 
 **Current Status:**
+
 - ✅ **303 total tests**
 - ✅ **298 passing** (98.3% pass rate)
 - ⚠️ **5 failing** (router observability - Story 5.2 scope)
@@ -179,11 +186,13 @@ npm run logs:prod
 ### Environment Configuration
 
 The service supports 3 environments:
+
 - **Development** (`npm run dev`) - Local testing with hot reload
 - **Staging** (`deploy:staging`) - Pre-production testing
 - **Production** (`deploy:prod`) - Live production environment
 
 Each environment has its own:
+
 - KV namespaces (URL storage)
 - GA4 properties (analytics)
 - Environment variables (secrets, config)
@@ -197,9 +206,20 @@ Each environment has its own:
 ### Basic Configuration
 
 ```bash
+
 # .env file (local development)
 DEFAULT_REDIRECT_URL=https://example.com
 ENABLE_TRACKING=false
+
+# Note: .env variables override wrangler.toml settings during local development (npm run dev)
+# This file is gitignored and should NOT be used for production configuration.
+```
+
+### Security Configuration (Optional)
+
+```bash
+# Restrict redirects to specific domains
+ALLOWED_DOMAINS=example.com,trusted-site.com
 ```
 
 ### Analytics Configuration (Optional)
@@ -211,13 +231,6 @@ GA4_MEASUREMENT_ID=G-XXXXXXXXXX
 GA4_API_SECRET=your-api-secret-here
 ```
 
-### Security Configuration (Optional)
-
-```bash
-# Restrict redirects to specific domains
-ALLOWED_DOMAINS=example.com,trusted-site.com
-```
-
 → **[Configuration Guide](./docs/getting-started/configuration.md)** | **[GA4 Setup](./docs/features/ga4/)**
 
 ---
@@ -227,18 +240,21 @@ ALLOWED_DOMAINS=example.com,trusted-site.com
 ### Redirect Endpoint: `GET /r`
 
 **Basic redirect:**
+
 ```bash
 curl "https://your-domain.com/r?to=https://example.com"
 # → 302 Found, Location: https://example.com
 ```
 
 **Debug mode:**
+
 ```bash
 curl "https://your-domain.com/r?to=https://example.com&debug=1"
 # → 200 OK, JSON response with redirect details
 ```
 
 **With tracking parameters:**
+
 ```bash
 curl "https://your-domain.com/r?to=https://example.com?utm_source=fb&utm_campaign=summer"
 # → 302 Found, parameters preserved + tracked
@@ -247,6 +263,7 @@ curl "https://your-domain.com/r?to=https://example.com?utm_source=fb&utm_campaig
 ### Legacy Bootstrap: `GET /`
 
 Supports legacy `/#url` format:
+
 ```
 https://your-domain.com/#https://example.com
 → Auto-upgrades to: /r?to=https://example.com
@@ -305,6 +322,7 @@ npm run build
 ## 📊 Project Status
 
 ### Completed Epics
+
 - ✅ **Epic 1:** Core Redirect Engine
 - ✅ **Epic 2:** Error Handling & Validation
 - ✅ **Epic 3:** Domain Allowlist Security
@@ -313,6 +331,7 @@ npm run build
 - ✅ **Epic 8:** GA4 Integration
 
 ### Current Focus
+
 - 📍 Documentation optimization
 - 📍 Test coverage improvements
 - 📍 Observability enhancements
@@ -324,6 +343,7 @@ npm run build
 ## 📚 Additional Resources
 
 ### Documentation
+
 - **[Full Documentation Index](./docs/README.md)** - Complete docs navigation
 - **[Getting Started](./docs/getting-started/)** - Beginner guides
 - **[Guides](./docs/guides/)** - Development, testing, deployment
@@ -331,6 +351,7 @@ npm run build
 - **[Reference](./docs/reference/)** - PRD, epics, specifications
 
 ### External Links
+
 - [Cloudflare Workers Docs](https://developers.cloudflare.com/workers/)
 - [Hono Framework Docs](https://hono.dev/)
 - [Wrangler CLI Docs](https://developers.cloudflare.com/workers/wrangler/)

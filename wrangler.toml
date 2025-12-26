@@ -26,6 +26,7 @@ ENVIRONMENT = "dev"
 ENABLE_TRACKING = "true"
 ANALYTICS_PROVIDERS = "ga4"
 ALLOWED_DOMAINS = "finejapanvietnam.com,example.com,test.com,localhost"
+ANALYTICS_TIMEOUT_MS= 200
 
 [[env.dev.kv_namespaces]]
 binding = "REDIRECT_KV"
@@ -45,6 +46,7 @@ ENVIRONMENT = "staging"
 ENABLE_TRACKING = "true"
 ANALYTICS_PROVIDERS = "ga4"
 ALLOWED_DOMAINS = "example.com,test.com"
+ANALYTICS_TIMEOUT_MS= 200
 
 [[env.staging.kv_namespaces]]
 binding = "REDIRECT_KV"
@@ -59,12 +61,13 @@ name = "cloudflare_redirect_production"
 
 [env.production.vars]
 DEFAULT_REDIRECT_URL = "https://example.com"
-GA4_MEASUREMENT_ID = "G-PRODXXXXXXXXX"
-GA4_API_SECRET = "ádfasfsadfasdf"
+#GA4_MEASUREMENT_ID = "G-PRODXXXXXXXXX"
+#GA4_API_SECRET = ""
 ENVIRONMENT = "production"
 ENABLE_TRACKING = "true"
 ANALYTICS_PROVIDERS = "ga4"
-ALLOWED_DOMAINS = "finejapanvietnam.com,example.com,test.com,localhost"
+ALLOWED_DOMAINS = "finejapanvietnam.com,finejapan.vn,fjp.vn,fwg.vn,fgcare.vn,fgorg.vn,jpc.vn,jpcshop.vn,sencare.vn,example.com,test.com,localhost"
+ANALYTICS_TIMEOUT_MS= 200
 
 [[env.production.kv_namespaces]]
 binding = "REDIRECT_KV"

@@ -18,11 +18,11 @@ Hướng dẫn triển khai Cloudflare Redirect Service với 3 môi trường: 
 
 ## 🌍 Environment Overview
 
-| Environment | Purpose | URL Pattern | GA4 Property | Notes |
-|-------------|---------|-------------|--------------|-------|
-| **dev** | Local development | `http://localhost:8787` | `G-DEV123456789` | Testing & debugging |
-| **staging** | Pre-production testing | `https://cloudflare-redirect-staging.[subdomain].workers.dev` | `G-STAGING123456789` | Integration testing |
-| **production** | Live production | `https://your-domain.com` (custom domain) | `G-PROD123456789` | Real user traffic |
+| Environment    | Purpose                | URL Pattern                                                   | GA4 Property         | Notes               |
+| -------------- | ---------------------- | ------------------------------------------------------------- | -------------------- | ------------------- |
+| **dev**        | Local development      | `http://localhost:8787`                                       | `G-DEV123456789`     | Testing & debugging |
+| **staging**    | Pre-production testing | `https://cloudflare-redirect-staging.[subdomain].workers.dev` | `G-STAGING123456789` | Integration testing |
+| **production** | Live production        | `https://your-domain.com` (custom domain)                     | `G-PROD123456789`    | Real user traffic   |
 
 ## 🛠️ Initial Setup
 
@@ -53,6 +53,31 @@ npm run dev
 ```
 
 ## ⚙️ Environment Configuration
+
+### Environment Variables & Secrets Strategy
+
+Understanding the difference between `.env` and `wrangler.toml` is critical for secure Deployment:
+
+| Feature        | `.env` File                           | `wrangler.toml` File                                 |
+| :------------- | :------------------------------------ | :--------------------------------------------------- |
+| **Purpose**    | Local development secrets & overrides | Infrastructure definition & Deployment configuration |
+| **Git Status** | **IGNORED** (Never commit)            | **COMMITTED** (Version controlled)                   |
+| **Usage**      | `npm run dev` / `wrangler dev`        | `npm run deploy` / `wrangler deploy`                 |
+| **Secrets?**   | Yes, safe for local secrets           | **NO** (Use `wrangler secret put`)                   |
+
+#### Precedence Rules
+
+1.  **Local Development (`npm run dev`)**:
+
+    - **`.env` > `wrangler.toml`**: Variables in `.env` **OVERWRITE** variables in `wrangler.toml`.
+    - _Example_: If `ENABLED_TRACKING=false` in `wrangler.toml` but `true` in `.env`, local dev uses `true`.
+
+2.  **Deployment (Cloudflare)**:
+    - **`.env` IS IGNORED**: This file is not uploaded.
+    - **Secrets > Environment Vars**: Encrypted secrets (set via CLI/Dashboard) take precedence over plain text variables.
+    - **Secrets > `wrangler.toml`**: `wrangler.toml` provides default values, but Dashboard/CLI config often overrides.
+
+> [!WARNING] > **NEVER put secrets (API keys, passwords) in `wrangler.toml`**. Use `npx wrangler secret put KEY_NAME` instead.
 
 ### Development Environment (Local)
 

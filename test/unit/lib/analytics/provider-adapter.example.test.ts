@@ -8,11 +8,13 @@ describe('Analytics Provider Examples', () => {
       class GA4Provider implements AnalyticsProvider {
         readonly name = 'ga4';
         async send(event: AnalyticsEvent): Promise<void> {}
+        isConfigured(): boolean { return true; }
       }
 
       class MixpanelProvider implements AnalyticsProvider {
         readonly name = 'mixpanel';
         async send(event: AnalyticsEvent): Promise<void> {}
+        isConfigured(): boolean { return true; }
       }
 
       const ga4Provider = new GA4Provider();
@@ -55,6 +57,7 @@ describe('Analytics Provider Examples', () => {
         async send(event: AnalyticsEvent): Promise<void> {
           // Valid implementation
         }
+        isConfigured(): boolean { return true; }
       }
 
       const provider = new ValidProvider();
@@ -68,7 +71,8 @@ describe('Analytics Provider Examples', () => {
         async send(event: AnalyticsEvent): Promise<void> {
           // Mock async operation
           await new Promise(resolve => setTimeout(resolve, 10));
-        }
+        },
+        isConfigured: () => true
       };
 
       const event: AnalyticsEvent = {

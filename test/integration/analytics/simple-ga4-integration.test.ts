@@ -99,7 +99,7 @@ describe('Simple GA4 Integration', () => {
       ENABLE_TRACKING: 'true'
     }
 
-    const providers = loadProviders(mockEnv)
+    const providers = loadProviders(mockEnv as any)
 
     expect(providers).toHaveLength(1)
     expect(providers[0].name).toBe('ga4')
@@ -113,7 +113,7 @@ describe('Simple GA4 Integration', () => {
       ENABLE_TRACKING: 'true'
     }
 
-    const providers = loadProviders(mockEnv)
+    const providers = loadProviders(mockEnv as any)
 
     expect(providers).toHaveLength(0)
   })

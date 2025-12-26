@@ -8,8 +8,9 @@ describe('Startup Validation Integration Tests', () => {
         experimental: { disableExperimentalWarning: true },
         vars: {
           ANALYTICS_PROVIDERS: 'ga4',
-          GA4_API_SECRET: 'test-secret'
-          // Missing GA4_MEASUREMENT_ID
+          GA4_API_SECRET: 'test-secret',
+          // Explicitly unset to override local .env and trigger validation error
+          GA4_MEASUREMENT_ID: ''
         }
       })
 
@@ -31,8 +32,9 @@ describe('Startup Validation Integration Tests', () => {
         experimental: { disableExperimentalWarning: true },
         vars: {
           ANALYTICS_PROVIDERS: 'ga4',
-          GA4_MEASUREMENT_ID: 'G-TEST123'
-          // Missing GA4_API_SECRET
+          GA4_MEASUREMENT_ID: 'G-TEST123',
+          // Explicitly unset to override local .env and trigger validation error
+          GA4_API_SECRET: ''
         }
       })
 
@@ -95,8 +97,10 @@ describe('Startup Validation Integration Tests', () => {
       const worker = await unstable_dev('src/index.ts', {
         experimental: { disableExperimentalWarning: true },
         vars: {
-          ANALYTICS_PROVIDERS: 'ga4'
-          // Missing both GA4 credentials
+          ANALYTICS_PROVIDERS: 'ga4',
+          // Explicitly unset to override local .env
+          GA4_MEASUREMENT_ID: '',
+          GA4_API_SECRET: ''
         }
       })
 

@@ -35,7 +35,8 @@ describe('Analytics Router - Structured Logging and Observability', () => {
     it('should log dispatch attempt with required schema fields', async () => {
       const mockProvider: AnalyticsProvider = {
         name: 'MockProvider',
-        send: vi.fn().mockResolvedValue(undefined)
+        send: vi.fn().mockResolvedValue(undefined),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
       
       const event: AnalyticsEvent = {
@@ -67,7 +68,8 @@ describe('Analytics Router - Structured Logging and Observability', () => {
     it('should log success with duration and timestamp', async () => {
       const mockProvider: AnalyticsProvider = {
         name: 'MockProvider',
-        send: vi.fn().mockResolvedValue(undefined)
+        send: vi.fn().mockResolvedValue(undefined),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
 
       const event: AnalyticsEvent = {
@@ -96,7 +98,8 @@ describe('Analytics Router - Structured Logging and Observability', () => {
     it('should log failure with error details and duration', async () => {
       const mockProvider: AnalyticsProvider = {
         name: 'MockProvider',
-        send: vi.fn().mockRejectedValue(new Error('Network error'))
+        send: vi.fn().mockRejectedValue(new Error('Network error')),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
       
       const event: AnalyticsEvent = {
@@ -129,7 +132,8 @@ describe('Analytics Router - Structured Logging and Observability', () => {
         name: 'MockProvider',
         send: vi.fn().mockImplementation(async () => {
           await new Promise(resolve => setTimeout(resolve, 300)) // Slower than timeout
-        })
+        }),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
 
       const event: AnalyticsEvent = {
@@ -160,12 +164,14 @@ describe('Analytics Router - Structured Logging and Observability', () => {
     it('should log completion summary with success/failure counts and duration', async () => {
       const successProvider: AnalyticsProvider = {
         name: 'SuccessProvider',
-        send: vi.fn().mockResolvedValue(undefined)
+        send: vi.fn().mockResolvedValue(undefined),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
 
       const failProvider: AnalyticsProvider = {
         name: 'FailProvider',
-        send: vi.fn().mockRejectedValue(new Error('Auth failed'))
+        send: vi.fn().mockRejectedValue(new Error('Auth failed')),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
 
       const event: AnalyticsEvent = {
@@ -226,7 +232,8 @@ describe('Analytics Router - Structured Logging and Observability', () => {
     it('should not log attribute values in structured logs', async () => {
       const mockProvider: AnalyticsProvider = {
         name: 'MockProvider',
-        send: vi.fn().mockResolvedValue(undefined)
+        send: vi.fn().mockResolvedValue(undefined),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
       
       const event: AnalyticsEvent = {
@@ -279,7 +286,8 @@ describe('Analytics Router - Structured Logging and Observability', () => {
     it('should use provider names and event names instead of raw attributes in logs', async () => {
       const mockProvider: AnalyticsProvider = {
         name: 'MockProvider',
-        send: vi.fn().mockResolvedValue(undefined)
+        send: vi.fn().mockResolvedValue(undefined),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
       
       const event: AnalyticsEvent = {
@@ -355,15 +363,21 @@ describe('Analytics Router - Structured Logging and Observability', () => {
   describe('Consistent Schema Across Providers', () => {
     it('should maintain consistent logging format across multiple providers', async () => {
       const mockProvider1: AnalyticsProvider = {
-        send: vi.fn().mockResolvedValue(undefined)
+        name: 'Mock1', 
+        send: vi.fn().mockResolvedValue(undefined),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
       
       const mockProvider2: AnalyticsProvider = {
-        send: vi.fn().mockRejectedValue(new Error('Network timeout'))
+        name: 'Mock2', 
+        send: vi.fn().mockRejectedValue(new Error('Network timeout')),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
       
       const mockProvider3: AnalyticsProvider = {
-        send: vi.fn().mockRejectedValue(new Error('Auth error'))
+        name: 'Mock3', 
+        send: vi.fn().mockRejectedValue(new Error('Auth error')),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
       
       const event: AnalyticsEvent = {
@@ -431,7 +445,8 @@ describe('Analytics Router - Structured Logging and Observability', () => {
         name: 'MockProvider',
         send: vi.fn().mockImplementation(async () => {
           await new Promise(resolve => setTimeout(resolve, 50)) // 50ms delay
-        })
+        }),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
       
       const event: AnalyticsEvent = {
@@ -464,12 +479,14 @@ describe('Analytics Router - Structured Logging and Observability', () => {
         name: 'SlowProvider',
         send: vi.fn().mockImplementation(async () => {
           await new Promise(resolve => setTimeout(resolve, 200)) // 200ms delay
-        })
+        }),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
 
       const fastProvider: AnalyticsProvider = {
         name: 'FastProvider',
-        send: vi.fn().mockResolvedValue(undefined)
+        send: vi.fn().mockResolvedValue(undefined),
+        isConfigured: vi.fn().mockReturnValue(true)
       }
       
       const event: AnalyticsEvent = {
