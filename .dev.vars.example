@@ -1,0 +1,51 @@
+# Environment Configuration Template
+# Copy this file to .env and fill in your values for local development
+
+# ============================================================================
+# CORE CONFIGURATION
+# ============================================================================
+
+# Allowed redirect domains (comma-separated)
+# If set, redirects are restricted to these domains only
+# Example: "example.com,trusted.org"
+ALLOWED_DOMAINS=
+
+# Default redirect URL when no destination is provided
+# Used by root endpoint (/) when no hash fragment is present
+DEFAULT_REDIRECT_URL=https://example.com
+
+# ============================================================================
+# ANALYTICS CONFIGURATION
+# ============================================================================
+
+# Enable analytics tracking (default: "false")
+# Set to "true" to enable pre-redirect analytics
+ENABLE_TRACKING=false
+
+# Analytics providers (comma-separated)
+# Supported: "ga4"
+# Example: "ga4"
+ANALYTICS_PROVIDERS=
+
+# Analytics timeout in milliseconds (default: "2000")
+# Maximum time to wait for analytics before redirecting
+ANALYTICS_TIMEOUT_MS=2000
+
+# ============================================================================
+# GOOGLE ANALYTICS 4 (GA4)
+# ============================================================================
+# Required if ANALYTICS_PROVIDERS includes "ga4"
+
+# GA4 Measurement ID (format: G-XXXXXXXXXX)
+GA4_MEASUREMENT_ID=
+
+# GA4 API Secret (from GA4 Admin > Data Streams > Measurement Protocol API secrets)
+GA4_API_SECRET=
+
+# ============================================================================
+# NOTES
+# ============================================================================
+# - This file should NOT be committed to git (.gitignored)
+# - For production, configure these in wrangler.toml or Cloudflare dashboard
+# - Required variables are marked with "Required if..."
+# - All variables are optional unless explicitly stated
