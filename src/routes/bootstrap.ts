@@ -23,7 +23,7 @@ app.get('/', (c) => {
  * Generate bootstrap HTML with inline JavaScript for URL upgrade
  * @param fallbackUrl - URL to redirect to if no hash fragment exists
  */
-function generateBootstrapHTML(fallbackUrl: string): string {
+export function generateBootstrapHTML(fallbackUrl: string): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,10 +32,10 @@ function generateBootstrapHTML(fallbackUrl: string): string {
     <meta name="robots" content="noindex, nofollow">
     <title>Redirecting...</title>
     <script>
-      // get redirect url (part after #)
-      var path = window.location.href;
-      var hashInd = path.indexOf("#");
-      var redirectUrl = path.slice(hashInd + 1);
+      // get redirect url (part after #) using robust hash extraction
+      // window.location.hash returns text starting with # (e.g. "#abc") or empty string "" if no hash
+      var hash = window.location.hash; 
+      var redirectUrl = hash ? hash.slice(1) : "";
 
       // get isNoRedirect value (0 or 1): https://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript/901144#901144
       var queryParams = new URLSearchParams(window.location.search);

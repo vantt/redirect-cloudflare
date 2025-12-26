@@ -91,7 +91,8 @@ describe('E2E Legacy URL Upgrade Flow', () => {
 
     // Step 2: Verify HTML contains expected JavaScript code for URL upgrade
     // CONFIDENCE: Medium (70%) - Chỉ verify code structure, không verify execution
-    expect(bootstrapHtml).toContain('var redirectUrl = path.slice(hashInd + 1)')
+    expect(bootstrapHtml).toContain('var hash = window.location.hash')
+    expect(bootstrapHtml).toContain('var redirectUrl = hash ? hash.slice(1) : ""')
     expect(bootstrapHtml).toContain('encodeURIComponent(redirectUrl)')
     expect(bootstrapHtml).toContain("var newLocation = '/r?to='")
     expect(bootstrapHtml).toContain('window.location.href = newLocation')
