@@ -58,8 +58,8 @@ export function loadConfig(env: Env): Config {
  * @param env - Cloudflare Workers environment bindings
  */
 export function validateRequiredEnvVars(env: Env): void {
-  // Validate GA4 credentials if GA4 provider is enabled
-  if (env.ANALYTICS_PROVIDERS?.includes('ga4')) {
+  // Validate GA4 credentials if GA4 provider is enabled AND tracking is enabled
+  if (env.ANALYTICS_PROVIDERS?.includes('ga4') && env.ENABLE_TRACKING === 'true') {
     if (!env.GA4_MEASUREMENT_ID) {
       throw new RedirectError(
         'GA4_MEASUREMENT_ID is required when ANALYTICS_PROVIDERS includes "ga4"',

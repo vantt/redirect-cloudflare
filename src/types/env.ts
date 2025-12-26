@@ -3,7 +3,7 @@
 import type { KVNamespace } from '@cloudflare/workers-types'
 
 export interface Env {
-  REDIRECT_KV: KVNamespace
+  REDIRECT_KV?: KVNamespace
   // Note: ANALYTICS_KV removed - retry queue deferred to Epic 9
   // Current analytics is fire-and-forget without persistence
   ALLOWED_DOMAINS?: string

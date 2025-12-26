@@ -63,7 +63,7 @@ export function isFullUrl(value: string): boolean {
  */
 export async function resolveDestination(
   destination: string,
-  kvStore: KVNamespace
+  kvStore?: KVNamespace
 ): Promise<ResolvedDestination> {
 
   // Case 1: Direct URL
@@ -77,6 +77,13 @@ export async function resolveDestination(
 
   // Case 2: Shortcode resolution
   if (isShortcode(destination)) {
+    if (!kvStore) {
+      throw new RedirectError(
+        'KV store not configured',
+        500,
+        'INTERNAL_ERROR'
+      );
+    }
     const redirectData = await getRedirect(destination, kvStore)
     
     if (!redirectData) {

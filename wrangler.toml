@@ -5,10 +5,10 @@ compatibility_flags = ["nodejs_compat"]
 
 # (Optional) Khai báo KV toàn cục để IDE nhận diện binding
 # Lưu ý: Chỉ là placeholder, Wrangler sẽ ưu tiên env cụ thể bên dưới
-[[kv_namespaces]]
-binding = "REDIRECT_KV"
-id = "23717fb69ec34910b4d0942167001260"
-preview_id = "9097b5ddc08d4448b45fc416f107cb88"
+# [[kv_namespaces]]
+# binding = "REDIRECT_KV"
+# id = "23717fb69ec34910b4d0942167001260"
+# preview_id = "9097b5ddc08d4448b45fc416f107cb88"
 
 # Note: ANALYTICS_KV removed - retry queue deferred to Epic 9
 # Current analytics implementation is fire-and-forget without persistence
@@ -28,10 +28,10 @@ ANALYTICS_PROVIDERS = "ga4"
 ALLOWED_DOMAINS = "finejapanvietnam.com,example.com,test.com,localhost"
 ANALYTICS_TIMEOUT_MS= 200
 
-[[env.dev.kv_namespaces]]
-binding = "REDIRECT_KV"
-id = "23717fb69ec34910b4d0942167001260"
-preview_id = "9097b5ddc08d4448b45fc416f107cb88"
+# [[env.dev.kv_namespaces]]
+# binding = "REDIRECT_KV"
+# id = "23717fb69ec34910b4d0942167001260"
+# preview_id = "9097b5ddc08d4448b45fc416f107cb88"
 
 # =====================
 # STAGING ENVIRONMENT
@@ -48,28 +48,31 @@ ANALYTICS_PROVIDERS = "ga4"
 ALLOWED_DOMAINS = "example.com,test.com"
 ANALYTICS_TIMEOUT_MS= 200
 
-[[env.staging.kv_namespaces]]
-binding = "REDIRECT_KV"
-id = "23717fb69ec34910b4d0942167001260"
-preview_id = "9097b5ddc08d4448b45fc416f107cb88"
+# [[env.staging.kv_namespaces]]
+# binding = "REDIRECT_KV"
+# id = "23717fb69ec34910b4d0942167001260"
+# preview_id = "9097b5ddc08d4448b45fc416f107cb88"
 
 # =====================
 # PRODUCTION ENVIRONMENT
 # =====================
 [env.production]
 name = "cloudflare_redirect_production"
+routes = [
+  { pattern = "fwg.vn/*", zone_name = "fwg.vn" }
+]
 
 [env.production.vars]
-DEFAULT_REDIRECT_URL = "https://example.com"
-#GA4_MEASUREMENT_ID = "G-PRODXXXXXXXXX"
+DEFAULT_REDIRECT_URL = "https://finejapanvietnam.com"
+#GA4_MEASUREMENT_ID = "G-4LRYE397Y7"
 #GA4_API_SECRET = ""
 ENVIRONMENT = "production"
-ENABLE_TRACKING = "true"
+ENABLE_TRACKING = "false"
 ANALYTICS_PROVIDERS = "ga4"
-ALLOWED_DOMAINS = "finejapanvietnam.com,finejapan.vn,fjp.vn,fwg.vn,fgcare.vn,fgorg.vn,jpc.vn,jpcshop.vn,sencare.vn,example.com,test.com,localhost"
+ALLOWED_DOMAINS = "shopee.vn, m.me, facebook.com, finejapanvietnam.com, finejapan.vn, fjp.vn,fwg.vn,fgcare.vn,fgorg.vn,jpc.vn,jpcshop.vn,sencare.vn,example.com,test.com,localhost"
 ANALYTICS_TIMEOUT_MS= 200
 
-[[env.production.kv_namespaces]]
-binding = "REDIRECT_KV"
-id = "23717fb69ec34910b4d0942167001260"
-preview_id = "9097b5ddc08d4448b45fc416f107cb88"
+# [[env.production.kv_namespaces]]
+# binding = "REDIRECT_KV"
+# id = "23717fb69ec34910b4d0942167001260"
+# preview_id = "9097b5ddc08d4448b45fc416f107cb88"

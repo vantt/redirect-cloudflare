@@ -8,6 +8,7 @@ describe('Startup Validation Integration Tests', () => {
         experimental: { disableExperimentalWarning: true },
         vars: {
           ANALYTICS_PROVIDERS: 'ga4',
+          ENABLE_TRACKING: 'true', // Enable tracking to trigger validation
           GA4_API_SECRET: 'test-secret',
           // Explicitly unset to override local .env and trigger validation error
           GA4_MEASUREMENT_ID: ''
@@ -32,6 +33,7 @@ describe('Startup Validation Integration Tests', () => {
         experimental: { disableExperimentalWarning: true },
         vars: {
           ANALYTICS_PROVIDERS: 'ga4',
+          ENABLE_TRACKING: 'true', // Enable tracking to trigger validation
           GA4_MEASUREMENT_ID: 'G-TEST123',
           // Explicitly unset to override local .env and trigger validation error
           GA4_API_SECRET: ''
@@ -98,6 +100,7 @@ describe('Startup Validation Integration Tests', () => {
         experimental: { disableExperimentalWarning: true },
         vars: {
           ANALYTICS_PROVIDERS: 'ga4',
+          ENABLE_TRACKING: 'true', // Enable tracking to trigger validation
           // Explicitly unset to override local .env
           GA4_MEASUREMENT_ID: '',
           GA4_API_SECRET: ''
@@ -123,7 +126,7 @@ describe('Startup Validation Integration Tests', () => {
   })
 
   describe('Valid Configuration', () => {
-    it('should start successfully with minimal valid configuration', async () => {
+  it('should start successfully with minimal valid configuration', async () => {
       const worker = await unstable_dev('src/index.ts', {
         experimental: { disableExperimentalWarning: true },
         vars: {
@@ -143,6 +146,28 @@ describe('Startup Validation Integration Tests', () => {
         if (resp.status >= 400) {
           const body = await resp.json() as { error: string; code: string }
           expect(body.code).not.toBe('CONFIG_VALIDATION_ERROR')
+        }
+      } finally {
+        await worker.stop()
+      }
+    })
+
+    it('should start successfully when tracking is disabled even if GA4 credentials are missing', async () => {
+      const worker = await unstable_dev('src/index.ts', {
+        experimental: { disableExperimentalWarning: true },
+        vars: {
+          ANALYTICS_PROVIDERS: 'ga4',
+          ENABLE_TRACKING: 'false',
+          // GA4 credentials explicitly missing
+        }
+      })
+
+      try {
+        const resp = await worker.fetch('https://test.example.com/')
+        expect(resp.status).not.toBe(500)
+        if (resp.status >= 400) {
+            const body = await resp.json() as { error: string; code: string }
+            expect(body.code).not.toBe('CONFIG_VALIDATION_ERROR')
         }
       } finally {
         await worker.stop()
