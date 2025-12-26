@@ -81,7 +81,7 @@ export class GA4Provider implements AnalyticsProvider {
       }
 
       // Build GA4 payload
-      const payload = buildGA4Payload(event, this.config.measurementId)
+      const payload = buildGA4Payload(event, this.config.measurementId, this.config.debug)
 
       // Send HTTP request to GA4
       await this.httpClient.sendRequest(payload)

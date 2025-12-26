@@ -296,6 +296,19 @@ describe('GA4 Payload Builder', () => {
       expect(() => buildGA4Payload(undefined as any, mockMeasurementId)).toThrow('Event name is required')
     })
 
+    it('should include debug_mode when debug flag is true', () => {
+      const event: AnalyticsEvent = {
+        name: 'test_event',
+        attributes: {
+          destination_url: 'https://example.com'
+        }
+      }
+
+      const payload = buildGA4Payload(event, mockMeasurementId, true)
+
+      expect(payload.events[0].parameters).toHaveProperty('debug_mode', 1)
+    })
+
     it('should handle special characters in parameter values', () => {
       const event: AnalyticsEvent = {
         name: 'redirect_click',

@@ -21,8 +21,9 @@ name = "cloudflare_redirect_dev"
 
 [env.dev.vars]
 DEFAULT_REDIRECT_URL = "https://dev.example.com"
-GA4_MEASUREMENT_ID = "G-DEVXXXXXXXXX"
+#GA4_MEASUREMENT_ID = 
 ENVIRONMENT = "dev"
+GA4_DEBUG=true
 ENABLE_TRACKING = "true"
 ANALYTICS_PROVIDERS = "ga4"
 ALLOWED_DOMAINS = "finejapanvietnam.com,example.com,test.com,localhost"
@@ -64,10 +65,11 @@ routes = [
 
 [env.production.vars]
 DEFAULT_REDIRECT_URL = "https://finejapanvietnam.com"
-#GA4_MEASUREMENT_ID = "G-4LRYE397Y7"
+GA4_MEASUREMENT_ID = "G-4LRYE397Y7"
+#GA4_DEBUG="true"
 #GA4_API_SECRET = ""
 ENVIRONMENT = "production"
-ENABLE_TRACKING = "false"
+ENABLE_TRACKING = "true"
 ANALYTICS_PROVIDERS = "ga4"
 ALLOWED_DOMAINS = "shopee.vn, m.me, facebook.com, finejapanvietnam.com, finejapan.vn, fjp.vn,fwg.vn,fgcare.vn,fgorg.vn,jpc.vn,jpcshop.vn,sencare.vn,example.com,test.com,localhost"
 ANALYTICS_TIMEOUT_MS= 200

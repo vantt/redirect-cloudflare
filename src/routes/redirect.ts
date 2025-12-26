@@ -34,7 +34,8 @@ app.get('/', async (c) => {
     }
 
     // Step 5: Track - Abstracted tracking call
-    trackRedirect({
+    // Step 5: Track - Abstracted tracking call
+    const trackingPromise = trackRedirect({
       shortUrl: resolved.shortcode || destination,
       destinationUrl: validatedUrl,
       redirectType: resolved.type,
@@ -44,6 +45,8 @@ app.get('/', async (c) => {
     }, c.env).catch(error => {
       appLogger.warn('Tracking service call failed', { error: error instanceof Error ? error.message : 'Unknown error' })
     })
+
+    c.executionCtx.waitUntil(trackingPromise)
 
     // Step 6: Redirect - Return redirect response
     return createRedirectResponse(validatedUrl, resolved.type)

@@ -5,4 +5,11 @@ node_modules
 .gemini/commands/
 .qwen/commands
 .wrangler
-bmad/*
+bmad
+.agent
+.agents
+.clavix
+.claude
+.gemini
+
+.dev.vars

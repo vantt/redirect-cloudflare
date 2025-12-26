@@ -120,9 +120,10 @@ export function extractCustomParameters(attributes: Record<string, any>): Record
  *
  * @param event - Neutral AnalyticsEvent to transform
  * @param measurementId - GA4 Measurement ID (format: G-XXXXXXXXXX)
+ * @param debug - Optional debug mode flag (adds debug_mode: 1)
  * @returns GA4 Measurement Protocol v2 compliant payload
  */
-export function buildGA4Payload(event: AnalyticsEvent, measurementId: string): GA4Payload {
+export function buildGA4Payload(event: AnalyticsEvent, measurementId: string, debug: boolean = false): GA4Payload {
   try {
     // Validate required parameters
     if (!measurementId) {
@@ -143,7 +144,12 @@ export function buildGA4Payload(event: AnalyticsEvent, measurementId: string): G
     const customParams = extractCustomParameters(event.attributes)
 
     // Merge standard and custom parameters
-    const allEventParameters = { ...standardParams, ...customParams }
+    const allEventParameters: Record<string, any> = { ...standardParams, ...customParams }
+
+    // Add debug mode if enabled
+    if (debug) {
+      allEventParameters['debug_mode'] = 1
+    }
 
     // Create GA4 event
     const ga4Event: GA4Event = {

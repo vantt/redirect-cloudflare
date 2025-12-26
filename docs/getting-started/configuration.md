@@ -12,14 +12,28 @@ This guide covers essential configuration for the cloudflareRedirect service.
 
 ## Configuration Files & Precedence
 
-- **`.env`**: Used **ONLY for local development**. Contains secrets and local overrides. High priority locally.
-- **`wrangler.toml`**: Used for **infrastructure and deployment**. Contains defaults and non-secret config. Lower priority locally, base config for production.
+- **`.dev.vars`**: The **native Wrangler way** to handle local secrets.
+  - Format: `KEY=VALUE`
+  - Purpose: Local development secrets that should **not** be committed to Git.
+  - Priority: High (loaded by `wrangler dev`).
+- **`.env`**: Supported for local development variables.
+  - Purpose: Generic local environment variables.
+  - Note: `.env` is supported, but **`.env.local` is NOT natively supported** by Wrangler. Use `.dev.vars` for local secrets instead.
+- **`wrangler.toml`**: Used for **infrastructure and deployment**.
+  - Purpose: Project-wide defaults and non-secret configuration.
+  - Base config for both local (via specific env blocks) and production.
 
-> **Rule of Thumb**:
+> [!TIP] > **Use `.dev.vars` for local secrets**
 >
-> - Want to change settings just for **YOU** (Locally)? -> Edit `.env`
-> - Want to change settings for **EVERYONE** (Project)? -> Edit `wrangler.toml`
-> - Want to change **SECRETS** (Production Keys)? -> Use `wrangler secret put`
+> Unlike Next.js or other frameworks that use `.env.local`, Cloudflare Workers (Wrangler) natively checks for a file named **`.dev.vars`** for local secrets.
+>
+> **Best Practice:**
+>
+> 1. Create a `.dev.vars` file (add to `.gitignore`).
+> 2. Add your secrets there: `GA4_API_SECRET=my_local_secret`.
+> 3. Run `npm run dev`. Wrangler will automatically load it.
+>
+> _No additional `dotenv` package configuration required!_
 
 ---
 

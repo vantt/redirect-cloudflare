@@ -46,6 +46,14 @@ export class GA4HttpClient {
       // Build request options
       const requestOptions = this.buildRequestOptions(payload)
 
+      // Debug: Log full payload if debug mode is enabled
+      if (this.config.debug) {
+        appLogger.info('GA4 Request Payload', {
+          url,
+          payload: JSON.stringify(payload, null, 2)
+        })
+      }
+
       // Send HTTP request
       const response = await fetch(url, requestOptions)
       const latency = Date.now() - startTime

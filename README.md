@@ -207,12 +207,13 @@ Each environment has its own:
 
 ```bash
 
-# .env file (local development)
+# .dev.vars (for local secrets) or .env (for local config)
 DEFAULT_REDIRECT_URL=https://example.com
 ENABLE_TRACKING=false
 
-# Note: .env variables override wrangler.toml settings during local development (npm run dev)
-# This file is gitignored and should NOT be used for production configuration.
+# Note: .dev.vars is the native way to handle local secrets in Workers.
+# .env is also supported for standard variables.
+# These files are gitignored.
 ```
 
 ### Security Configuration (Optional)

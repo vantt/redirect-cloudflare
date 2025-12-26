@@ -71,6 +71,9 @@ export interface GA4StandardParameters {
 
   /** Link domain (original: redirect_type) */
   link_domain?: string
+
+  /** Debug mode flag (GA4 specific) */
+  debug_mode?: number | boolean
 }
 
 /**
