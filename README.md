@@ -17,6 +17,13 @@ A serverless URL redirect service that runs at the edge on Cloudflare's global n
 - Legacy URL migration
 - Analytics-tracked redirects
 
+**Usage Examples:**
+
+- **Simple Redirect:** `https://your-service.com/r?to=https://destination.com`
+- **Marketing Tracking:** `https://your-service.com/r?to=https://shop.com&utm_source=fb`
+- **Debug Mode:** `https://your-service.com/r?to=https://test.com&debug=1`
+- **Legacy Support:** `https://your-service.com/#https://old-link.com`
+
 ---
 
 ## ✨ Key Features
